@@ -39,9 +39,9 @@ const TITLELIST_Version = '0.1';
 
 function TL() {
     'use strict';
-    /* XXX var myPrivateVar;
+    var mainContext;
 
-    var private_stuff = function() {  // Only visible inside Restaurant()
+    /* XXX var private_stuff = function() {  // Only visible inside Restaurant()
         myPrivateVar = "I can set this here!";
     }*/
 
@@ -112,24 +112,22 @@ function TL() {
     };
 
 
-    this.checkPage = function(ctx) {
+    this.manageTitlePage = function(ctx) {
         var we_are_in_a_title_page = ctx.isTitlePage(document);
+        if (!we_are_in_a_title_page) return;
 
-        if (we_are_in_a_title_page) {
-            // find current logged in user, or quit script
-            if (!getLoggedUser(ctx)) return;
+        // find current logged in user, or quit script
+        if (!getLoggedUser(ctx)) return;
 
-            // Load lists data for this user from local storage
-            ctx.allLists = loadSavedLists(dest);
-            myLocalList = allLists['localHide']; // XXX
+        mainContext = ctx;
 
-            // start the title processing function
-            if (ctx.allLists.length) {
-                processTitles(ctx);
-                if (ctx.interval >= 100) {
-                    ctx.timer = setInterval(function() {processTitles(ctx);}, ctx.interval);
-                }
-            }
+        // Load lists data for this user from local storage
+        ctx.allLists = loadSavedLists(dest);
+
+        // start the title processing function
+        processTitles(ctx);
+        if (ctx.interval >= 100) {
+            ctx.timer = setInterval(function() {processTitles(ctx);}, ctx.interval);
         }
     };
 
@@ -149,14 +147,14 @@ function TL() {
     };
 
 
-    function processTitles(ctx) {
+    this.processTitles = function(ctx) {
         //
         // Process all title cards in current page
         //
+        var entries = ctx.getTitleEntries(document);
+        if (!entries) return;
 
         var entry, tt, lists, processingType;
-        var entries = ctx.getTitleEntries(document);
-
         for (var i = 0; i < entries.length; i++) {
             entry = entries[i];
 
@@ -171,11 +169,52 @@ function TL() {
 
             processingType = ctx.determineType(lists, tt, entry);
 
-            if (processingType) ctx.processItem(entry, tt, processingType);
+            if (processingType) {
+                ctx.processItem(entry, tt, processingType);
+                entry.TLProcessingType = processingType;
+            }
 
             entry.TLProcessed = true; // set to "true" after processing (so we skip it on next pass)
-        } // end for on all entries
-    }
+        }
+    };
+
+
+    this.toggleTitle = function(evt) {
+        var data = evt.target.dataset;
+
+        // get title entry
+        var entry = evt.target;
+        if (Number.isInteger(Number(data.howToFindEntry))) {
+            for (var i = 0; i < Number(data.howToFindEntry); i++) entry = entry.parentNode;
+        } else {
+            entry = entry.closest(data.howToFindEntry);
+        }
+
+        var tt = mainContext.getIdFromEntry(entry);
+        if (!tt) return;
+
+        // check if item is in list
+        var list = mainContext.allLists[data.toggleList];
+        if (list[tt.id]) {
+            delete list[tt.id];
+            mainContext.unProcessItem(entry, tt, data.toggleType);
+            entry.TLProcessingType = "-" + data.toggleType;
+        } else {
+            list[tt.id] = tt.title;
+            mainContext.processItem(entry, tt, data.toggleType);
+            entry.TLProcessingType = data.toggleType;
+        }
+        saveList(mainContext, list, data.toggleList);
+    };
+
+
+
+    this.addToggleEventOnClick = function(button, toggleType, toggleList, howToFindEntry) {
+        button.dataset.toggleType     = toggleType;
+        button.dataset.toggleList     = toggleList;
+        button.dataset.howToFindEntry = howToFindEntry;
+        button.addEventListener('click', toggleTitle, false);
+    };
 
 
 }
