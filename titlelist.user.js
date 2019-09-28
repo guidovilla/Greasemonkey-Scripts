@@ -127,7 +127,7 @@ var TL = (new function() {
         if (!( !ctx.isTitlePage || ctx.isTitlePage(document) )) return;
 
         // find current logged in user, or quit script
-        if (!this.getLoggedUser(ctx)) return;
+        if (!self.getLoggedUser(ctx)) return;
 
         // Load list data for this user from local storage
         ctx.allLists = self.loadSavedLists(ctx);
