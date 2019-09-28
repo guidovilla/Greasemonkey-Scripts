@@ -41,7 +41,7 @@ const TITLELIST_Version = '0.1';
 
 // FUNCTIONS *************************************************************************************************************	
 
-function TL() {
+function TitleList() {
     'use strict';
     var mainContext;
 
@@ -222,3 +222,5 @@ function TL() {
 
 
 }
+
+var TL = new TitleList();
