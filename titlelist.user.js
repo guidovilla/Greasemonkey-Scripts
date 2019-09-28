@@ -164,6 +164,9 @@ var TL = (new function() {
             // if entry has already been previously processed, skip it
             if (entry.TLProcessed) continue;
 
+            // see if entry is valid
+            if (ctx.isValidEntry && !ctx.isValidEntry(entry)) continue;
+
             tt = ctx.getIdFromEntry(entry);
             if (!tt) continue;
 
