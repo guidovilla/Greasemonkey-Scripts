@@ -37,18 +37,145 @@ const TITLELIST_Version = '0.1';
 
 // FUNCTIONS *************************************************************************************************************	
 
-function getLoggedUser(ctx) {
-   //
-   // Return name of user currently logged on site (log on console if failed)
-   // Return last saved value if no user is found
-   //
-   var user = ctx.getUser();
+function TL() {
+    'use strict';
+    /* XXX var myPrivateVar;
 
-   if (!user) {
-      console.error(ctx.name + ": user not logged in (or couldn't get user info) on URL " + document.URL);
-      user = GM_getValue(ctx.name + '-lastUser', '');
-      console.error("Using last user: " + user);
-   }
-   GM_setValue(ctx.name + '-lastUser', user);
-   return user;
+    var private_stuff = function() {  // Only visible inside Restaurant()
+        myPrivateVar = "I can set this here!";
+    }*/
+
+    this.getLoggedUser = function(ctx) {
+        //
+        // Return name of user currently logged on <ctx> site
+        // Return last saved value and log error if no user is found
+        //
+        var user = ctx.getUser();
+
+        if (!user) {
+            console.error(ctx.name + ": user not logged in (or couldn't get user info) on URL " + document.URL);
+            user = GM_getValue(ctx.name + '-lastUser', '');
+            console.error("Using last user: " + user);
+        }
+        GM_setValue(ctx.name + '-lastUser', user);
+        ctx.user = user;
+        return user;
+    };
+
+
+    function loadSavedList(listName) {
+        //
+        // Load a single saved lists
+        //
+        var list;
+        var userData = GM_getValue(listName, null);
+        if (userData) {
+            try {
+                list = JSON.parse(userData);
+            } catch(err) {
+                alert("Error loading saved list named '" + listName + "'!\n" + err.message);
+            }
+        }
+        return list;
+    }
+
+
+    this.loadSavedLists = function(ctx) {
+        //
+        // Load lists saved for the current user
+        //
+        var lists = {};
+
+        var listNames = loadSavedList('TitleLists-' + ctx.user);
+        if (!listNames) return lists;
+
+        for (var listName in listNames) {
+            lists[listName] = loadSavedList('TitleList-' + ctx.user + '-' + listName);
+        }
+        return lists;
+    };
+
+
+    this.saveList = function(ctx, list, name) {
+        //
+        // Save single list for the current user
+        //
+        var listNames = loadSavedList('TitleLists-' + ctx.user);
+        if (!listNames) listNames = {};
+
+        listNames[name] = 1;
+        var userData = JSON.stringify(listNames);
+        GM_setValue('TitleLists-' + ctx.user, userData);
+
+        userData = JSON.stringify(list);
+        GM_setValue('TitleList-' + ctx.user + '-' + name, userData);
+    };
+
+
+    this.checkPage = function(ctx) {
+        var we_are_in_a_title_page = ctx.isTitlePage(document);
+
+        if (we_are_in_a_title_page) {
+            // find current logged in user, or quit script
+            if (!getLoggedUser(ctx)) return;
+
+            // Load lists data for this user from local storage
+            ctx.allLists = loadSavedLists(dest);
+            myLocalList = allLists['localHide']; // XXX
+
+            // start the title processing function
+            if (ctx.allLists.length) {
+                processTitles(ctx);
+                if (ctx.interval >= 100) {
+                    ctx.timer = setInterval(function() {processTitles(ctx);}, ctx.interval);
+                }
+            }
+        }
+    };
+
+
+    this.inLists = function(ctx, tt, entry) {
+        //
+        // Receives a title (and corresponding entry) and finds all lists title is in.
+        // Argument "entry" is for "virtual" lists determined by attributes in the DOM
+        //
+        var lists = ( ctx.getListsFromEntry && ctx.getListsFromEntry(tt, entry) || {} );
+
+        for (var list in ctx.allLists) {
+            if (ctx.allLists[list][tt.id]) lists[list] = true;
+        }
+
+        return lists;
+    };
+
+
+    function processTitles(ctx) {
+        //
+        // Process all title cards in current page
+        //
+
+        var entry, tt, lists, processingType;
+        var entries = ctx.getTitleEntries(document);
+
+        for (var i = 0; i < entries.length; i++) {
+            entry = entries[i];
+
+            // if entry has already been previously processed, skip it
+            if (entry.TLProcessed) continue;
+
+            tt = ctx.getIdFromEntry(entry);
+            if (!tt) continue;
+
+            ctx.modifyEntry(entry);
+            lists = inLists(tt, entry);
+
+            processingType = ctx.determineType(lists, tt, entry);
+
+            if (processingType) ctx.processItem(entry, tt, processingType);
+
+            entry.TLProcessed = true; // set to "true" after processing (so we skip it on next pass)
+        } // end for on all entries
+    }
+
+
 }
