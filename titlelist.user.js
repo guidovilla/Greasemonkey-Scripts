@@ -18,14 +18,13 @@
 // @copyright     2019, Guido Villa
 // @license       GPL-3.0-or-later
 // @oujs:author   Guido
-// @date          26.09.2019
+// @date          27.09.2019
 // @version       1.1
 // ==/UserScript==
 //
 // To-do (priority: [H]igh, [M]edium, [L]ow):
 //   - [M] Reorder functions
 //   - [H] Extend library to work on all the scripts
-//   - [M] Move string literals
 //   - [M] correct public/private
 //   - [M] main context as default context
 //   - [M] move scripts to github or similar
@@ -40,7 +39,7 @@
 //
 // History:
 // --------
-// 2019.09.26  [1.1] Code cleanup (string literals)
+// 2019.09.27  [1.1] Code cleanup (string and number literals)
 // 2019.09.21  [1.0] First version
 // 2019.09.18  [0.1] First test version, private use only
 //
@@ -55,7 +54,8 @@ const Library_Version_TITLELIST = '1.1';
 
 var TL = new (function() {
     'use strict';
-    const STORAGE_SEP = '-';
+    const STORAGE_SEP      = '-';
+    const MIN_INTERVAL     = 100;
 
     var self = this;
 
@@ -69,16 +69,16 @@ var TL = new (function() {
 
         if (!user) {
             console.error(ctx.name + ": user not logged in (or couldn't get user info) on URL " + document.URL);
-            user = GM_getValue(ctx.name + STORAGE_SEP + 'lastUser', '');
+            user = GM_getValue(storName.lastUser(ctx), '');
             console.error("Using last user: " + user);
         }
-        GM_setValue(ctx.name + '-lastUser', user);
+        GM_setValue(storName.lastUser(ctx), user);
         ctx.user = user;
         return user;
     };
 
 
-    /* PRIVATE member */
+    /* PRIVATE members */
     // Load a single saved lists
     function loadSavedList(listName) {
         var list;
@@ -93,16 +93,22 @@ var TL = new (function() {
         return list;
     }
 
+    var storName = {
+        lastUser:    function(ctx)       { return ctx.name + STORAGE_SEP + 'lastUser'; },
+        listOfLists: function(ctx)       { return'TitleLists' + STORAGE_SEP + ctx.user; },
+        listName:    function(ctx, list) { return'TitleList' + STORAGE_SEP + ctx.user + STORAGE_SEP + listName; },
+    };
+
 
     // Load lists saved for the current user
     this.loadSavedLists = function(ctx) {
         var lists = {};
 
-        var listNames = loadSavedList('TitleLists' + STORAGE_SEP + ctx.user);
+        var listNames = loadSavedList(storName.listOfLists(ctx));
         if (!listNames) return lists;
 
         for (var listName in listNames) {
-            lists[listName] = loadSavedList('TitleList' + STORAGE_SEP + ctx.user + STORAGE_SEP + listName);
+            lists[listName] = loadSavedList(storName.listName(ctx, listName));
         }
         return lists;
     };
@@ -110,14 +116,14 @@ var TL = new (function() {
 
     // Save single list for the current user
     this.saveList = function(ctx, list, name) {
-        var listNames = ( loadSavedList('TitleLists' + STORAGE_SEP + ctx.user) || {} );
+        var listNames = ( loadSavedList(storName.listOfLists(ctx)) || {} );
 
         listNames[name] = 1;
         var userData = JSON.stringify(listNames);
-        GM_setValue('TitleLists' + STORAGE_SEP + ctx.user, userData);
+        GM_setValue(storName.listOfLists(ctx), userData);
 
         userData = JSON.stringify(list);
-        GM_setValue('TitleList' + STORAGE_SEP + ctx.user + STORAGE_SEP + name, userData);
+        GM_setValue(storName.listName(ctx, name), userData);
     };
 
 
@@ -137,7 +143,7 @@ var TL = new (function() {
 
         // start the title processing function
         self.processTitles(ctx);
-        if (ctx.interval >= 100) {
+        if (ctx.interval >= MIN_INTERVAL) {
             ctx.timer = setInterval(function() {self.processTitles(ctx);}, ctx.interval);
         }
     };
