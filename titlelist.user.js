@@ -23,6 +23,15 @@
 // ==/UserScript==
 //
 // To-do (priority: [H]igh, [M]edium, [L]ow):
+//   - [M] Move string literals
+//   - [M] correct public/private
+//   - [M] main context as default context
+//   - [H] Make it work! Understand "this", etc.
+//   - [H] what is the correct way of exporting the library?
+//   - [H] move scripts to github or similar
+//   - [H] do we need that the library is not cached? if so, how?
+//   - [H] See if ok that old versions are public
+//   - [M] Reorder functions
 //   - [H] Extend library to work on all the scripts
 //   - [M] Automatically handle case with only one list
 //   - [M] Add indication of URL to use to @require library itself
@@ -42,13 +51,11 @@ const TITLELIST_Version = '0.1';
 
 // FUNCTIONS *************************************************************************************************************	
 
-function TitleList() {
+var TL = (function() {
     'use strict';
+
     var mainContext;
 
-    /* XXX var private_stuff = function() {  // Only visible inside Restaurant()
-        myPrivateVar = "I can set this here!";
-    }*/
 
     this.getLoggedUser = function(ctx) {
         //
@@ -124,15 +131,15 @@ function TitleList() {
         if (!we_are_in_a_title_page) return;
 
         // find current logged in user, or quit script
-        if (!getLoggedUser(ctx)) return;
+        if (!this.getLoggedUser(ctx)) return;
 
         mainContext = ctx;
 
         // Load lists data for this user from local storage
-        ctx.allLists = loadSavedLists(dest);
+        ctx.allLists = this.loadSavedLists(ctx);
 
         // start the title processing function
-        processTitles(ctx);
+        this.processTitles(ctx);
         if (ctx.interval >= 100) {
             ctx.timer = setInterval(function() {processTitles(ctx);}, ctx.interval);
         }
@@ -172,7 +179,7 @@ function TitleList() {
             if (!tt) continue;
 
             if (ctx.modifyEntry) ctx.modifyEntry(entry);
-            lists = inLists(ctx, tt, entry);
+            lists = this.inLists(ctx, tt, entry);
 
             processingType = ctx.determineType(lists, tt, entry);
 
@@ -211,7 +218,7 @@ function TitleList() {
             mainContext.processItem(entry, tt, data.toggleType);
             entry.TLProcessingType = data.toggleType;
         }
-        saveList(mainContext, list, data.toggleList);
+        this.saveList(mainContext, list, data.toggleList);
     };
 
 
@@ -220,10 +227,8 @@ function TitleList() {
         button.dataset.toggleType     = toggleType;
         button.dataset.toggleList     = toggleList;
         button.dataset.howToFindEntry = howToFindEntry;
-        button.addEventListener('click', toggleTitle, false);
+        button.addEventListener('click', this.toggleTitle, false);
     };
 
 
-}
-
-var TL = new TitleList();
+}());
