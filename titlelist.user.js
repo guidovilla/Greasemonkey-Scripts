@@ -24,6 +24,7 @@
 //
 // To-do (priority: [H]igh, [M]edium, [L]ow):
 //   - [H] Extend library to work on all the scripts
+//   - [M] Automatically handle case with only one list
 //   - [M] Add indication of URL to use to @require library itself
 //   - [M] correct @namespace and @homepageURL
 //   - [M] Auto-update
@@ -117,7 +118,9 @@ function TitleList() {
 
 
     this.manageTitlePage = function(ctx) {
-        var we_are_in_a_title_page = ctx.isTitlePage(document);
+        //TODO forse qualcosa da cambiare, salvare la variabile nel contesto? Le operazioni sono sempre le stesse o qualcuno deve fare qualcosa di specifico?
+        //le dure righe sotto possono diventare una?
+        var we_are_in_a_title_page = ( !ctx.isTitlePage || ctx.isTitlePage(document) );
         if (!we_are_in_a_title_page) return;
 
         // find current logged in user, or quit script
@@ -168,8 +171,8 @@ function TitleList() {
             tt = ctx.getIdFromEntry(entry);
             if (!tt) continue;
 
-            ctx.modifyEntry(entry);
-            lists = inLists(tt, entry);
+            if (ctx.modifyEntry) ctx.modifyEntry(entry);
+            lists = inLists(ctx, tt, entry);
 
             processingType = ctx.determineType(lists, tt, entry);
 
