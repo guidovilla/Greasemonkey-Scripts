@@ -106,8 +106,7 @@ var TL = (new function() {
 
     // Save single list for the current user
     this.saveList = function(ctx, list, name) {
-        var listNames = loadSavedList('TitleLists-' + ctx.user);
-        if (!listNames) listNames = {};
+        var listNames = ( loadSavedList('TitleLists-' + ctx.user) || {} );
 
         listNames[name] = 1;
         var userData = JSON.stringify(listNames);
@@ -184,6 +183,8 @@ var TL = (new function() {
 
 
     this.toggleTitle = function(evt) {
+        evt.stopPropagation();
+        evt.preventDefault();
         var data = evt.target.dataset;
         var ctx = self.mainContext;
 
@@ -200,6 +201,7 @@ var TL = (new function() {
 
         // check if item is in list
         var list = ctx.allLists[data.toggleList];
+        if (!list) list = ctx.allLists[data.toggleList] = {};
         if (list[tt.id]) {
             delete list[tt.id];
             ctx.unProcessItem(entry, tt, data.toggleType);
