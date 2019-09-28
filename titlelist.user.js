@@ -56,6 +56,7 @@ var TL = new (function() {
     'use strict';
     const STORAGE_SEP      = '-';
     const MIN_INTERVAL     = 100;
+    const DEFAULT_INTERVAL = 1000;
 
     var self = this;
 
@@ -65,7 +66,7 @@ var TL = new (function() {
     // Return name of user currently logged on <ctx> site
     // Return last saved value and log error if no user is found
     this.getLoggedUser = function(ctx) {
-        var user = ctx.getUser();
+        var user = ctx.getUser(document);
 
         if (!user) {
             console.error(ctx.name + ": user not logged in (or couldn't get user info) on URL " + document.URL);
@@ -136,15 +137,19 @@ var TL = new (function() {
         if (!( !ctx.isTitlePage || ctx.isTitlePage(document) )) return;
 
         // find current logged in user, or quit script
-        if (!self.getLoggedUser(ctx)) return;
+        if (!self.getLoggedUser(ctx)) {
+            console.log('No user is defined, aborting');
+            return;
+        }
 
         // Load list data for this user from local storage
         ctx.allLists = self.loadSavedLists(ctx);
 
         // start the title processing function
         self.processTitles(ctx);
-        if (ctx.interval >= MIN_INTERVAL) {
-            ctx.timer = setInterval(function() {self.processTitles(ctx);}, ctx.interval);
+        if (typeof ctx.interval === "undefined" || ctx.interval >= MIN_INTERVAL) {
+            // TODO we might consider using MutationObserver in the future, instead
+            ctx.timer = setInterval(function() {self.processTitles(ctx);}, ctx.interval || DEFAULT_INTERVAL);
         }
     };
 
