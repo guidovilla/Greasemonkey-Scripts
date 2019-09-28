@@ -51,10 +51,11 @@ const TITLELIST_Version = '0.1';
 
 // FUNCTIONS *************************************************************************************************************	
 
-var TL = (function() {
+var TL = (new function() {
     'use strict';
+    var self = this;
 
-    var mainContext;
+    this.mainContext = null;
 
 
     this.getLoggedUser = function(ctx) {
@@ -75,6 +76,7 @@ var TL = (function() {
     };
 
 
+    /* PRIVATE member */
     function loadSavedList(listName) {
         //
         // Load a single saved lists
@@ -125,23 +127,22 @@ var TL = (function() {
 
 
     this.manageTitlePage = function(ctx) {
-        //TODO forse qualcosa da cambiare, salvare la variabile nel contesto? Le operazioni sono sempre le stesse o qualcuno deve fare qualcosa di specifico?
-        //le dure righe sotto possono diventare una?
-        var we_are_in_a_title_page = ( !ctx.isTitlePage || ctx.isTitlePage(document) );
-        if (!we_are_in_a_title_page) return;
+        self.mainContext = ctx;
+
+        //TODO forse qualcosa da cambiare, salvare una variabile we_are_in_a_title_page nel contesto?
+        //TODO per altri casi lo startup deve fare anche altro
+        if (!( !ctx.isTitlePage || ctx.isTitlePage(document) )) return;
 
         // find current logged in user, or quit script
         if (!this.getLoggedUser(ctx)) return;
 
-        mainContext = ctx;
-
-        // Load lists data for this user from local storage
-        ctx.allLists = this.loadSavedLists(ctx);
+        // Load list data for this user from local storage
+        ctx.allLists = self.loadSavedLists(ctx);
 
         // start the title processing function
-        this.processTitles(ctx);
+        self.processTitles(ctx);
         if (ctx.interval >= 100) {
-            ctx.timer = setInterval(function() {processTitles(ctx);}, ctx.interval);
+            ctx.timer = setInterval(function() {self.processTitles(ctx);}, ctx.interval);
         }
     };
 
@@ -179,7 +180,7 @@ var TL = (function() {
             if (!tt) continue;
 
             if (ctx.modifyEntry) ctx.modifyEntry(entry);
-            lists = this.inLists(ctx, tt, entry);
+            lists = self.inLists(ctx, tt, entry);
 
             processingType = ctx.determineType(lists, tt, entry);
 
@@ -195,6 +196,7 @@ var TL = (function() {
 
     this.toggleTitle = function(evt) {
         var data = evt.target.dataset;
+        var ctx = self.mainContext;
 
         // get title entry
         var entry = evt.target;
@@ -204,21 +206,21 @@ var TL = (function() {
             entry = entry.closest(data.howToFindEntry);
         }
 
-        var tt = mainContext.getIdFromEntry(entry);
+        var tt = ctx.getIdFromEntry(entry);
         if (!tt) return;
 
         // check if item is in list
-        var list = mainContext.allLists[data.toggleList];
+        var list = ctx.allLists[data.toggleList];
         if (list[tt.id]) {
             delete list[tt.id];
-            mainContext.unProcessItem(entry, tt, data.toggleType);
+            ctx.unProcessItem(entry, tt, data.toggleType);
             entry.TLProcessingType = "-" + data.toggleType;
         } else {
             list[tt.id] = tt.title;
-            mainContext.processItem(entry, tt, data.toggleType);
+            ctx.processItem(entry, tt, data.toggleType);
             entry.TLProcessingType = data.toggleType;
         }
-        this.saveList(mainContext, list, data.toggleList);
+        self.saveList(ctx, list, data.toggleList);
     };
 
 
@@ -227,7 +229,7 @@ var TL = (function() {
         button.dataset.toggleType     = toggleType;
         button.dataset.toggleList     = toggleList;
         button.dataset.howToFindEntry = howToFindEntry;
-        button.addEventListener('click', this.toggleTitle, false);
+        button.addEventListener('click', self.toggleTitle, false);
     };
 
 
