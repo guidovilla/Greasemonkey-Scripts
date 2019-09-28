@@ -3,7 +3,7 @@
 // titles based on these lists.
 //
 // Copyright (c) 2019, Guido Villa
-// Most of the code is taken from IMDb 'My Movies' enhancer:
+// Original idea and some of the code is taken from IMDb 'My Movies' enhancer:
 // Copyright (c) 2008-2018, Ricardo Mendonça Ferreira (ric@mpcnet.com.br)
 // Released under the GPL license - http://www.gnu.org/copyleft/gpl.html
 //
@@ -18,21 +18,20 @@
 // @copyright     2019, Guido Villa
 // @license       GPL-3.0-or-later
 // @oujs:author   Guido
-// @date          18.09.2019
-// @version       0.1
+// @date          21.09.2019
+// @version       1.0
 // ==/UserScript==
 //
 // To-do (priority: [H]igh, [M]edium, [L]ow):
+//   - [M] Reorder functions
+//   - [H] Extend library to work on all the scripts
 //   - [M] Move string literals
 //   - [M] correct public/private
 //   - [M] main context as default context
-//   - [H] Make it work! Understand "this", etc.
-//   - [H] what is the correct way of exporting the library?
-//   - [H] move scripts to github or similar
-//   - [H] do we need that the library is not cached? if so, how?
-//   - [H] See if ok that old versions are public
-//   - [M] Reorder functions
-//   - [H] Extend library to work on all the scripts
+//   - [M] move scripts to github or similar
+//   - [M] do we need that the library is not cached? if so, how?
+//   - [M] See if ok that old versions are public
+//   - [M] changes to a list aren't reflected in page till reload. Change?
 //   - [M] Automatically handle case with only one list
 //   - [M] Add indication of URL to use to @require library itself
 //   - [M] correct @namespace and @homepageURL
@@ -41,17 +40,18 @@
 //
 // History:
 // --------
+// 2019.09.21  [1.0] First version
 // 2019.09.18  [0.1] First test version, private use only
 //
 //}
 
-/*jshint esversion: 6 */
+/* jshint esversion: 6, supernew: true */
 
-const TITLELIST_Version = '0.1';
+const Library_Version_TITLELIST = '1.0';
 
-// FUNCTIONS *************************************************************************************************************	
+// FUNCTIONS ************************************************************************************************************
 
-var TL = (new function() {
+var TL = new (function() {
     'use strict';
     var self = this;
 
@@ -227,4 +227,4 @@ var TL = (new function() {
     };
 
 
-}());
+})();
