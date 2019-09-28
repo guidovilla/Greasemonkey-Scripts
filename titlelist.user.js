@@ -149,10 +149,9 @@ var TL = new (function() {
     };
 
 
-    // Receives a title (and corresponding entry) and finds all lists title is in.
-    // Argument "entry" is for "virtual" lists determined by attributes in the DOM
-    this.inLists = function(ctx, tt, entry) {
-        var lists = ( ctx.getListsFromEntry && ctx.getListsFromEntry(tt, entry) || {} );
+    // Receives a title (and corresponding entry) and finds all lists title is in
+    this.inLists = function(ctx, tt) {
+        var lists = {};
 
         for (var list in ctx.allLists) {
             if (ctx.allLists[list][tt.id]) lists[list] = true;
@@ -181,7 +180,7 @@ var TL = new (function() {
             if (!tt) continue;
 
             if (ctx.modifyEntry) ctx.modifyEntry(entry);
-            lists = self.inLists(ctx, tt, entry);
+            lists = self.inLists(ctx, tt);
 
             processingType = ctx.determineType(lists, tt, entry);
 
