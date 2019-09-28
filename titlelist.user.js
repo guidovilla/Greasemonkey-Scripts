@@ -165,9 +165,9 @@ var TL = new (function() {
     }
 
     var storName = {
-        lastUser:    function(ctx)       { return ctx.name + STORAGE_SEP + 'lastUser'; },
-        listOfLists: function(ctx)       { return'TitleLists' + STORAGE_SEP + ctx.user; },
-        listName:    function(ctx, list) { return'TitleList' + STORAGE_SEP + ctx.user + STORAGE_SEP + listName; },
+        'lastUser':    function(ctx)           { return ctx.name    + STORAGE_SEP + 'lastUser'; },
+        'listOfLists': function(ctx)           { return'TitleLists' + STORAGE_SEP + ctx.user; },
+        'listName':    function(ctx, listName) { return'TitleList'  + STORAGE_SEP + ctx.user + STORAGE_SEP + listName; },
     };
 
 
@@ -179,7 +179,7 @@ var TL = new (function() {
         if (!user) {
             console.error(ctx.name + ": user not logged in (or couldn't get user info) on URL " + document.URL);
             user = GM_getValue(storName.lastUser(ctx), '');
-            console.error("Using last user: " + user);
+            console.error('Using last user: ' + user);
         }
         GM_setValue(storName.lastUser(ctx), user);
         ctx.user = user;
@@ -282,7 +282,7 @@ var TL = new (function() {
         if (list[tt.id]) {
             delete list[tt.id];
             ctx.unProcessItem(entry, tt, data.toggleType);
-            entry.TLProcessingType = "-" + data.toggleType;
+            entry.TLProcessingType = '-' + data.toggleType;
         } else {
             list[tt.id] = tt.title;
             ctx.processItem(entry, tt, data.toggleType);
@@ -320,7 +320,7 @@ var TL = new (function() {
 
         // start the title processing function
         self.processTitles(ctx);
-        if (typeof ctx.interval === "undefined" || ctx.interval >= MIN_INTERVAL) {
+        if (typeof ctx.interval === 'undefined' || ctx.interval >= MIN_INTERVAL) {
             // TODO we might consider using MutationObserver in the future, instead
             ctx.timer = setInterval(function() {self.processTitles(ctx);}, ctx.interval || DEFAULT_INTERVAL);
         }
