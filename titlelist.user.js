@@ -58,11 +58,9 @@ var TL = (new function() {
     this.mainContext = null;
 
 
+    // Return name of user currently logged on <ctx> site
+    // Return last saved value and log error if no user is found
     this.getLoggedUser = function(ctx) {
-        //
-        // Return name of user currently logged on <ctx> site
-        // Return last saved value and log error if no user is found
-        //
         var user = ctx.getUser();
 
         if (!user) {
@@ -77,10 +75,8 @@ var TL = (new function() {
 
 
     /* PRIVATE member */
+    // Load a single saved lists
     function loadSavedList(listName) {
-        //
-        // Load a single saved lists
-        //
         var list;
         var userData = GM_getValue(listName, null);
         if (userData) {
@@ -94,10 +90,8 @@ var TL = (new function() {
     }
 
 
+    // Load lists saved for the current user
     this.loadSavedLists = function(ctx) {
-        //
-        // Load lists saved for the current user
-        //
         var lists = {};
 
         var listNames = loadSavedList('TitleLists-' + ctx.user);
@@ -110,10 +104,8 @@ var TL = (new function() {
     };
 
 
+    // Save single list for the current user
     this.saveList = function(ctx, list, name) {
-        //
-        // Save single list for the current user
-        //
         var listNames = loadSavedList('TitleLists-' + ctx.user);
         if (!listNames) listNames = {};
 
@@ -126,10 +118,11 @@ var TL = (new function() {
     };
 
 
-    this.manageTitlePage = function(ctx) {
+    // startup function
+    this.startup = function(ctx) {
         self.mainContext = ctx;
 
-        //TODO forse qualcosa da cambiare, salvare una variabile we_are_in_a_title_page nel contesto?
+        //TODO forse salvare una variabile we_are_in_a_title_page nel contesto?
         //TODO per altri casi lo startup deve fare anche altro
         if (!( !ctx.isTitlePage || ctx.isTitlePage(document) )) return;
 
@@ -147,11 +140,9 @@ var TL = (new function() {
     };
 
 
+    // Receives a title (and corresponding entry) and finds all lists title is in.
+    // Argument "entry" is for "virtual" lists determined by attributes in the DOM
     this.inLists = function(ctx, tt, entry) {
-        //
-        // Receives a title (and corresponding entry) and finds all lists title is in.
-        // Argument "entry" is for "virtual" lists determined by attributes in the DOM
-        //
         var lists = ( ctx.getListsFromEntry && ctx.getListsFromEntry(tt, entry) || {} );
 
         for (var list in ctx.allLists) {
@@ -162,10 +153,8 @@ var TL = (new function() {
     };
 
 
+    // Process all title cards in current page
     this.processTitles = function(ctx) {
-        //
-        // Process all title cards in current page
-        //
         var entries = ctx.getTitleEntries(document);
         if (!entries) return;
 
