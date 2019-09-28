@@ -24,11 +24,12 @@
 //
 // To-do (priority: [H]igh, [M]edium, [L]ow):
 //   - [H] Extend library to work on all the scripts
-//   - [M] correct public/private
+//   - [M] Make private members actually private and not only undocumented
+//         (only after understanding which ones really can be private)
 //   - [M] main context as default context
 //   - [M] move scripts to github or similar
 //   - [M] do we need that the library is not cached? if so, how?
-//   - [M] See if ok that old versions are public
+//   - [M] See if ok that old versions of this library are public
 //   - [M] changes to a list aren't reflected in page till reload. Change?
 //   - [M] Automatically handle case with only one list
 //   - [M] Add indication of URL to use to @require library itself
@@ -38,7 +39,8 @@
 //
 // History:
 // --------
-// 2019.09.27  [1.1] Code cleanup (string and number literals, reorder functions)
+// 2019.09.27  [1.1] Code cleanup (string literals, reorder functions)
+//                   Add usage documentation
 // 2019.09.21  [1.0] First version
 // 2019.09.18  [0.1] First test version, private use only
 //
@@ -49,7 +51,69 @@
 
 const Library_Version_TITLELIST = '1.1';
 
-// FUNCTIONS ************************************************************************************************************
+/* How to use the library
+
+This library instantitates a TL object with a startup method.
+
+Call TL.startup(ctx), passing a "context" object that is specific to the
+website you are working on.
+
+Other functions and variables:
+- mainContext: the context saved with TL.startup
+
+- addToggleEventOnClick(button, howToFindEntry, toggleType, toggleList):
+  mainly used in ctx.modifyEntry(), adds an event listener that implements
+  a toggle function:
+  - button: the DOM object to attach the event listener to
+  - howToFindEntry: how to go from evt.target to the entry object. It can be:
+    - a number: # of node.parentNode to hop to get from evt.target to to entry
+    - a CSS selector: used with evt.target.closest to get to entry
+  - toggleType: the processing type that is toggle by the press of the button
+  - toggleList: the list where the entry is toggled when the button is pressed
+
+
+Mandatory callback functions and variables in context:
+
+- name: identifier of the site
+
+- getUser(document): retrieve and return the username used on the website
+- getTitleEntries(document):
+  return (usually with querySelectorAll) an array of entries to be treated
+- getIdFromEntry(entry): return a tt: { id, title } object from the entry
+- determineType(lists, tt, entry):
+  determine the processing type for an entry given the lists it appears in,
+  the tt and entry objects may be as well used for the decision
+  "lists" is an object with a true property for each list the entry appears in
+- processItem(entry, tt, processingType):
+  process the entry based on the processing type or other features of the entry
+
+
+Conditionally mandatory callback functions and variables in context:
+
+- unProcessItem(entry, tt, processingType):
+  mandatory for entries that have a toggle action added with
+  TL.addToggleEventOnClick()
+  It is like processItem, but it should reverse the action
+
+
+Optional callback functions and variables in context:
+
+- interval: interval (in ms) to re-scan links in the DOM
+            won't re-scan if < MIN_INTERVAL
+            dafault: DEFAULT_INTERVAL
+
+- isTitlePage(document):
+  returns false if page must not be scanned for entries
+  default is always true (all pages contain entries)
+- isValidEntry(entry):
+  return false if entry must be skipped
+  default is always true (all entries returned by "getTitleEntries" are valid)
+- modifyEntry(entry):
+  optionally modify entry when scanned for the first time (e.g. add a button)
+  see TL.addToggleEventOnClick() above
+
+*/
+
 
 var TL = new (function() {
     'use strict';
