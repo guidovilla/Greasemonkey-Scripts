@@ -18,8 +18,8 @@
 // @copyright     2019, Guido Villa
 // @license       GPL-3.0-or-later
 // @oujs:author   Guido
-// @date          21.09.2019
-// @version       1.0
+// @date          26.09.2019
+// @version       1.1
 // ==/UserScript==
 //
 // To-do (priority: [H]igh, [M]edium, [L]ow):
@@ -40,19 +40,23 @@
 //
 // History:
 // --------
+// 2019.09.26  [1.1] Code cleanup (string literals)
 // 2019.09.21  [1.0] First version
 // 2019.09.18  [0.1] First test version, private use only
 //
 //}
 
 /* jshint esversion: 6, supernew: true */
+/* exported TL, Library_Version_TITLELIST */
 
-const Library_Version_TITLELIST = '1.0';
+const Library_Version_TITLELIST = '1.1';
 
 // FUNCTIONS ************************************************************************************************************
 
 var TL = new (function() {
     'use strict';
+    const STORAGE_SEP = '-';
+
     var self = this;
 
     this.mainContext = null;
@@ -65,7 +69,7 @@ var TL = new (function() {
 
         if (!user) {
             console.error(ctx.name + ": user not logged in (or couldn't get user info) on URL " + document.URL);
-            user = GM_getValue(ctx.name + '-lastUser', '');
+            user = GM_getValue(ctx.name + STORAGE_SEP + 'lastUser', '');
             console.error("Using last user: " + user);
         }
         GM_setValue(ctx.name + '-lastUser', user);
@@ -94,11 +98,11 @@ var TL = new (function() {
     this.loadSavedLists = function(ctx) {
         var lists = {};
 
-        var listNames = loadSavedList('TitleLists-' + ctx.user);
+        var listNames = loadSavedList('TitleLists' + STORAGE_SEP + ctx.user);
         if (!listNames) return lists;
 
         for (var listName in listNames) {
-            lists[listName] = loadSavedList('TitleList-' + ctx.user + '-' + listName);
+            lists[listName] = loadSavedList('TitleList' + STORAGE_SEP + ctx.user + STORAGE_SEP + listName);
         }
         return lists;
     };
@@ -106,14 +110,14 @@ var TL = new (function() {
 
     // Save single list for the current user
     this.saveList = function(ctx, list, name) {
-        var listNames = ( loadSavedList('TitleLists-' + ctx.user) || {} );
+        var listNames = ( loadSavedList('TitleLists' + STORAGE_SEP + ctx.user) || {} );
 
         listNames[name] = 1;
         var userData = JSON.stringify(listNames);
-        GM_setValue('TitleLists-' + ctx.user, userData);
+        GM_setValue('TitleLists' + STORAGE_SEP + ctx.user, userData);
 
         userData = JSON.stringify(list);
-        GM_setValue('TitleList-' + ctx.user + '-' + name, userData);
+        GM_setValue('TitleList' + STORAGE_SEP + ctx.user + STORAGE_SEP + name, userData);
     };
 
 
