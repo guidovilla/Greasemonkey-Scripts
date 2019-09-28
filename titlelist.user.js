@@ -40,6 +40,7 @@
 // History:
 // --------
 // 2019.09.27  [1.1] Code cleanup (string literals, reorder functions)
+//                   Check for validity of the context object
 //                   Add usage documentation
 // 2019.09.21  [1.0] First version
 // 2019.09.18  [0.1] First test version, private use only
@@ -129,9 +130,9 @@ var TL = new (function() {
     /* PRIVATE members */
 
     // Check if "object" has "property" of "type"
-    function checkProperty(object, property, type) {
-        if (typeof object[property] !== type) {
-            console.error('Context must have a "' + property + '" property of type "' + type + '"');
+    function checkProperty(object, property, type, optional) {
+        if (typeof object[property] !== type && (!optional || typeof object[property] !== 'undefined')) {
+            console.error((optional ? 'Optionally, c' : 'C') + 'ontext must have a "' + property + '" property of type "' + type + '"');
             return false;
         }
         else return true;
@@ -146,6 +147,11 @@ var TL = new (function() {
         valid &= checkProperty(ctx, 'getIdFromEntry',  'function');
         valid &= checkProperty(ctx, 'determineType',   'function');
         valid &= checkProperty(ctx, 'processItem',     'function');
+        valid &= checkProperty(ctx, 'interval',        'number',   true);
+        valid &= checkProperty(ctx, 'isTitlePage',     'function', true);
+        valid &= checkProperty(ctx, 'isValidEntry',    'function', true);
+        valid &= checkProperty(ctx, 'modifyEntry',     'function', true);
+        valid &= checkProperty(ctx, 'unProcessItem',   'function', true);
 
         return !!valid;
     }
