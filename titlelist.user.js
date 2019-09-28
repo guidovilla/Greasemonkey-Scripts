@@ -80,6 +80,29 @@ var TL = new (function() {
 
 
     /* PRIVATE members */
+
+    // Check if "object" has "property" of "type"
+    function checkProperty(object, property, type) {
+        if (typeof object[property] !== type) {
+            console.error('Context must have a "' + property + '" property of type "' + type + '"');
+            return false;
+        }
+        else return true;
+    }
+
+    function isValidTargetContext(ctx) {
+        var valid = true;
+
+        valid &= checkProperty(ctx, 'name',            'string');
+        valid &= checkProperty(ctx, 'getUser',         'function');
+        valid &= checkProperty(ctx, 'getTitleEntries', 'function');
+        valid &= checkProperty(ctx, 'getIdFromEntry',  'function');
+        valid &= checkProperty(ctx, 'determineType',   'function');
+        valid &= checkProperty(ctx, 'processItem',     'function');
+
+        return !!valid;
+    }
+
     // Load a single saved lists
     function loadSavedList(listName) {
         var list;
@@ -130,6 +153,12 @@ var TL = new (function() {
 
     // startup function
     this.startup = function(ctx) {
+        // check that passed context is good
+        if (!isValidTargetContext(ctx)) {
+            console.log('Invalid context, aborting');
+            return;
+        }
+
         self.mainContext = ctx;
 
         //TODO forse salvare una variabile we_are_in_a_title_page nel contesto?
