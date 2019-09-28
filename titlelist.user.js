@@ -23,7 +23,11 @@
 // ==/UserScript==
 //
 // To-do (priority: [H]igh, [M]edium, [L]ow):
-//   - [H] Everything: extract functions from Netflix Hide Titles script and insert them below
+//   - [H] Extend library to work on all the scripts
+//   - [M] Add indication of URL to use to @require library itself
+//   - [M] correct @namespace and @homepageURL
+//   - [M] Auto-update
+//   - [L] Make public
 //
 // History:
 // --------
