@@ -23,7 +23,6 @@
 // ==/UserScript==
 //
 // To-do (priority: [H]igh, [M]edium, [L]ow):
-//   - [M] Reorder functions
 //   - [H] Extend library to work on all the scripts
 //   - [M] correct public/private
 //   - [M] main context as default context
@@ -39,7 +38,7 @@
 //
 // History:
 // --------
-// 2019.09.27  [1.1] Code cleanup (string and number literals)
+// 2019.09.27  [1.1] Code cleanup (string and number literals, reorder functions)
 // 2019.09.21  [1.0] First version
 // 2019.09.18  [0.1] First test version, private use only
 //
@@ -61,22 +60,6 @@ var TL = new (function() {
     var self = this;
 
     this.mainContext = null;
-
-
-    // Return name of user currently logged on <ctx> site
-    // Return last saved value and log error if no user is found
-    this.getLoggedUser = function(ctx) {
-        var user = ctx.getUser(document);
-
-        if (!user) {
-            console.error(ctx.name + ": user not logged in (or couldn't get user info) on URL " + document.URL);
-            user = GM_getValue(storName.lastUser(ctx), '');
-            console.error("Using last user: " + user);
-        }
-        GM_setValue(storName.lastUser(ctx), user);
-        ctx.user = user;
-        return user;
-    };
 
 
     /* PRIVATE members */
@@ -124,6 +107,22 @@ var TL = new (function() {
     };
 
 
+    // Return name of user currently logged on <ctx> site
+    // Return last saved value and log error if no user is found
+    this.getLoggedUser = function(ctx) {
+        var user = ctx.getUser(document);
+
+        if (!user) {
+            console.error(ctx.name + ": user not logged in (or couldn't get user info) on URL " + document.URL);
+            user = GM_getValue(storName.lastUser(ctx), '');
+            console.error("Using last user: " + user);
+        }
+        GM_setValue(storName.lastUser(ctx), user);
+        ctx.user = user;
+        return user;
+    };
+
+
     // Load lists saved for the current user
     this.loadSavedLists = function(ctx) {
         var lists = {};
@@ -148,38 +147,6 @@ var TL = new (function() {
 
         userData = JSON.stringify(list);
         GM_setValue(storName.listName(ctx, name), userData);
-    };
-
-
-    // startup function
-    this.startup = function(ctx) {
-        // check that passed context is good
-        if (!isValidTargetContext(ctx)) {
-            console.log('Invalid context, aborting');
-            return;
-        }
-
-        self.mainContext = ctx;
-
-        //TODO forse salvare una variabile we_are_in_a_title_page nel contesto?
-        //TODO per altri casi lo startup deve fare anche altro
-        if (!( !ctx.isTitlePage || ctx.isTitlePage(document) )) return;
-
-        // find current logged in user, or quit script
-        if (!self.getLoggedUser(ctx)) {
-            console.log('No user is defined, aborting');
-            return;
-        }
-
-        // Load list data for this user from local storage
-        ctx.allLists = self.loadSavedLists(ctx);
-
-        // start the title processing function
-        self.processTitles(ctx);
-        if (typeof ctx.interval === "undefined" || ctx.interval >= MIN_INTERVAL) {
-            // TODO we might consider using MutationObserver in the future, instead
-            ctx.timer = setInterval(function() {self.processTitles(ctx);}, ctx.interval || DEFAULT_INTERVAL);
-        }
     };
 
 
@@ -260,6 +227,40 @@ var TL = new (function() {
         self.saveList(ctx, list, data.toggleList);
     };
 
+
+
+    /* PUBLIC members */
+
+    // startup function
+    this.startup = function(ctx) {
+        // check that passed context is good
+        if (!isValidTargetContext(ctx)) {
+            console.log('Invalid context, aborting');
+            return;
+        }
+
+        self.mainContext = ctx;
+
+        //TODO forse salvare una variabile we_are_in_a_title_page nel contesto?
+        //TODO per altri casi lo startup deve fare anche altro
+        if (!( !ctx.isTitlePage || ctx.isTitlePage(document) )) return;
+
+        // find current logged in user, or quit script
+        if (!self.getLoggedUser(ctx)) {
+            console.log('No user is defined, aborting');
+            return;
+        }
+
+        // Load list data for this user from local storage
+        ctx.allLists = self.loadSavedLists(ctx);
+
+        // start the title processing function
+        self.processTitles(ctx);
+        if (typeof ctx.interval === "undefined" || ctx.interval >= MIN_INTERVAL) {
+            // TODO we might consider using MutationObserver in the future, instead
+            ctx.timer = setInterval(function() {self.processTitles(ctx);}, ctx.interval || DEFAULT_INTERVAL);
+        }
+    };
 
 
     this.addToggleEventOnClick = function(button, toggleType, toggleList, howToFindEntry) {
