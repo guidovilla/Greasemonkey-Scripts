@@ -30,7 +30,6 @@
 //   - [M] Make private members actually private and not only undocumented
 //         (only after understanding which ones really can be private)
 //   - [M] main context as default context
-//   - [M] move scripts to github or similar
 //   - [M] do we need that the library is not cached? if so, how?
 //   - [M] See if ok that old versions of this library are public
 //   - [M] changes to a list aren't reflected in page till reload. Change?
@@ -38,7 +37,6 @@
 //   - [M] Add indication of URL to use to @require library itself
 //   - [M] correct @namespace and @homepageURL
 //   - [M] Auto-update
-//   - [L] Make public
 //
 // History:
 // --------
