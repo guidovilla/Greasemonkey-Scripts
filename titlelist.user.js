@@ -1,6 +1,9 @@
 //{
-// Common functions for working on lists of titles, loading them, highlighting
-// titles based on these lists.
+// Common functions for modifying/hiding/etc. entries in page, based on
+// entry features or presence in one or more lists.
+// For instance: hide all YouTube videos that have been watched and highlight
+// the ones that have been started but not finished, highlight Netflix movies
+// based on IMDb lists, etc.
 //
 // Copyright (c) 2019, Guido Villa
 // Original idea and some of the code is taken from IMDb 'My Movies' enhancer:
@@ -10,16 +13,16 @@
 // --------------------------------------------------------------------
 //
 // ==UserScript==
-// @name          TitleList
-// @description   Common functions for working on lists of titles
-// @namespace     https://greasyfork.org/en/scripts/390248-titlelist
+// @name          EntryList
+// @description   Common functions for working on lists of entries
+// @namespace     https://greasyfork.org/en/scripts/390248-entrylist
 // @updateURL     about:blank
-// @homepageURL   https://greasyfork.org/en/scripts/390248-titlelist
+// @homepageURL   https://greasyfork.org/en/scripts/390248-entrylist
 // @copyright     2019, Guido Villa
 // @license       GPL-3.0-or-later
 // @oujs:author   Guido
 // @date          27.09.2019
-// @version       1.1
+// @version       1.2
 // ==/UserScript==
 //
 // To-do (priority: [H]igh, [M]edium, [L]ow):
@@ -39,6 +42,7 @@
 //
 // History:
 // --------
+// 2019.09.27  [1.2] Refactoring and name changing: TitleList -> EntryList
 // 2019.09.27  [1.1] Code cleanup (string literals, reorder functions)
 //                   Check for validity of the context object
 //                   Add usage documentation
@@ -48,19 +52,19 @@
 //}
 
 /* jshint esversion: 6, supernew: true */
-/* exported TL, Library_Version_TITLELIST */
+/* exported EL, Library_Version_ENTRYLIST */
 
-const Library_Version_TITLELIST = '1.1';
+const Library_Version_ENTRYLIST = '1.2';
 
 /* How to use the library
 
-This library instantitates a TL object with a startup method.
+This library instantitates an EL object with a startup method.
 
-Call TL.startup(ctx), passing a "context" object that is specific to the
+Call EL.startup(ctx), passing a "context" object that is specific to the
 website you are working on.
 
 Other functions and variables:
-- mainContext: the context saved with TL.startup
+- mainContext: the context saved with EL.startup
 
 - addToggleEventOnClick(button, howToFindEntry, toggleType, toggleList):
   mainly used in ctx.modifyEntry(), adds an event listener that implements
@@ -78,9 +82,9 @@ Mandatory callback functions and variables in context:
 - name: identifier of the site
 
 - getUser(document): retrieve and return the username used on the website
-- getTitleEntries(document):
+- getPageEntries(document):
   return (usually with querySelectorAll) an array of entries to be treated
-- getIdFromEntry(entry): return a tt: { id, title } object from the entry
+- getIdFromEntry(entry): return a tt: { id, name } object from the entry
 - determineType(lists, tt, entry):
   determine the processing type for an entry given the lists it appears in,
   the tt and entry objects may be as well used for the decision
@@ -93,7 +97,7 @@ Conditionally mandatory callback functions and variables in context:
 
 - unProcessItem(entry, tt, processingType):
   mandatory for entries that have a toggle action added with
-  TL.addToggleEventOnClick()
+  EL.addToggleEventOnClick()
   It is like processItem, but it should reverse the action
 
 
@@ -103,20 +107,20 @@ Optional callback functions and variables in context:
             won't re-scan if < MIN_INTERVAL
             dafault: DEFAULT_INTERVAL
 
-- isTitlePage(document):
+- isEntryPage(document):
   returns false if page must not be scanned for entries
   default is always true (all pages contain entries)
 - isValidEntry(entry):
   return false if entry must be skipped
-  default is always true (all entries returned by "getTitleEntries" are valid)
+  default is always true (all entries returned by "getPageEntries" are valid)
 - modifyEntry(entry):
   optionally modify entry when scanned for the first time (e.g. add a button)
-  see TL.addToggleEventOnClick() above
+  see also EL.addToggleEventOnClick() above
 
 */
 
 
-var TL = new (function() {
+var EL = new (function() {
     'use strict';
     const STORAGE_SEP      = '-';
     const MIN_INTERVAL     = 100;
@@ -141,17 +145,17 @@ var TL = new (function() {
     function isValidTargetContext(ctx) {
         var valid = true;
 
-        valid &= checkProperty(ctx, 'name',            'string');
-        valid &= checkProperty(ctx, 'getUser',         'function');
-        valid &= checkProperty(ctx, 'getTitleEntries', 'function');
-        valid &= checkProperty(ctx, 'getIdFromEntry',  'function');
-        valid &= checkProperty(ctx, 'determineType',   'function');
-        valid &= checkProperty(ctx, 'processItem',     'function');
-        valid &= checkProperty(ctx, 'interval',        'number',   true);
-        valid &= checkProperty(ctx, 'isTitlePage',     'function', true);
-        valid &= checkProperty(ctx, 'isValidEntry',    'function', true);
-        valid &= checkProperty(ctx, 'modifyEntry',     'function', true);
-        valid &= checkProperty(ctx, 'unProcessItem',   'function', true);
+        valid &= checkProperty(ctx, 'name',           'string');
+        valid &= checkProperty(ctx, 'getUser',        'function');
+        valid &= checkProperty(ctx, 'getPageEntries', 'function');
+        valid &= checkProperty(ctx, 'getIdFromEntry', 'function');
+        valid &= checkProperty(ctx, 'determineType',  'function');
+        valid &= checkProperty(ctx, 'processItem',    'function');
+        valid &= checkProperty(ctx, 'interval',       'number',   true);
+        valid &= checkProperty(ctx, 'isEntryPage',    'function', true);
+        valid &= checkProperty(ctx, 'isValidEntry',   'function', true);
+        valid &= checkProperty(ctx, 'modifyEntry',    'function', true);
+        valid &= checkProperty(ctx, 'unProcessItem',  'function', true);
 
         return !!valid;
     }
@@ -172,8 +176,8 @@ var TL = new (function() {
 
     var storName = {
         'lastUser':    function(ctx)           { return ctx.name    + STORAGE_SEP + 'lastUser'; },
-        'listOfLists': function(ctx)           { return'TitleLists' + STORAGE_SEP + ctx.user; },
-        'listName':    function(ctx, listName) { return'TitleList'  + STORAGE_SEP + ctx.user + STORAGE_SEP + listName; },
+        'listOfLists': function(ctx)           { return'EntryLists' + STORAGE_SEP + ctx.user; },
+        'listName':    function(ctx, listName) { return'EntryList'  + STORAGE_SEP + ctx.user + STORAGE_SEP + listName; },
     };
 
 
@@ -220,7 +224,7 @@ var TL = new (function() {
     };
 
 
-    // Receives a title (and corresponding entry) and finds all lists title is in
+    // Receives an entry tt and finds all lists where tt.id appears
     this.inLists = function(ctx, tt) {
         var lists = {};
 
@@ -232,9 +236,9 @@ var TL = new (function() {
     };
 
 
-    // Process all title cards in current page
-    this.processTitles = function(ctx) {
-        var entries = ctx.getTitleEntries(document);
+    // Process all entries in current page
+    this.processEntries = function(ctx) {
+        var entries = ctx.getPageEntries(document);
         if (!entries) return;
 
         var entry, tt, lists, processingType;
@@ -242,7 +246,7 @@ var TL = new (function() {
             entry = entries[i];
 
             // if entry has already been previously processed, skip it
-            if (entry.TLProcessed) continue;
+            if (entry.ELProcessed) continue;
 
             // see if entry is valid
             if (ctx.isValidEntry && !ctx.isValidEntry(entry)) continue;
@@ -257,21 +261,21 @@ var TL = new (function() {
 
             if (processingType) {
                 ctx.processItem(entry, tt, processingType);
-                entry.TLProcessingType = processingType;
+                entry.ELProcessingType = processingType;
             }
 
-            entry.TLProcessed = true; // set to "true" after processing (so we skip it on next pass)
+            entry.ELProcessed = true; // set to "true" after processing (so we skip it on next pass)
         }
     };
 
 
-    this.toggleTitle = function(evt) {
+    this.toggleEntry = function(evt) {
         evt.stopPropagation();
         evt.preventDefault();
         var data = evt.target.dataset;
         var ctx = self.mainContext;
 
-        // get title entry
+        // get corresponding entry
         var entry = evt.target;
         if (Number.isInteger(Number(data.howToFindEntry))) {
             for (var i = 0; i < Number(data.howToFindEntry); i++) entry = entry.parentNode;
@@ -288,11 +292,11 @@ var TL = new (function() {
         if (list[tt.id]) {
             delete list[tt.id];
             ctx.unProcessItem(entry, tt, data.toggleType);
-            entry.TLProcessingType = '-' + data.toggleType;
+            entry.ELProcessingType = '-' + data.toggleType;
         } else {
-            list[tt.id] = tt.title;
+            list[tt.id] = tt.name;
             ctx.processItem(entry, tt, data.toggleType);
-            entry.TLProcessingType = data.toggleType;
+            entry.ELProcessingType = data.toggleType;
         }
         self.saveList(ctx, list, data.toggleList);
     };
@@ -311,9 +315,9 @@ var TL = new (function() {
 
         self.mainContext = ctx;
 
-        //TODO forse salvare una variabile we_are_in_a_title_page nel contesto?
+        //TODO forse salvare una variabile we_are_in_an_entry_page nel contesto?
         //TODO per altri casi lo startup deve fare anche altro
-        if (!( !ctx.isTitlePage || ctx.isTitlePage(document) )) return;
+        if (!( !ctx.isEntryPage || ctx.isEntryPage(document) )) return;
 
         // find current logged in user, or quit script
         if (!self.getLoggedUser(ctx)) {
@@ -324,11 +328,11 @@ var TL = new (function() {
         // Load list data for this user from local storage
         ctx.allLists = self.loadSavedLists(ctx);
 
-        // start the title processing function
-        self.processTitles(ctx);
+        // start the entry processing function
+        self.processEntries(ctx);
         if (typeof ctx.interval === 'undefined' || ctx.interval >= MIN_INTERVAL) {
             // TODO we might consider using MutationObserver in the future, instead
-            ctx.timer = setInterval(function() {self.processTitles(ctx);}, ctx.interval || DEFAULT_INTERVAL);
+            ctx.timer = setInterval(function() {self.processEntries(ctx);}, ctx.interval || DEFAULT_INTERVAL);
         }
     };
 
@@ -337,7 +341,7 @@ var TL = new (function() {
         button.dataset.toggleType     = toggleType;
         button.dataset.toggleList     = toggleList;
         button.dataset.howToFindEntry = howToFindEntry;
-        button.addEventListener('click', self.toggleTitle, false);
+        button.addEventListener('click', self.toggleEntry, false);
     };
 
 
