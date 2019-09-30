@@ -1,9 +1,8 @@
 // File encoding: UTF-8
 //{
-// Loads lists of movies from a local list and an IMDb account and uses
-// them to highlight or hide titles on Netflix.
+// Hide watched videos on YouTube
 //
-// Copyright (c) 2019, Guido Villa (guido@villa.name)
+// Copyright (c) 2019, Guido Villa
 // Most of the script is taken from IMDb 'My Movies' enhancer:
 // Copyright (c) 2008-2018, Ricardo Mendonça Ferreira (ric@mpcnet.com.br)
 // Released under the GPL license - http://www.gnu.org/copyleft/gpl.html
@@ -13,19 +12,21 @@
 // ==UserScript==
 // @name          Enhance titles - YouTube
 // @description   Hide watched videos on YouTube
-// @namespace     http://guido.villa.name/
-// @homepageURL   http://guido.villa.name/
+// @homepageURL   https://greasyfork.org/scripts/390633-enhance-titles-youtube
+// @namespace     https://greasyfork.org/users/373199-guido-villa
+// @version       1.1
+// @installURL    https://greasyfork.org/scripts/390633-enhance-titles-youtube/code/Enhance%20titles%20-%20YouTube.user.js
+// @updateURL     https://greasyfork.org/scripts/390633-enhance-titles-youtube/code/Enhance%20titles%20-%20YouTube.meta.js
 // @copyright     2019, Guido Villa
 // @license       GPL-3.0-or-later
-// @oujs:author   Guido
+// @author        Guido
+// @date          30.09.2019
 // @match         https://www.youtube.com/*
-// @version       1.0
 // @grant         GM_xmlHttpRequest
 // @grant         GM_getValue
 // @grant         GM_setValue
 // @grant         GM_deleteValue
 // @grant         GM_addStyle
-// @updateURL     http://guido.villa.name/
 // ==/UserScript==
 //
 // --------------------------------------------------------------------
@@ -46,6 +47,7 @@
 //
 // History:
 // --------
+// 2019.09.30  [1.1] First public version, correct @namespace and other headers
 // 2019.06.17  [1.0] First version
 //
 //}

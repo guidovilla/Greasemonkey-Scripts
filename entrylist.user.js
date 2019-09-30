@@ -15,14 +15,15 @@
 // ==UserScript==
 // @name          EntryList
 // @description   Common functions for working on lists of entries
-// @namespace     https://greasyfork.org/en/scripts/390248-entrylist
-// @updateURL     about:blank
-// @homepageURL   https://greasyfork.org/en/scripts/390248-entrylist
+// @homepageURL   https://greasyfork.org/scripts/390248-entrylist
+// @namespace     https://greasyfork.org/users/373199-guido-villa
+// @version       1.3
+// @installURL    https://greasyfork.org/scripts/390248-entrylist/code/EntryList.user.js
+// @updateURL     https://greasyfork.org/scripts/390248-entrylist/code/EntryList.meta.js
 // @copyright     2019, Guido Villa
 // @license       GPL-3.0-or-later
-// @oujs:author   Guido
-// @date          27.09.2019
-// @version       1.2
+// @author        Guido
+// @date          30.09.2019
 // ==/UserScript==
 //
 // To-do (priority: [H]igh, [M]edium, [L]ow):
@@ -40,6 +41,7 @@
 //
 // History:
 // --------
+// 2019.09.30  [1.3] Correct @namespace and other headers (for public use)
 // 2019.09.27  [1.2] Refactoring and name changing: TitleList -> EntryList
 // 2019.09.27  [1.1] Code cleanup (string literals, reorder functions)
 //                   Check for validity of the context object
@@ -52,7 +54,7 @@
 /* jshint esversion: 6, supernew: true */
 /* exported EL, Library_Version_ENTRYLIST */
 
-const Library_Version_ENTRYLIST = '1.2';
+const Library_Version_ENTRYLIST = '1.3';
 
 /* How to use the library
 

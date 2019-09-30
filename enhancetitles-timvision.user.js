@@ -2,28 +2,30 @@
 //{
 // Enhance/hide titles on Timvision website by clicking on a button.
 //
-// Copyright (c) 2019, Guido Villa (guido@villa.name)
+// Copyright (c) 2019, Guido Villa
 // Released under the GPL license - http://www.gnu.org/copyleft/gpl.html
 //
 // --------------------------------------------------------------------
 //
 // ==UserScript==
 // @name          Enhance titles - Timvision
-// @description   Enhance/hide titles on Timvision website
-// @namespace     http://guido.villa.name/
-// @homepageURL   http://guido.villa.name/
+// @description   Hide titles on Timvision website by clicking on a button
+// @homepageURL   https://greasyfork.org/scripts/390632-enhance-titles-timvision
+// @namespace     https://greasyfork.org/users/373199-guido-villa
+// @version       1.2
+// @installURL    https://greasyfork.org/scripts/390632-enhance-titles-timvision/code/Enhance%20titles%20-%20Timvision.user.js
+// @updateURL     https://greasyfork.org/scripts/390632-enhance-titles-timvision/code/Enhance%20titles%20-%20Timvision.meta.js
 // @copyright     2019, Guido Villa
 // @license       GPL-3.0-or-later
-// @oujs:author   Guido
+// @author        Guido
+// @date          30.09.2019
 // @match         https://www.timvision.it/*
-// @version       1.1
 // @grant         GM_xmlHttpRequest
 // @grant         GM_getValue
 // @grant         GM_setValue
 // @grant         GM_deleteValue
 // @grant         GM_addStyle
 // @require       https://greasyfork.org/scripts/390248-entrylist/code/EntryList.js
-// @updateURL     http://guido.villa.name/
 // ==/UserScript==
 //
 // --------------------------------------------------------------------
@@ -37,6 +39,7 @@
 //
 // History:
 // --------
+// 2019.09.30  [1.2] First public version, correct @namespace and other headers
 // 2019.09.27  [1.1] Changes due to EntryList (formerly TitleList) refactoring
 // 2019.09.21  [1.0] First version. Hiding function and removes useless zooming of title cards on mouseover
 // 2019.09.18  [0.1] First test version, private use only
