@@ -79,8 +79,8 @@ Mandatory callback functions and variables in context:
 
 - name: identifier of the site
 
-- getUser(document): retrieve and return the username used on the website
-- getPageEntries(document):
+- getUser(): retrieve and return the username used on the website
+- getPageEntries():
   return (usually with querySelectorAll) an array of entries to be treated
 - getIdFromEntry(entry): return a tt: { id, name } object from the entry
 - determineType(lists, tt, entry):
@@ -105,7 +105,7 @@ Optional callback functions and variables in context:
             won't re-scan if < MIN_INTERVAL
             dafault: DEFAULT_INTERVAL
 
-- isEntryPage(document):
+- isEntryPage():
   returns false if page must not be scanned for entries
   default is always true (all pages contain entries)
 - isValidEntry(entry):
@@ -182,7 +182,7 @@ var EL = new (function() {
     // Return name of user currently logged on <ctx> site
     // Return last saved value and log error if no user is found
     this.getLoggedUser = function(ctx) {
-        var user = ctx.getUser(document);
+        var user = ctx.getUser();
 
         if (!user) {
             console.error(ctx.name + ": user not logged in (or couldn't get user info) on URL " + document.URL);
@@ -236,7 +236,7 @@ var EL = new (function() {
 
     // Process all entries in current page
     this.processEntries = function(ctx) {
-        var entries = ctx.getPageEntries(document);
+        var entries = ctx.getPageEntries();
         if (!entries) return;
 
         var entry, tt, lists, processingType;
@@ -315,7 +315,7 @@ var EL = new (function() {
 
         //TODO forse salvare una variabile we_are_in_an_entry_page nel contesto?
         //TODO per altri casi lo startup deve fare anche altro
-        if (!( !ctx.isEntryPage || ctx.isEntryPage(document) )) return;
+        if (!( !ctx.isEntryPage || ctx.isEntryPage() )) return;
 
         // find current logged in user, or quit script
         if (!self.getLoggedUser(ctx)) {

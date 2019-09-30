@@ -57,14 +57,14 @@
     dest.HIDE_TYPE = 'H';
 
 
-    dest.getUser = function(document) {
+    dest.getUser = function() {
         var user = document.querySelector('span.username');
         if (user) user = user.textContent.trim();
         return user;
     }
 
 
-    dest.getPageEntries = function(document) {
+    dest.getPageEntries = function() {
         return document.querySelectorAll(this.ENTRY_SELECTOR);
     }
 
