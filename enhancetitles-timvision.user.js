@@ -48,6 +48,7 @@
     'use strict';
 
     /* BEGIN CONTEXT DEFINITION */
+
     var dest  = {};
     dest.name = 'TIMVision';
 
@@ -134,7 +135,7 @@
         entry.style.opacity = 1;
     }
 
-    /* BEGIN CONTEXT DEFINITION */
+    /* END CONTEXT DEFINITION */
 
 
 
