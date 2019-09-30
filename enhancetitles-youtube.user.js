@@ -11,7 +11,7 @@
 // --------------------------------------------------------------------
 //
 // ==UserScript==
-// @name          Youtube hide watched
+// @name          Enhance titles - YouTube
 // @description   Hide watched videos on YouTube
 // @namespace     http://guido.villa.name/
 // @homepageURL   http://guido.villa.name/

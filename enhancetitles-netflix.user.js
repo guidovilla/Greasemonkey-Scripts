@@ -11,7 +11,7 @@
 // --------------------------------------------------------------------
 //
 // ==UserScript==
-// @name          Netflix hide titles
+// @name          Enhance titles - Netflix
 // @description   Emphasize or hide titles on Netflix according to IMDb lists
 // @namespace     http://guido.villa.name/
 // @homepageURL   http://guido.villa.name/
