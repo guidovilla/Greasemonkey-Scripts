@@ -31,9 +31,7 @@
 // --------------------------------------------------------------------
 //
 // To-do (priority: [H]igh, [M]edium, [L]ow):
-//   - [M] correct @namespace, @homepage and other headers
 //   - [M] add some @exclude
-//   - [M] add updateurl
 //   - [M] remove commented code
 //   - [L] Integration with IMDb list
 //
