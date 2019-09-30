@@ -35,6 +35,7 @@
 // --------------------------------------------------------------------
 //
 // To-do (priority: [H]igh, [M]edium, [L]ow):
+//   - [H] Refactor using EntryList library
 //   - [H] Not all IMDb movies are recognized because matching is done by title
 //   - [M] Make triangles more visible
 //   - [M] Show name in tooltip? Maybe not needed if above is solved

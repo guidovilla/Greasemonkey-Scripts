@@ -42,8 +42,9 @@
 //
 // --------------------------------------------------------------------
 //
-// To-do:
-//   - hide selective titles?
+// To-do (priority: [H]igh, [M]edium, [L]ow):
+//   - [H] Refactor using EntryList library
+//   - [L] hide selective titles?
 //
 // History:
 // --------
