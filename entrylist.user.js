@@ -78,7 +78,6 @@ Mandatory callback functions and variables in context:
 
 - name: identifier of the site
 
-- getUser(): retrieve and return the username used on the website
 - getPageEntries():
   return (usually with querySelectorAll) an array of entries to be treated
 - getIdFromEntry(entry): return a tt: { id, name } object from the entry
@@ -92,10 +91,12 @@ Mandatory callback functions and variables in context:
 
 Conditionally mandatory callback functions and variables in context:
 
+- getUser(): retrieve and return the username used on the website
+  mandatory if data are to be stored on a per-user basis
 - unProcessItem(entry, tt, processingType):
+  like processItem, but it should reverse the action
   mandatory for entries that have a toggle action added with
   EL.addToggleEventOnClick()
-  It is like processItem, but it should reverse the action
 
 
 Optional callback functions and variables in context:
@@ -120,6 +121,7 @@ Optional callback functions and variables in context:
 var EL = new (function() {
     'use strict';
     const STORAGE_SEP      = '-';
+    const FAKE_USER        = '_';
     const MIN_INTERVAL     = 100;
     const DEFAULT_INTERVAL = 1000;
 
@@ -181,8 +183,9 @@ var EL = new (function() {
     // Return name of user currently logged on <ctx> site
     // Return last saved value and log error if no user is found
     this.getLoggedUser = function(ctx) {
-        var user = ctx.getUser();
+        if (!ctx.getUser) return FAKE_USER;
 
+        var user = ctx.getUser();
         if (!user) {
             console.error(ctx.name + ": user not logged in (or couldn't get user info) on URL " + document.URL);
             user = GM_getValue(storName.lastUser(ctx), '');
