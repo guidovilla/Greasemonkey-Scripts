@@ -145,7 +145,6 @@ var EL = new (function() {
         var valid = true;
 
         valid &= checkProperty(ctx, 'name',           'string');
-        valid &= checkProperty(ctx, 'getUser',        'function');
         valid &= checkProperty(ctx, 'getPageEntries', 'function');
         valid &= checkProperty(ctx, 'getIdFromEntry', 'function');
         valid &= checkProperty(ctx, 'determineType',  'function');
@@ -154,6 +153,7 @@ var EL = new (function() {
         valid &= checkProperty(ctx, 'isEntryPage',    'function', true);
         valid &= checkProperty(ctx, 'isValidEntry',   'function', true);
         valid &= checkProperty(ctx, 'modifyEntry',    'function', true);
+        valid &= checkProperty(ctx, 'getUser',        'function', true);
         valid &= checkProperty(ctx, 'unProcessItem',  'function', true);
 
         return !!valid;
