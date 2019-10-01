@@ -34,6 +34,8 @@
 //   - [M] do we need that the library is not cached? if so, how?
 //   - [M] changes to a list aren't reflected in page till reload. Change?
 //   - [M] Automatically handle case with only one list
+//   - [M] Better handle case without lists
+//   - [M] Add description of flow in usage documentation
 //   - [M] Add indication of URL to use to @require library itself
 //
 // History:
@@ -81,9 +83,10 @@ Mandatory callback functions and variables in context:
 - getPageEntries():
   return (usually with querySelectorAll) an array of entries to be treated
 - determineType(lists, tt, entry):
-  determine the processing type for an entry given the lists it appears in,
+  return the processing type for an entry given the lists it appears in,
   the tt and entry objects may be as well used for the decision
   "lists" is an object with a true property for each list the entry appears in
+  If there is a single processing type, the function may as well return true/false
 - processItem(entry, tt, processingType):
   process the entry based on the processing type or other features of the entry
 
