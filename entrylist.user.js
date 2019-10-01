@@ -80,7 +80,6 @@ Mandatory callback functions and variables in context:
 
 - getPageEntries():
   return (usually with querySelectorAll) an array of entries to be treated
-- getIdFromEntry(entry): return a tt: { id, name } object from the entry
 - determineType(lists, tt, entry):
   determine the processing type for an entry given the lists it appears in,
   the tt and entry objects may be as well used for the decision
@@ -93,6 +92,8 @@ Conditionally mandatory callback functions and variables in context:
 
 - getUser(): retrieve and return the username used on the website
   mandatory if data are to be stored on a per-user basis
+- getIdFromEntry(entry): return a tt: { id, name } object from the entry
+  mandatory if you want to save entries to lists
 - unProcessItem(entry, tt, processingType):
   like processItem, but it should reverse the action
   mandatory for entries that have a toggle action added with
@@ -146,7 +147,6 @@ var EL = new (function() {
 
         valid &= checkProperty(ctx, 'name',           'string');
         valid &= checkProperty(ctx, 'getPageEntries', 'function');
-        valid &= checkProperty(ctx, 'getIdFromEntry', 'function');
         valid &= checkProperty(ctx, 'determineType',  'function');
         valid &= checkProperty(ctx, 'processItem',    'function');
         valid &= checkProperty(ctx, 'interval',       'number',   true);
@@ -154,6 +154,7 @@ var EL = new (function() {
         valid &= checkProperty(ctx, 'isValidEntry',   'function', true);
         valid &= checkProperty(ctx, 'modifyEntry',    'function', true);
         valid &= checkProperty(ctx, 'getUser',        'function', true);
+        valid &= checkProperty(ctx, 'getIdFromEntry', 'function', true);
         valid &= checkProperty(ctx, 'unProcessItem',  'function', true);
 
         return !!valid;
@@ -251,11 +252,14 @@ var EL = new (function() {
             // see if entry is valid
             if (ctx.isValidEntry && !ctx.isValidEntry(entry)) continue;
 
-            tt = ctx.getIdFromEntry(entry);
-            if (!tt) continue;
+            tt = null;
+            if (ctx.getIdFromEntry) {
+                tt = ctx.getIdFromEntry(entry);
+                if (!tt) continue;
+            }
 
             if (ctx.modifyEntry) ctx.modifyEntry(entry);
-            lists = self.inLists(ctx, tt);
+            lists = ( tt ? self.inLists(ctx, tt) : {} );
 
             processingType = ctx.determineType(lists, tt, entry);
 
