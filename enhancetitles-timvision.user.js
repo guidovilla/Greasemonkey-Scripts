@@ -96,6 +96,7 @@
         EL.addToggleEventOnClick(d, this.ENTRY_SELECTOR);
         entry.querySelector('figure').appendChild(d);
 
+        // remove useless zooming on mouseover
         var parent = entry.parentNode.parentNode.parentNode;
         if (!parent.NoMouseOver) {
             parent.addEventListener('mouseenter',function(e){e.stopPropagation();},true);
