@@ -136,9 +136,9 @@ var EL = new (function() {
     'use strict';
     const STORAGE_SEP      = '-';
     const FAKE_USER        = '_';
+    const DEFAULT_TYPE     = '_DEF_';
     const MIN_INTERVAL     = 100;
     const DEFAULT_INTERVAL = 1000;
-    const DEFAULT_TYPE     = '_DEF_';
 
     var self = this;
 
@@ -148,6 +148,7 @@ var EL = new (function() {
     /* PRIVATE members */
 
     // Check if "object" has "property" of "type"
+    // used to test if object "implements" a specific interface
     function checkProperty(object, property, type, optional) {
         if (typeof object[property] !== type && (!optional || typeof object[property] !== 'undefined')) {
             console.error((optional ? 'Optionally, c' : 'C') + 'ontext must have a "' + property + '" property of type "' + type + '"');
@@ -156,6 +157,8 @@ var EL = new (function() {
         else return true;
     }
 
+
+    // check if context has the correct variables and functions
     function isValidTargetContext(ctx) {
         var valid = true;
 
@@ -174,20 +177,8 @@ var EL = new (function() {
         return !!valid;
     }
 
-    // Load a single saved lists
-    function loadSavedList(listName) {
-        var list;
-        var userData = GM_getValue(listName, null);
-        if (userData) {
-            try {
-                list = JSON.parse(userData);
-            } catch(err) {
-                alert("Error loading saved list named '" + listName + "'!\n" + err.message);
-            }
-        }
-        return list;
-    }
 
+    // standardized names for storage variables
     var storName = {
         'lastUser':    function(ctx)           { return ctx.name    + STORAGE_SEP + 'lastUser'; },
         'listOfLists': function(ctx)           { return'EntryLists' + STORAGE_SEP + ctx.user; },
@@ -212,7 +203,22 @@ var EL = new (function() {
     };
 
 
-    // Load lists saved for the current user
+    // Load a single saved lists
+    function loadSavedList(listName) {
+        var list;
+        var userData = GM_getValue(listName, null);
+        if (userData) {
+            try {
+                list = JSON.parse(userData);
+            } catch(err) {
+                alert("Error loading saved list named '" + listName + "'!\n" + err.message);
+            }
+        }
+        return list;
+    }
+
+
+    // Load lists for the current user
     this.loadSavedLists = function(ctx) {
         var lists = {};
 
@@ -251,6 +257,14 @@ var EL = new (function() {
     };
 
 
+    // Wrap ctx.getIdFromEntry and add error logging
+    function _wrap_getIdFromEntry(ctx, entry) {
+        var tt = ctx.getIdFromEntry(entry);
+        if (!tt) console.error('Could not determine id :-( - for entry', entry);
+        return tt;
+    }
+
+
     // Process all entries in current page
     this.processEntries = function(ctx) {
         var entries = ctx.getPageEntries();
@@ -268,7 +282,7 @@ var EL = new (function() {
 
             tt = null;
             if (ctx.getIdFromEntry) {
-                tt = ctx.getIdFromEntry(entry);
+                tt = _wrap_getIdFromEntry(ctx, entry);
                 if (!tt) continue;
             }
 
@@ -289,11 +303,11 @@ var EL = new (function() {
     };
 
 
-    this.toggleEntry = function(evt) {
+    // handle the toggle event
+    this.handleToggleButton = function(evt) {
         evt.stopPropagation();
         evt.preventDefault();
         var data = evt.target.dataset;
-        var ctx  = self.mainContext;
         var toggleList = (typeof data.toggleList === 'undefined' ? DEFAULT_TYPE : data.toggleList);
         var toggleType = (typeof data.toggleType === 'undefined' ? DEFAULT_TYPE : data.toggleType);
 
@@ -305,7 +319,15 @@ var EL = new (function() {
             entry = entry.closest(data.howToFindEntry);
         }
 
-        var tt = ctx.getIdFromEntry(entry);
+        self.toggleEntry(entry, toggleList, toggleType);
+    };
+
+
+    // add/remove entry from a list
+    this.toggleEntry = function(entry, toggleList, toggleType) {
+        var ctx  = self.mainContext;
+
+        var tt = _wrap_getIdFromEntry(ctx, entry);
         if (!tt) return;
 
         // check if item is in list
@@ -369,7 +391,7 @@ var EL = new (function() {
         button.dataset.howToFindEntry = howToFindEntry;
         if (typeof toggleList !== 'undefined') button.dataset.toggleList = toggleList;
         if (typeof toggleType !== 'undefined') button.dataset.toggleType = toggleType;
-        button.addEventListener('click', self.toggleEntry, false);
+        button.addEventListener('click', self.handleToggleButton, false);
     };
 
 
