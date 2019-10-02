@@ -17,7 +17,7 @@
 // @description   Common functions for working on lists of entries
 // @homepageURL   https://greasyfork.org/scripts/390248-entrylist
 // @namespace     https://greasyfork.org/users/373199-guido-villa
-// @version       1.4
+// @version       1.5
 // @installURL    https://greasyfork.org/scripts/390248-entrylist/code/EntryList.user.js
 // @updateURL     https://greasyfork.org/scripts/390248-entrylist/code/EntryList.meta.js
 // @copyright     2019, Guido Villa
@@ -33,13 +33,13 @@
 //   - [M] main context as default context
 //   - [M] do we need that the library is not cached? if so, how?
 //   - [M] changes to a list aren't reflected in page till reload. Change?
-//   - [M] Automatically handle case with only one list
 //   - [M] Better handle case without lists
 //   - [M] Add description of flow in usage documentation
 //   - [M] Add indication of URL to use to @require library itself
 //
 // History:
 // --------
+// 2019.02.10  [1.5] Automatically handle case with only one list
 // 2019.02.10  [1.4] More generic: getUser and getIdFromEntry are now optional
 //                   Add newContext utility function
 // 2019.09.30  [1.3] Correct @namespace and other headers (for public use)
@@ -55,7 +55,7 @@
 /* jshint esversion: 6, supernew: true */
 /* exported EL, Library_Version_ENTRYLIST */
 
-const Library_Version_ENTRYLIST = '1.4';
+const Library_Version_ENTRYLIST = '1.5';
 
 /* How to use the library
 
@@ -67,15 +67,18 @@ website you are working on.
 Other functions and variables:
 - mainContext: the context saved with EL.startup
 
-- addToggleEventOnClick(button, howToFindEntry, toggleType, toggleList):
+- addToggleEventOnClick(button, howToFindEntry[, toggleList[, toggleType]]):
   mainly used in ctx.modifyEntry(), adds an event listener that implements
   a toggle function:
   - button: the DOM object to attach the event listener to
   - howToFindEntry: how to go from evt.target to the entry object. It can be:
     - a number: # of node.parentNode to hop to get from evt.target to to entry
     - a CSS selector: used with evt.target.closest to get to entry
-  - toggleType: the processing type that is toggle by the press of the button
   - toggleList: the list where the entry is toggled when the button is pressed
+                (can be omitted if a default list is to be used)
+  - toggleType: the processing type that is toggled by the press of the button
+                (can be omitted if only one processing type is used)
+                It cannot be a false value (0, null, false, undefined, etc.)
 - newContext(name):
   utility function that returns a new context, initialized with <name>
 
@@ -86,11 +89,6 @@ Mandatory callback functions and variables in context:
 
 - getPageEntries():
   return (usually with querySelectorAll) an array of entries to be treated
-- determineType(lists, tt, entry):
-  return the processing type for an entry given the lists it appears in,
-  the tt and entry objects may be as well used for the decision
-  "lists" is an object with a true property for each list the entry appears in
-  If there is a single processing type, the function may as well return true/false
 - processItem(entry, tt, processingType):
   process the entry based on the processing type or other features of the entry
 
@@ -122,6 +120,14 @@ Optional callback functions and variables in context:
 - modifyEntry(entry):
   optionally modify entry when scanned for the first time (e.g. add a button)
   see also EL.addToggleEventOnClick() above
+- determineType(lists, tt, entry):
+  return the processing type for an entry, given the lists it appears in, or a
+  false value (0, null, false, undefined, etc.) if no processing is required
+  "lists" is an object with a true property for each list the entry appears in.
+  The decision can also be taken using name, id and properties of the entry.
+  If there is a single processing type, the function might as well return true/false
+  Default: returns true if entry is in at least one list (especially useful in
+  cases with only one list, so there is no need to tell different lists apart)
 
 */
 
@@ -132,6 +138,7 @@ var EL = new (function() {
     const FAKE_USER        = '_';
     const MIN_INTERVAL     = 100;
     const DEFAULT_INTERVAL = 1000;
+    const DEFAULT_TYPE     = '_DEF_';
 
     var self = this;
 
@@ -154,12 +161,12 @@ var EL = new (function() {
 
         valid &= checkProperty(ctx, 'name',           'string');
         valid &= checkProperty(ctx, 'getPageEntries', 'function');
-        valid &= checkProperty(ctx, 'determineType',  'function');
         valid &= checkProperty(ctx, 'processItem',    'function');
         valid &= checkProperty(ctx, 'interval',       'number',   true);
         valid &= checkProperty(ctx, 'isEntryPage',    'function', true);
         valid &= checkProperty(ctx, 'isValidEntry',   'function', true);
         valid &= checkProperty(ctx, 'modifyEntry',    'function', true);
+        valid &= checkProperty(ctx, 'determineType',  'function', true);
         valid &= checkProperty(ctx, 'getUser',        'function', true);
         valid &= checkProperty(ctx, 'getIdFromEntry', 'function', true);
         valid &= checkProperty(ctx, 'unProcessItem',  'function', true);
@@ -268,7 +275,9 @@ var EL = new (function() {
             if (ctx.modifyEntry) ctx.modifyEntry(entry);
             lists = ( tt ? self.inLists(ctx, tt) : {} );
 
-            processingType = ctx.determineType(lists, tt, entry);
+            processingType = (ctx.determineType
+                ? ctx.determineType(lists, tt, entry)
+                : Object.keys(lists).length > 0);
 
             if (processingType) {
                 ctx.processItem(entry, tt, processingType);
@@ -284,7 +293,9 @@ var EL = new (function() {
         evt.stopPropagation();
         evt.preventDefault();
         var data = evt.target.dataset;
-        var ctx = self.mainContext;
+        var ctx  = self.mainContext;
+        var toggleList = (typeof data.toggleList === 'undefined' ? DEFAULT_TYPE : data.toggleList);
+        var toggleType = (typeof data.toggleType === 'undefined' ? DEFAULT_TYPE : data.toggleType);
 
         // get corresponding entry
         var entry = evt.target;
@@ -298,18 +309,18 @@ var EL = new (function() {
         if (!tt) return;
 
         // check if item is in list
-        var list = ctx.allLists[data.toggleList];
-        if (!list) list = ctx.allLists[data.toggleList] = {};
+        var list = ctx.allLists[toggleList];
+        if (!list) list = ctx.allLists[toggleList] = {};
         if (list[tt.id]) {
             delete list[tt.id];
-            ctx.unProcessItem(entry, tt, data.toggleType);
-            entry.ELProcessingType = '-' + data.toggleType;
+            ctx.unProcessItem(entry, tt, toggleType);
+            entry.ELProcessingType = '-' + toggleType;
         } else {
             list[tt.id] = tt.name;
-            ctx.processItem(entry, tt, data.toggleType);
-            entry.ELProcessingType = data.toggleType;
+            ctx.processItem(entry, tt, toggleType);
+            entry.ELProcessingType = toggleType;
         }
-        self.saveList(ctx, list, data.toggleList);
+        self.saveList(ctx, list, toggleList);
     };
 
 
@@ -354,10 +365,10 @@ var EL = new (function() {
     };
 
 
-    this.addToggleEventOnClick = function(button, toggleType, toggleList, howToFindEntry) {
-        button.dataset.toggleType     = toggleType;
-        button.dataset.toggleList     = toggleList;
+    this.addToggleEventOnClick = function(button, howToFindEntry, toggleList, toggleType) {
         button.dataset.howToFindEntry = howToFindEntry;
+        if (typeof toggleList !== 'undefined') button.dataset.toggleList = toggleList;
+        if (typeof toggleType !== 'undefined') button.dataset.toggleType = toggleType;
         button.addEventListener('click', self.toggleEntry, false);
     };
 
