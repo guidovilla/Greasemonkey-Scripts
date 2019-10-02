@@ -17,13 +17,13 @@
 // @description   Common functions for working on lists of entries
 // @homepageURL   https://greasyfork.org/scripts/390248-entrylist
 // @namespace     https://greasyfork.org/users/373199-guido-villa
-// @version       1.3
+// @version       1.4
 // @installURL    https://greasyfork.org/scripts/390248-entrylist/code/EntryList.user.js
 // @updateURL     https://greasyfork.org/scripts/390248-entrylist/code/EntryList.meta.js
 // @copyright     2019, Guido Villa
 // @license       GPL-3.0-or-later
 // @author        Guido
-// @date          30.09.2019
+// @date          02.10.2019
 // ==/UserScript==
 //
 // To-do (priority: [H]igh, [M]edium, [L]ow):
@@ -40,6 +40,8 @@
 //
 // History:
 // --------
+// 2019.02.10  [1.4] More generic: getUser and getIdFromEntry are now optional
+//                   Add newContext utility function
 // 2019.09.30  [1.3] Correct @namespace and other headers (for public use)
 // 2019.09.27  [1.2] Refactoring and name changing: TitleList -> EntryList
 // 2019.09.27  [1.1] Code cleanup (string literals, reorder functions)
@@ -53,7 +55,7 @@
 /* jshint esversion: 6, supernew: true */
 /* exported EL, Library_Version_ENTRYLIST */
 
-const Library_Version_ENTRYLIST = '1.3';
+const Library_Version_ENTRYLIST = '1.4';
 
 /* How to use the library
 
@@ -74,6 +76,8 @@ Other functions and variables:
     - a CSS selector: used with evt.target.closest to get to entry
   - toggleType: the processing type that is toggle by the press of the button
   - toggleList: the list where the entry is toggled when the button is pressed
+- newContext(name):
+  utility function that returns a new context, initialized with <name>
 
 
 Mandatory callback functions and variables in context:
@@ -311,6 +315,12 @@ var EL = new (function() {
 
 
     /* PUBLIC members */
+
+    // utility function to create a new context, initialized with <name>
+    this.newContext = function(name) {
+        return { 'name': name };
+    };
+
 
     // startup function
     this.startup = function(ctx) {
