@@ -112,10 +112,7 @@
             id = a.href.match(/\/detail\/([0-9]+)-/) || a.href.match(/\/series\/([0-9]+)-/);
             if (id && id.length >= 2) id = id[1];
         }
-        if (!id) {
-            console.error('Could not determine title id :-( - for entry', entry);
-            return null;
-        }
+        if (!id) return null;
         return { 'id': id, 'name': a.title };
     }
 
