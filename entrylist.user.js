@@ -84,7 +84,11 @@ Other functions and variables:
                 It cannot be a false value (0, null, false, undefined, etc.)
 - newContext(name):
   utility function that returns a new context, initialized with <name>
-- markInvalid(entry): marks entry as invalid and skips it in subsequent passes
+- markInvalid(entry):
+  marks entry as invalid to skips it in subsequent passes
+  This function returns false so it can be used in isValidEntry() in this way:
+  return condition || EL.markInvalid(entry)
+  This leaves the return value unchanged and marks the entry only if invalid
 
 
 Mandatory callback functions and variables in context:
@@ -439,6 +443,7 @@ var EL = new (function() {
 
     this.markInvalid = function(entry) {
         entry.ELInvalid = true;
+        return false;
     }
 
 
