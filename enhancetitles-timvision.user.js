@@ -12,13 +12,13 @@
 // @description   Hide titles on Timvision website by clicking on a button
 // @homepageURL   https://greasyfork.org/scripts/390632-enhance-titles-timvision
 // @namespace     https://greasyfork.org/users/373199-guido-villa
-// @version       1.3
+// @version       1.4
 // @installURL    https://greasyfork.org/scripts/390632-enhance-titles-timvision/code/Enhance%20titles%20-%20Timvision.user.js
 // @updateURL     https://greasyfork.org/scripts/390632-enhance-titles-timvision/code/Enhance%20titles%20-%20Timvision.meta.js
 // @copyright     2019, Guido Villa
 // @license       GPL-3.0-or-later
 // @author        Guido
-// @date          02.10.2019
+// @date          03.10.2019
 // @match         https://www.timvision.it/*
 // @grant         GM_xmlHttpRequest
 // @grant         GM_getValue
@@ -37,6 +37,7 @@
 //
 // History:
 // --------
+// 2019.10.03  [1.4] Use classes instead of inline styles
 // 2019.10.02  [1.3] Simplify code thanks to new EntryList defaults
 // 2019.09.30  [1.2] First public version, correct @namespace and other headers
 // 2019.09.27  [1.1] Changes due to EntryList (formerly TitleList) refactoring
@@ -55,6 +56,29 @@
 
     // other variables
     dest.ENTRY_SELECTOR = '.content-item-tile-small';
+    dest.CLASS_BUTTON = 'EL-TIMVision-HButton';
+    dest.STYLE_BUTTON = '.' + dest.CLASS_BUTTON + ' {'
+            + 'position: absolute;'
+            + 'bottom: 8px;'
+            + 'left: 8px;'
+            + 'z-index: 1000;'
+            + 'width: 30px;'
+            + 'height: 30px;'
+            + 'line-height: 30px;'
+            + 'border: 2px solid white;'
+            + 'border-radius: 50%;'
+            + 'background-color: black;'
+            + 'opacity: 0.5;'
+            + 'text-align: center;'
+            + 'vertical-align: middle;'
+            + 'font-weight: bold;'
+            + '}';
+    dest.CLASS_PROCESS = 'EL-TIMVision-Process';
+    var process_selector = dest.ENTRY_SELECTOR + '.' + dest.CLASS_PROCESS;
+    dest.STYLE_PROCESS =
+              process_selector + ' {opacity: 0.15; zoom: .5;} '
+            + process_selector + ' .' + dest.CLASS_BUTTON + ' {zoom: 2;} '
+            + process_selector + ' .content-item-tile-title {font-size:26px;}';
 
 
     dest.getUser = function() {
@@ -75,24 +99,10 @@
 
 
     dest.modifyEntry = function(entry) {
-        var d           = document.createElement('div');
-        d.style.cssText =
-            'position: absolute;' +
-            'bottom: 8px;' +
-            'left: 8px;' +
-            'z-index: 1000;' +
-            'width: 30px;' +
-            'height: 30px;' +
-            'line-height: 30px;' +
-            'border: 2px solid white;' +
-            'border-radius: 50%;' +
-            'background-color: black;' +
-            'opacity: 0.5;' +
-            'text-align: center;' +
-            'vertical-align: middle;' +
-            'font-weight: bold;';
-        d.textContent   = 'H';
-        d.title         = 'Hide/show this title';
+        var d         = document.createElement('div');
+        d.textContent = 'H';
+        d.title       = 'Hide/show this title';
+        d.classList.add(this.CLASS_BUTTON);
         EL.addToggleEventOnClick(d, this.ENTRY_SELECTOR);
         entry.querySelector('figure').appendChild(d);
 
@@ -119,12 +129,12 @@
 
 
     dest.processItem = function(entry, _I_tt, _I_processingType) {
-        entry.style.opacity = .15;
+        entry.classList.toggle(this.CLASS_PROCESS, true);
     }
 
 
     dest.unProcessItem = function(entry, _I_tt, _I_processingType) {
-        entry.style.opacity = 1;
+        entry.classList.toggle(this.CLASS_PROCESS, false);
     }
 
     /* END CONTEXT DEFINITION */
@@ -132,6 +142,8 @@
 
 
     //-------- "main" --------
+    GM_addStyle(dest.STYLE_BUTTON);
+    GM_addStyle(dest.STYLE_PROCESS);
     EL.startup(dest);
 
 })();
