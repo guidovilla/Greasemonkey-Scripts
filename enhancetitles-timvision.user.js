@@ -96,7 +96,7 @@
 
     dest.isValidEntry = function(entry) {
         return !!(entry.querySelector('a[href^="/detail/"]') || entry.querySelector('a[href^="/series/"]'))
-            || TL.markInvalid(entry);
+            || EL.markInvalid(entry);
     }
 
 
