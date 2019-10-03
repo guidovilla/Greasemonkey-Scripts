@@ -38,6 +38,7 @@
 // History:
 // --------
 // 2019.10.03  [1.4] Use classes instead of inline styles
+//                   Optimization: permanently skip invalid entries
 // 2019.10.02  [1.3] Simplify code thanks to new EntryList defaults
 // 2019.09.30  [1.2] First public version, correct @namespace and other headers
 // 2019.09.27  [1.1] Changes due to EntryList (formerly TitleList) refactoring
@@ -94,7 +95,8 @@
 
 
     dest.isValidEntry = function(entry) {
-        return !!(entry.querySelector('a[href^="/detail/"]') || entry.querySelector('a[href^="/series/"]'));
+        return !!(entry.querySelector('a[href^="/detail/"]') || entry.querySelector('a[href^="/series/"]'))
+            || TL.markInvalid(entry);
     }
 
 
