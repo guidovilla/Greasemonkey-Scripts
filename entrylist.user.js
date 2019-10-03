@@ -42,6 +42,7 @@
 // --------
 // 2019.10.03  [1.5] Automatically handle case with only one list
 //                   Better handling of list of lists
+//                   Add possibility to permanently skip an entry
 // 2019.10.02  [1.4] More generic: getUser and getIdFromEntry are now optional
 //                   Add newContext utility function
 // 2019.09.30  [1.3] Correct @namespace and other headers (for public use)
@@ -83,6 +84,7 @@ Other functions and variables:
                 It cannot be a false value (0, null, false, undefined, etc.)
 - newContext(name):
   utility function that returns a new context, initialized with <name>
+- markInvalid(entry): marks entry as invalid and skips it in subsequent passes
 
 
 Mandatory callback functions and variables in context:
@@ -101,6 +103,8 @@ Conditionally mandatory callback functions and variables in context:
   mandatory if data are to be stored on a per-user basis
 - getIdFromEntry(entry): return a tt: { id, name } object from the entry
   mandatory if you want to save entries to lists
+  NOTE: if id is not found, entry is skipped but it is not marked as invalid
+  for subsequent passes (unless you use TL.markInvalid(), see above)
 - unProcessItem(entry, tt, processingType):
   like processItem, but it should reverse the action
   mandatory for entries that have a toggle action added with
@@ -118,6 +122,8 @@ Optional callback functions and variables in context:
   default is always true (all pages contain entries)
 - isValidEntry(entry):
   return false if entry must be skipped
+  NOTE: if entry is skipped, it is not however marked as invalid for subsequent
+  passes (unless you use TL.markInvalid(), see above)
   default is always true (all entries returned by "getPageEntries" are valid)
 - modifyEntry(entry):
   optionally modify entry when scanned for the first time (e.g. add a button)
@@ -311,7 +317,7 @@ var EL = new (function() {
             entry = entries[i];
 
             // if entry has already been previously processed, skip it
-            if (entry.ELProcessed) continue;
+            if (entry.ELProcessed || entry.ELInvalid) continue;
 
             // see if entry is valid
             if (ctx.isValidEntry && !ctx.isValidEntry(entry)) continue;
@@ -429,6 +435,11 @@ var EL = new (function() {
         if (typeof toggleType !== 'undefined') button.dataset.toggleType = toggleType;
         button.addEventListener('click', self.handleToggleButton, false);
     };
+
+
+    this.markInvalid = function(entry) {
+        entry.ELInvalid = true;
+    }
 
 
 })();
