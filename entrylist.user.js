@@ -23,7 +23,7 @@
 // @copyright     2019, Guido Villa
 // @license       GPL-3.0-or-later
 // @author        Guido
-// @date          02.10.2019
+// @date          03.10.2019
 // ==/UserScript==
 //
 // To-do (priority: [H]igh, [M]edium, [L]ow):
@@ -36,11 +36,13 @@
 //   - [M] Better handle case without lists
 //   - [M] Add description of flow in usage documentation
 //   - [M] Add indication of URL to use to @require library itself
+//   - [M] List regeneration function doesn't handle case where lists are missing
 //
 // History:
 // --------
-// 2019.02.10  [1.5] Automatically handle case with only one list
-// 2019.02.10  [1.4] More generic: getUser and getIdFromEntry are now optional
+// 2019.10.03  [1.5] Automatically handle case with only one list
+//                   Better handle list of lists
+// 2019.10.02  [1.4] More generic: getUser and getIdFromEntry are now optional
 //                   Add newContext utility function
 // 2019.09.30  [1.3] Correct @namespace and other headers (for public use)
 // 2019.09.27  [1.2] Refactoring and name changing: TitleList -> EntryList
@@ -180,9 +182,10 @@ var EL = new (function() {
 
     // standardized names for storage variables
     var storName = {
-        'lastUser':    function(ctx)           { return ctx.name    + STORAGE_SEP + 'lastUser'; },
-        'listOfLists': function(ctx)           { return'EntryLists' + STORAGE_SEP + ctx.user; },
-        'listName':    function(ctx, listName) { return'EntryList'  + STORAGE_SEP + ctx.user + STORAGE_SEP + listName; },
+        'lastUser':    function(ctx)           { return ctx.name     + STORAGE_SEP + 'lastUser'; },
+        'listOfLists': function(ctx)           { return 'EntryLists' + STORAGE_SEP + ctx.user; },
+        'listPrefix':  function(ctx)           { return 'EntryList'  + STORAGE_SEP + ctx.user + STORAGE_SEP; },
+        'listName':    function(ctx, listName) { return this.listPrefix(ctx) + listName; },
     };
 
 
@@ -203,6 +206,24 @@ var EL = new (function() {
     };
 
 
+    // Regenerate and save the list of lists stored object, even if empty
+    // returns the new list
+    function regenerateListOfLists(ctx) {
+        var allVariables = GM_listValues();
+
+        var listNames = allVariables.reduce(function(listNames, variable) {
+            if (variable.startsWith(storName.listPrefix(ctx))) {
+                listNames.push(variable.substring(storName.listPrefix(ctx).length));
+            }
+            return listNames;
+        }, []);
+
+        var userData = JSON.stringify(listNames);
+        GM_setValue(storName.listOfLists(ctx), userData);
+        return listNames;
+    }
+
+
     // Load a single saved lists
     function loadSavedList(listName) {
         var list;
@@ -218,27 +239,42 @@ var EL = new (function() {
     }
 
 
+    // Load the list of lists, regenerating it if necessary
+    // always returns an array, possibly empty
+    function loadListOfLists(ctx) {
+        var listNames = loadSavedList(storName.listOfLists(ctx));
+
+        if (!Array.isArray(listNames)) listNames = regenerateListOfLists(ctx);
+        return listNames;
+    }
+
+
     // Load lists for the current user
     this.loadSavedLists = function(ctx) {
+        var listNames = loadListOfLists(ctx);
         var lists = {};
+        var list;
+        var mustRegenerateListOfLists = false;
 
-        var listNames = loadSavedList(storName.listOfLists(ctx));
-        if (!listNames) return lists;
-
-        for (var listName in listNames) {
-            lists[listName] = loadSavedList(storName.listName(ctx, listName));
-        }
+        listNames.forEach(function(listName) {
+            list = loadSavedList(storName.listName(ctx, listName));
+            if (list) lists[listName] = list;
+            else mustRegenerateListOfLists = true;
+        });
+        if (mustRegenerateListOfLists) regenerateListOfLists(ctx);
         return lists;
     };
 
 
     // Save single list for the current user
     this.saveList = function(ctx, list, name) {
-        var listNames = ( loadSavedList(storName.listOfLists(ctx)) || {} );
+        var listNames = loadListOfLists(ctx);
 
-        listNames[name] = 1;
-        var userData = JSON.stringify(listNames);
-        GM_setValue(storName.listOfLists(ctx), userData);
+        if (listNames.indexOf(name) == -1) {
+            listNames.push(name);
+            var userData = JSON.stringify(listNames);
+            GM_setValue(storName.listOfLists(ctx), userData);
+        }
 
         userData = JSON.stringify(list);
         GM_setValue(storName.listName(ctx, name), userData);
