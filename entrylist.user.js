@@ -33,7 +33,7 @@
 //   - [M] main context as default context
 //   - [M] do we need that the library is not cached? if so, how?
 //   - [M] changes to a list aren't reflected in page till reload. Change?
-//   - [M] Better handle case without lists
+//   - [M] Better handle case without lists (e.g. optimizations)
 //   - [M] Add description of flow in usage documentation
 //   - [M] Add indication of URL to use to @require library itself
 //   - [M] List regeneration function doesn't handle case where lists are missing
@@ -41,7 +41,7 @@
 // History:
 // --------
 // 2019.10.03  [1.5] Automatically handle case with only one list
-//                   Better handle list of lists
+//                   Better handling of list of lists
 // 2019.10.02  [1.4] More generic: getUser and getIdFromEntry are now optional
 //                   Add newContext utility function
 // 2019.09.30  [1.3] Correct @namespace and other headers (for public use)
