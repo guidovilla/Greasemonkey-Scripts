@@ -123,7 +123,6 @@
             parent.addEventListener('mouseenter',function(e){e.stopPropagation();},true);
             parent.NoMouseOver = true;
         }
-        return d;
     };
 
 
