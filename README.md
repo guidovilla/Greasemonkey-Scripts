@@ -1,4 +1,4 @@
-# Greasemonkey Scripts
+# Userscripts
 
 Greasemonkey scripts and libraries
 
