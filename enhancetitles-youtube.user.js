@@ -11,9 +11,9 @@
 // ==UserScript==
 // @name            Enhance titles - YouTube
 // @description     Hide watched videos on YouTube
-// @version         1.2
+// @version         1.3
 // @author          guidovilla
-// @date            03.10.2019
+// @date            05.10.2019
 // @copyright       2019, Guido Villa (https://greasyfork.org/users/373199-guido-villa)
 // @license         GPL-3.0-or-later
 // @homepageURL     https://greasyfork.org/scripts/390633-enhance-titles-youtube
@@ -41,6 +41,7 @@
 //
 // Changelog:
 // ----------
+// 2019.10.05  [1.3] Fix completion status appearing later (after ELProcessed)
 // 2019.10.03  [1.2] Refactor using EntryList library
 // 2019.09.30  [1.1] First public version, correct @namespace and other headers
 // 2019.06.17  [1.0] First version
@@ -62,11 +63,14 @@
     };
 
 
-    dest.determineType = function(_I_lists, _I_tt, entry) {
+    dest.isValidEntry = function(entry) {
         var st = entry.querySelector('#overlays');
-        if (!st.innerHTML) return false;
+        return !!(st && st.innerHTML);
+    };
 
-        st = st.querySelector('#progress');
+
+    dest.determineType = function(_I_lists, _I_tt, entry) {
+        var st = entry.querySelector('#overlays #progress');
         return (st && st.style.width == "100%");
     };
 
