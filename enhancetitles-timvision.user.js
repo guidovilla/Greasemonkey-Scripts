@@ -54,6 +54,7 @@
 // 2019.09.18  [0.1] First test version, private use only
 //
 
+/* jshint laxbreak: true */
 /* global EL: readonly */
 
 (function() {

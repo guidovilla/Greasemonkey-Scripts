@@ -67,7 +67,7 @@
 // 2019.09.18  [0.1] First test version, private use only
 //
 
-/* jshint esversion: 6, supernew: true */
+/* jshint esversion: 6, supernew: true, laxbreak: true */
 /* exported EL, Library_Version_ENTRYLIST */
 
 const Library_Version_ENTRYLIST = '1.5';
