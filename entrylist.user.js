@@ -33,9 +33,6 @@
 // @homepageURL     https://greasyfork.org/scripts/390248-entrylist
 // @supportURL      https://gitlab.com/gv-browser/userscripts/issues
 // @contributionURL https://tinyurl.com/gv-donate-0c
-//
-// @downloadURL     https://greasyfork.org/scripts/390248-entrylist/code/EntryList.user.js
-// @updateURL       https://greasyfork.org/scripts/390248-entrylist/code/EntryList.meta.js
 // ==/UserScript==
 //
 // ==/UserLibrary==
