@@ -113,7 +113,7 @@
         var d         = document.createElement('div');
         d.textContent = 'H';
         d.title       = 'Hide/show this title';
-        d.classList.add(this.CLASS_BUTTON);
+        d.className   = this.CLASS_BUTTON;
         EL.addToggleEventOnClick(d, this.ENTRY_SELECTOR);
         entry.querySelector('figure').appendChild(d);
 
