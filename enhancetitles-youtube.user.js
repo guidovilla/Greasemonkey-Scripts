@@ -27,12 +27,9 @@
 // @match           https://www.youtube.com/*
 //
 // @require         https://greasyfork.org/scripts/390248-entrylist/code/EntryList.js
-// @grant           GM_xmlHttpRequest
 // @grant           GM_getValue
 // @grant           GM_setValue
-// @grant           GM_deleteValue
 // @grant           GM_listValues
-// @grant           GM_addStyle
 // ==/UserScript==
 //
 // --------------------------------------------------------------------

@@ -3,10 +3,9 @@
 - usare addStyle e spostare in EL se utile
 - header:
     aggiungere degli exclude
-    rimuovere grant in eccesso
     connect per XHR
     resource usare
-    altri header (vedere quelli in verde in Header)
+    altri header (vedere quelli in verde)
     correggere attribution ricardo mendonça
 
 - README in gitlab/GF/OUJS - esempi:
