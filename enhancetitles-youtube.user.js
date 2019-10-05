@@ -23,6 +23,8 @@
 // @namespace       https://greasyfork.org/users/373199-guido-villa
 // @downloadURL     https://greasyfork.org/scripts/390633-enhance-titles-youtube/code/Enhance%20titles%20-%20YouTube.user.js
 // @updateURL       https://greasyfork.org/scripts/390633-enhance-titles-youtube/code/Enhance%20titles%20-%20YouTube.meta.js
+// @downloadURL     https://openuserjs.org/install/guidovilla/Enhance_titles_-_YouTube.user.js
+// @updateURL       https://openuserjs.org/meta/guidovilla/Enhance_titles_-_YouTube.meta.js
 //
 // @match           https://www.youtube.com/*
 //

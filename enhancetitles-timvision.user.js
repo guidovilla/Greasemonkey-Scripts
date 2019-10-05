@@ -23,6 +23,8 @@
 // @namespace       https://greasyfork.org/users/373199-guido-villa
 // @downloadURL     https://greasyfork.org/scripts/390632-enhance-titles-timvision/code/Enhance%20titles%20-%20Timvision.user.js
 // @updateURL       https://greasyfork.org/scripts/390632-enhance-titles-timvision/code/Enhance%20titles%20-%20Timvision.meta.js
+// @downloadURL     https://openuserjs.org/install/guidovilla/Enhance_titles_-_Timvision.user.js
+// @updateURL       https://openuserjs.org/meta/guidovilla/Enhance_titles_-_Timvision.meta.js
 //
 // @match           https://www.timvision.it/*
 //

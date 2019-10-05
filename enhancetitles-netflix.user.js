@@ -27,6 +27,8 @@
 // @namespace       https://greasyfork.org/users/373199-guido-villa
 // @downloadURL     https://greasyfork.org/scripts/390631-enhance-titles-netflix/code/Enhance%20titles%20-%20Netflix.user.js
 // @updateURL       https://greasyfork.org/scripts/390631-enhance-titles-netflix/code/Enhance%20titles%20-%20Netflix.meta.js
+// @downloadURL     https://openuserjs.org/install/guidovilla/Enhance_titles_-_Netflix.user.js
+// @updateURL       https://openuserjs.org/meta/guidovilla/Enhance_titles_-_Netflix.meta.js
 //
 // @match           https://www.netflix.com/*
 // @match           https://www.imdb.com/user/*/lists*
