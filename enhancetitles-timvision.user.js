@@ -38,6 +38,7 @@
 // --------------------------------------------------------------------
 //
 // To-do (priority: [H]igh, [M]edium, [L]ow):
+//   - [M] check if title id is really unique for a title or if multiple ids are possible
 //   - [M] add some @exclude
 //   - [M] remove commented code
 //   - [L] Integration with IMDb list

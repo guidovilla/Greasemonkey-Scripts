@@ -1,15 +1,5 @@
 - testare autoupdate
 - gruppo GF
-- readme in gitlab - esempi:
-    https://greasyfork.org/en/scripts/1810-google-tracking-b-gone
-    https://openuserjs.org/libs/Marti/GM_setStyle
-    https://openuserjs.org/scripts/Marti/oujs_-_Meta_View
-    vedere anche esempi di sizzle
-- condividere info tra metadata block e readme/altri posti? Come? CI/CD?
-- aggiornamento README su GF e OUJS
-- gv profile su GF e OUJS (bug reporting, vedere esempi fatti da altri)
-- update anche opeuserjs?
-- valutare {} -> [] per output inLists
 - usare addStyle e spostare in EL se utile
 - header:
     aggiungere degli exclude
@@ -18,8 +8,21 @@
     resource usare
     altri header (vedere quelli in verde in Header)
     correggere attribution ricardo mendonça
-- timvision vedere se id identifica titolo o se ce n'è più di uno
+
+- README in gitlab/GF/OUJS - esempi:
+    https://greasyfork.org/en/scripts/1810-google-tracking-b-gone
+    https://openuserjs.org/libs/Marti/GM_setStyle
+    https://openuserjs.org/scripts/Marti/oujs_-_Meta_View
+    vedere anche esempi di sizzle
+- gv profile su GF e OUJS (bug reporting, vedere esempi fatti da altri)
+- valutare {} -> [] per output inLists
 - usare: https://greasyfork.org/en/scripts/390115-imdb-utility-library-api
+  per linkare titoli da Netflix/Timvision a IMDb
 - usare GM_config (uno dei due):
     https://github.com/sizzlemctwizzle/GM_config
     https://greasyfork.org/en/scripts/1884-gm-config
+
+- condividere info tra metadata block e readme/altri posti? Come? CI/CD?
+  - todo
+  - changelog
+  - altre informazioni
