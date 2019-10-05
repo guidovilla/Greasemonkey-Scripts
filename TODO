@@ -11,8 +11,6 @@
 - update anche opeuserjs?
 - valutare {} -> [] per output inLists
 - usare addStyle e spostare in EL se utile
-- la libreria deve documentare quali grant servono
-- aggiungere in libreria indicazione del @require che serve per isarla
 - header:
     aggiungere degli exclude
     rimuovere grant in eccesso

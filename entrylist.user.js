@@ -13,6 +13,9 @@
 //
 // For instructions, see https://greasyfork.org/help/installing-user-scripts
 //
+// Use "@require https://greasyfork.org/scripts/390248-entrylist/code/EntryList.js"
+// to use this library in a script.
+//
 // --------------------------------------------------------------------
 //
 // ==UserScript==
@@ -101,6 +104,10 @@ Other functions and variables:
   This function returns false so it can be used in isValidEntry() in this way:
   return condition || EL.markInvalid(entry)
   This leaves the return value unchanged and marks the entry only if invalid
+
+
+NOTE:
+to use this library you must @grant GM_getValue, GM_setValue, GM_listValues
 
 
 Mandatory callback functions and variables in context:
