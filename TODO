@@ -1,5 +1,4 @@
 - testare autoupdate
-- gruppo GF
 - usare addStyle e spostare in EL se utile
 - header:
     aggiungere degli exclude
@@ -25,3 +24,4 @@
   - todo
   - changelog
   - altre informazioni
+- gruppo GF e/o OUJS (occhio che questo non può cambiare)
