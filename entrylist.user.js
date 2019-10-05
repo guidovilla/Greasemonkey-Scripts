@@ -464,7 +464,7 @@ var EL = new (function() {
     this.markInvalid = function(entry) {
         entry.ELInvalid = true;
         return false;
-    }
+    };
 
 
 })();
