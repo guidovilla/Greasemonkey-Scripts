@@ -177,7 +177,8 @@ var EL = new (function() {
 
     // Check if "object" has "property" of "type"
     // used to test if object "implements" a specific interface
-    function checkProperty(object, property, type, optional) {
+    function checkProperty(object, property, type, optional = false) {
+
         if (typeof object[property] !== type && (!optional || typeof object[property] !== 'undefined')) {
             console.error((optional ? 'Optionally, c' : 'C') + 'ontext must have a "' + property + '" property of type "' + type + '"');
             return false;
@@ -328,40 +329,44 @@ var EL = new (function() {
     }
 
 
+    // Process a single entry
+    function processOneEntry(ctx, entry) {
+        var tt, lists, processingType;
+
+        // if entry has already been previously processed, skip it
+        if (entry.ELProcessed || entry.ELInvalid) continue;
+
+        // see if entry is valid
+        if (ctx.isValidEntry && !ctx.isValidEntry(entry)) continue;
+
+        if (ctx.getIdFromEntry) {
+            tt = _wrap_getIdFromEntry(ctx, entry);
+            if (!tt) continue;
+        }
+
+        if (ctx.modifyEntry) ctx.modifyEntry(entry);
+        lists = ( tt ? self.inLists(ctx, tt) : {} );
+
+        processingType = (ctx.determineType
+            ? ctx.determineType(lists, tt, entry)
+            : Object.keys(lists).length > 0);
+
+        if (processingType) {
+            ctx.processItem(entry, tt, processingType);
+            entry.ELProcessingType = processingType;
+        }
+
+        entry.ELProcessed = true; // set to "true" after processing (so we skip it on next pass)
+    }
+
+
     // Process all entries in current page
-    this.processEntries = function(ctx) {
+    this.processAllEntries = function(ctx) {
         var entries = ctx.getPageEntries();
         if (!entries) return;
 
-        var entry, tt, lists, processingType;
         for (var i = 0; i < entries.length; i++) {
-            entry = entries[i];
-
-            // if entry has already been previously processed, skip it
-            if (entry.ELProcessed || entry.ELInvalid) continue;
-
-            // see if entry is valid
-            if (ctx.isValidEntry && !ctx.isValidEntry(entry)) continue;
-
-            tt = null;
-            if (ctx.getIdFromEntry) {
-                tt = _wrap_getIdFromEntry(ctx, entry);
-                if (!tt) continue;
-            }
-
-            if (ctx.modifyEntry) ctx.modifyEntry(entry);
-            lists = ( tt ? self.inLists(ctx, tt) : {} );
-
-            processingType = (ctx.determineType
-                ? ctx.determineType(lists, tt, entry)
-                : Object.keys(lists).length > 0);
-
-            if (processingType) {
-                ctx.processItem(entry, tt, processingType);
-                entry.ELProcessingType = processingType;
-            }
-
-            entry.ELProcessed = true; // set to "true" after processing (so we skip it on next pass)
+            processOneEntry(entries[i]);
         }
     };
 
@@ -442,18 +447,18 @@ var EL = new (function() {
         ctx.allLists = self.loadSavedLists(ctx);
 
         // start the entry processing function
-        self.processEntries(ctx);
+        self.processAllEntries(ctx);
         if (typeof ctx.interval === 'undefined' || ctx.interval >= MIN_INTERVAL) {
             // TODO we might consider using MutationObserver in the future, instead
-            ctx.timer = setInterval(function() {self.processEntries(ctx);}, ctx.interval || DEFAULT_INTERVAL);
+            ctx.timer = setInterval(function() {self.processAllEntries(ctx);}, ctx.interval || DEFAULT_INTERVAL);
         }
     };
 
 
-    this.addToggleEventOnClick = function(button, howToFindEntry, toggleList, toggleType) {
+    this.addToggleEventOnClick = function(button, howToFindEntry, toggleList = null, toggleType = null) {
         button.dataset.howToFindEntry = howToFindEntry;
-        if (typeof toggleList !== 'undefined') button.dataset.toggleList = toggleList;
-        if (typeof toggleType !== 'undefined') button.dataset.toggleType = toggleType;
+        if (toggleList !== null) button.dataset.toggleList = toggleList;
+        if (toggleType !== null) button.dataset.toggleType = toggleType;
         button.addEventListener('click', self.handleToggleButton, false);
     };
 
