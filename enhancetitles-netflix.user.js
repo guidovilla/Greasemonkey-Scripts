@@ -68,6 +68,7 @@
 // 2019.03.30  [0.1] First test version, private use only
 //
 
+/*jshint -W008 */
 
 (function() {
    var WATCHLIST  = "watchlist";
@@ -118,7 +119,7 @@
          var accountString = account.getAttribute("aria-label");
          if (accountString) {
             loggedUser = accountString.replace(/ - Account & Settings$/, '');
-            if (loggedUser == accountString) loggedUser == null;
+            if (loggedUser == accountString) loggedUser = null;
          }
       }
       if (!loggedUser) {
@@ -323,7 +324,6 @@
            hideItem(div, tt, movieTitle);
        }
        saveMyLocalList();
-       console.log('TOGGLE: ' + tt + ', t: ' + movieTitle);
    }
 
 
@@ -345,7 +345,7 @@
 
       if (!hideTypes[hideType]) hideType = 'MISSING';
       var triangle = document.createElement('div');
-      triangle.className = 'NHT-triangle'
+      triangle.className = 'NHT-triangle';
       triangle.style.cssText =
           'border-right: 20px solid ' + hideTypes[hideType].colour + '; ' +
           'border-bottom: 20px solid transparent;' +
@@ -354,7 +354,7 @@
           'position: absolute; ' +
           'top: 0; ' +
           'right: 0; ' +
-          'z-index: 2;'
+          'z-index: 2;';
       triangle.title = hideTypes[hideType].name;
       div.parentNode.appendChild(triangle);
 
@@ -497,7 +497,7 @@
             } else if (type == PEOPLE) {
                // ___0___   __1__  ___2___  ___3____  _____4_____  __5__  ____6____  ____7_____
                // Position, Const, Created, Modified, Description, Name,  Known For, Birth Date
-               for (var f=0; f < data[0].length; f++)
+               for (f=0; f < data[0].length; f++)
                   { fields[data[0][f]] = data[i][f]; }
                var nm   = fields["Const"];
              //var name = fields["Name"];
@@ -670,7 +670,7 @@
                break;
             }
       // Add remaining indices
-      for (var i = 0; i < myLists.length; i++)
+      for (i = 0; i < myLists.length; i++)
          if (!listOrderIdx.includes(i))
             listOrderIdx.push(i);
    }
@@ -815,7 +815,7 @@
    function addBtn(div, func, txt, help, style) {
       var b = document.createElement('button');
       b.className     = "btn";
-      if (!style) style = "margin-right: 10px; font-size: 11px;"
+      if (!style) style = "margin-right: 10px; font-size: 11px;";
       b.style.cssText = style;
 //      b.textContent   = txt;   // GUIDO NF
       b.textContent   = 'NF ' + txt;   // GUIDO NF

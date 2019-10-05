@@ -92,18 +92,18 @@
         var user = document.querySelector('span.username');
         if (user) user = user.textContent.trim();
         return user;
-    }
+    };
 
 
     dest.getPageEntries = function() {
         return document.querySelectorAll(this.ENTRY_SELECTOR);
-    }
+    };
 
 
     dest.isValidEntry = function(entry) {
         return !!(entry.querySelector('a[href^="/detail/"]') || entry.querySelector('a[href^="/series/"]'))
             || EL.markInvalid(entry);
-    }
+    };
 
 
     dest.modifyEntry = function(entry) {
@@ -121,7 +121,7 @@
             parent.NoMouseOver = true;
         }
         return d;
-    }
+    };
 
 
     dest.getIdFromEntry = function(entry) {
@@ -133,17 +133,17 @@
         }
         if (!id) return null;
         return { 'id': id, 'name': a.title };
-    }
+    };
 
 
     dest.processItem = function(entry, _I_tt, _I_processingType) {
         entry.classList.toggle(this.CLASS_PROCESS, true);
-    }
+    };
 
 
     dest.unProcessItem = function(entry, _I_tt, _I_processingType) {
         entry.classList.toggle(this.CLASS_PROCESS, false);
-    }
+    };
 
     /* END CONTEXT DEFINITION */
 

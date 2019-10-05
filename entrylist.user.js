@@ -297,11 +297,12 @@ var EL = new (function() {
 
     // Save single list for the current user
     this.saveList = function(ctx, list, name) {
+        var userData;
         var listNames = loadListOfLists(ctx);
 
         if (listNames.indexOf(name) == -1) {
             listNames.push(name);
-            var userData = JSON.stringify(listNames);
+            userData = JSON.stringify(listNames);
             GM_setValue(storName.listOfLists(ctx), userData);
         }
 

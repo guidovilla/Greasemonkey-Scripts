@@ -44,6 +44,7 @@
 // 2019.06.17  [1.0] First version
 //
 
+/*jshint -W008 */
 /* global EL: readonly */
 
 (function() {
@@ -56,7 +57,7 @@
 
     dest.getPageEntries = function() {
         return document.querySelectorAll('a#thumbnail');
-    }
+    };
 
 
     dest.determineType = function(_I_lists, _I_tt, entry) {
@@ -65,12 +66,12 @@
 
         st = st.querySelector('#progress');
         return (st && st.style.width == "100%");
-    }
+    };
 
 
     dest.processItem = function(entry, _I_tt, _I_processingType) {
         entry.style.opacity = .1;
-    }
+    };
 
     /* END CONTEXT DEFINITION */
 
