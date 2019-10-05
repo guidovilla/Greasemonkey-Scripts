@@ -497,8 +497,8 @@
             } else if (type == PEOPLE) {
                // ___0___   __1__  ___2___  ___3____  _____4_____  __5__  ____6____  ____7_____
                // Position, Const, Created, Modified, Description, Name,  Known For, Birth Date
-               for (f=0; f < data[0].length; f++)
-                  { fields[data[0][f]] = data[i][f]; }
+               for (var ff=0; ff < data[0].length; ff++)
+                  { fields[data[0][ff]] = data[i][ff]; }
                var nm   = fields["Const"];
              //var name = fields["Name"];
                if (typeof nm === "undefined")   console.error("Error processing line "+i+" of "+idx);
@@ -670,9 +670,9 @@
                break;
             }
       // Add remaining indices
-      for (i = 0; i < myLists.length; i++)
-         if (!listOrderIdx.includes(i))
-            listOrderIdx.push(i);
+      for (var ii = 0; ii < myLists.length; ii++)
+         if (!listOrderIdx.includes(ii))
+            listOrderIdx.push(ii);
    }
 
 
