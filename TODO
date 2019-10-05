@@ -1,8 +1,10 @@
 - testare autoupdate
 - gruppo GF
 - readme in gitlab - esempi:
-    https://openuserjs.org/libs/Marti/GM_setStyle
     https://greasyfork.org/en/scripts/1810-google-tracking-b-gone
+    https://openuserjs.org/libs/Marti/GM_setStyle
+    https://openuserjs.org/scripts/Marti/oujs_-_Meta_View
+    vedere anche esempi di sizzle
 - condividere info tra metadata block e readme/altri posti? Come? CI/CD?
 - aggiornamento README su GF e OUJS
 - gv profile su GF e OUJS (bug reporting, vedere esempi fatti da altri)
