@@ -1,34 +1,38 @@
-// File encoding: UTF-8
-//{
+// Enhance titles - YouTube
 // Hide watched videos on YouTube
 //
-// Copyright (c) 2019, Guido Villa
-// Most of the script is taken from IMDb 'My Movies' enhancer:
-// Copyright (c) 2008-2018, Ricardo Mendonça Ferreira (ric@mpcnet.com.br)
-// Released under the GPL license - http://www.gnu.org/copyleft/gpl.html
+// https://greasyfork.org/scripts/390633-enhance-titles-youtube
+// Copyright (C) 2019, Guido Villa
+//
+// For instructions, see https://greasyfork.org/help/installing-user-scripts
 //
 // --------------------------------------------------------------------
 //
 // ==UserScript==
-// @name          Enhance titles - YouTube
-// @description   Hide watched videos on YouTube
-// @homepageURL   https://greasyfork.org/scripts/390633-enhance-titles-youtube
-// @namespace     https://greasyfork.org/users/373199-guido-villa
-// @version       1.2
-// @installURL    https://greasyfork.org/scripts/390633-enhance-titles-youtube/code/Enhance%20titles%20-%20YouTube.user.js
-// @updateURL     https://greasyfork.org/scripts/390633-enhance-titles-youtube/code/Enhance%20titles%20-%20YouTube.meta.js
-// @copyright     2019, Guido Villa
-// @license       GPL-3.0-or-later
-// @author        Guido
-// @date          03.10.2019
-// @match         https://www.youtube.com/*
-// @grant         GM_xmlHttpRequest
-// @grant         GM_getValue
-// @grant         GM_setValue
-// @grant         GM_deleteValue
-// @grant         GM_listValues
-// @grant         GM_addStyle
-// @require       https://greasyfork.org/scripts/390248-entrylist/code/EntryList.js
+// @name            Enhance titles - YouTube
+// @description     Hide watched videos on YouTube
+// @version         1.2
+// @author          guidovilla
+// @date            03.10.2019
+// @copyright       2019, Guido Villa (https://greasyfork.org/users/373199-guido-villa)
+// @license         GPL-3.0-or-later
+// @homepageURL     https://greasyfork.org/scripts/390633-enhance-titles-youtube
+// @supportURL      https://gitlab.com/gv-browser/userscripts/issues
+// @contributionURL https://tinyurl.com/gv-donate-72
+//
+// @namespace       https://greasyfork.org/users/373199-guido-villa
+// @downloadURL     https://greasyfork.org/scripts/390633-enhance-titles-youtube/code/Enhance%20titles%20-%20YouTube.user.js
+// @updateURL       https://greasyfork.org/scripts/390633-enhance-titles-youtube/code/Enhance%20titles%20-%20YouTube.meta.js
+//
+// @match           https://www.youtube.com/*
+//
+// @require         https://greasyfork.org/scripts/390248-entrylist/code/EntryList.js
+// @grant           GM_xmlHttpRequest
+// @grant           GM_getValue
+// @grant           GM_setValue
+// @grant           GM_deleteValue
+// @grant           GM_listValues
+// @grant           GM_addStyle
 // ==/UserScript==
 //
 // --------------------------------------------------------------------
@@ -36,13 +40,13 @@
 // To-do (priority: [H]igh, [M]edium, [L]ow):
 //   - [L] hide selective titles?
 //
-// History:
-// --------
+// Changelog:
+// ----------
 // 2019.10.03  [1.2] Refactor using EntryList library
 // 2019.09.30  [1.1] First public version, correct @namespace and other headers
 // 2019.06.17  [1.0] First version
 //
-//}
+
 /* global EL: readonly */
 
 (function() {

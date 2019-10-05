@@ -1,30 +1,43 @@
-//{
+// EntryList library
 // Common functions for modifying/hiding/etc. entries in page, based on
 // entry features or presence in one or more lists.
 // For instance: hide all YouTube videos that have been watched and highlight
 // the ones that have been started but not finished, highlight Netflix movies
 // based on IMDb lists, etc.
 //
-// Copyright (c) 2019, Guido Villa
+// https://greasyfork.org/scripts/390248-entrylist
+// Copyright (C) 2019, Guido Villa
 // Original idea and some of the code is taken from IMDb 'My Movies' enhancer:
-// Copyright (c) 2008-2018, Ricardo Mendonça Ferreira (ric@mpcnet.com.br)
+// Copyright (C) 2008-2018, Ricardo Mendonça Ferreira (ric@mpcnet.com.br)
 // Released under the GPL license - http://www.gnu.org/copyleft/gpl.html
+//
+// For instructions, see https://greasyfork.org/help/installing-user-scripts
 //
 // --------------------------------------------------------------------
 //
 // ==UserScript==
-// @name          EntryList
-// @description   Common functions for working on lists of entries
-// @homepageURL   https://greasyfork.org/scripts/390248-entrylist
-// @namespace     https://greasyfork.org/users/373199-guido-villa
-// @version       1.5
-// @installURL    https://greasyfork.org/scripts/390248-entrylist/code/EntryList.user.js
-// @updateURL     https://greasyfork.org/scripts/390248-entrylist/code/EntryList.meta.js
-// @copyright     2019, Guido Villa
-// @license       GPL-3.0-or-later
-// @author        Guido
-// @date          03.10.2019
+// @namespace       https://greasyfork.org/users/373199-guido-villa
+// @exclude         *
+//
+// ==UserLibrary==
+// @name            EntryList
+// @description     Common functions for working on lists of entries
+// @version         1.5
+// @author          guidovilla
+// @date            03.10.2019
+// @copyright       2019, Guido Villa (https://greasyfork.org/users/373199-guido-villa)
+// @license         GPL-3.0-or-later
+// @homepageURL     https://greasyfork.org/scripts/390248-entrylist
+// @supportURL      https://gitlab.com/gv-browser/userscripts/issues
+// @contributionURL https://tinyurl.com/gv-donate-0c
+//
+// @downloadURL     https://greasyfork.org/scripts/390248-entrylist/code/EntryList.user.js
+// @updateURL       https://greasyfork.org/scripts/390248-entrylist/code/EntryList.meta.js
 // ==/UserScript==
+//
+// ==/UserLibrary==
+//
+// --------------------------------------------------------------------
 //
 // To-do (priority: [H]igh, [M]edium, [L]ow):
 //   - [H] Extend library to work on all the scripts
@@ -38,8 +51,8 @@
 //   - [M] Add indication of URL to use to @require library itself
 //   - [M] List regeneration function doesn't handle case where lists are missing
 //
-// History:
-// --------
+// Changelog:
+// ----------
 // 2019.10.03  [1.5] Automatically handle case with only one list
 //                   Better handling of list of lists
 //                   Add possibility to permanently skip an entry
@@ -53,7 +66,6 @@
 // 2019.09.21  [1.0] First version
 // 2019.09.18  [0.1] First test version, private use only
 //
-//}
 
 /* jshint esversion: 6, supernew: true */
 /* exported EL, Library_Version_ENTRYLIST */

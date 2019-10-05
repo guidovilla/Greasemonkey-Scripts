@@ -1,31 +1,38 @@
-// File encoding: UTF-8
-//{
-// Enhance/hide titles on Timvision website by clicking on a button.
+// Enhance titles - Timvision
+// Hide titles on Timvision website by clicking on a button
 //
-// Copyright (c) 2019, Guido Villa
-// Released under the GPL license - http://www.gnu.org/copyleft/gpl.html
+// https://greasyfork.org/scripts/390632-enhance-titles-timvision
+// Copyright (C) 2019, Guido Villa
+//
+// For instructions, see https://greasyfork.org/help/installing-user-scripts
 //
 // --------------------------------------------------------------------
 //
 // ==UserScript==
-// @name          Enhance titles - Timvision
-// @description   Hide titles on Timvision website by clicking on a button
-// @homepageURL   https://greasyfork.org/scripts/390632-enhance-titles-timvision
-// @namespace     https://greasyfork.org/users/373199-guido-villa
-// @version       1.4
-// @installURL    https://greasyfork.org/scripts/390632-enhance-titles-timvision/code/Enhance%20titles%20-%20Timvision.user.js
-// @updateURL     https://greasyfork.org/scripts/390632-enhance-titles-timvision/code/Enhance%20titles%20-%20Timvision.meta.js
-// @copyright     2019, Guido Villa
-// @license       GPL-3.0-or-later
-// @author        Guido
-// @date          03.10.2019
-// @match         https://www.timvision.it/*
-// @grant         GM_xmlHttpRequest
-// @grant         GM_getValue
-// @grant         GM_setValue
-// @grant         GM_deleteValue
-// @grant         GM_addStyle
-// @require       https://greasyfork.org/scripts/390248-entrylist/code/EntryList.js
+// @name            Enhance titles - Timvision
+// @description     Hide titles on Timvision website by clicking on a button
+// @version         1.4
+// @author          guidovilla
+// @date            03.10.2019
+// @copyright       2019, Guido Villa (https://greasyfork.org/users/373199-guido-villa)
+// @license         GPL-3.0-or-later
+// @homepageURL     https://greasyfork.org/scripts/390632-enhance-titles-timvision
+// @supportURL      https://gitlab.com/gv-browser/userscripts/issues
+// @contributionURL https://tinyurl.com/gv-donate-3a
+//
+// @namespace       https://greasyfork.org/users/373199-guido-villa
+// @downloadURL     https://greasyfork.org/scripts/390632-enhance-titles-timvision/code/Enhance%20titles%20-%20Timvision.user.js
+// @updateURL       https://greasyfork.org/scripts/390632-enhance-titles-timvision/code/Enhance%20titles%20-%20Timvision.meta.js
+//
+// @match           https://www.timvision.it/*
+//
+// @require         https://greasyfork.org/scripts/390248-entrylist/code/EntryList.js
+// @grant           GM_xmlHttpRequest
+// @grant           GM_getValue
+// @grant           GM_setValue
+// @grant           GM_deleteValue
+// @grant           GM_listValues
+// @grant           GM_addStyle
 // ==/UserScript==
 //
 // --------------------------------------------------------------------
@@ -35,8 +42,8 @@
 //   - [M] remove commented code
 //   - [L] Integration with IMDb list
 //
-// History:
-// --------
+// Changelog:
+// ----------
 // 2019.10.03  [1.4] Use classes instead of inline styles
 //                   Optimization: permanently skip invalid entries
 // 2019.10.02  [1.3] Simplify code thanks to new EntryList defaults
@@ -45,7 +52,7 @@
 // 2019.09.21  [1.0] First version. Hiding function and removes useless zooming of title cards on mouseover
 // 2019.09.18  [0.1] First test version, private use only
 //
-//}
+
 /* global EL: readonly */
 
 (function() {

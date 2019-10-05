@@ -1,35 +1,43 @@
-// File encoding: UTF-8
-//{
+// Enhance titles - Netflix
 // Loads lists of movies from a local list and an IMDb account and uses
 // them to highlight or hide titles on Netflix.
 //
-// Copyright (c) 2019, Guido Villa
+// https://greasyfork.org/scripts/390631-enhance-titles-netflix
+// Copyright (C) 2019, Guido Villa
 // Most of the script is taken from IMDb 'My Movies' enhancer:
-// Copyright (c) 2008-2018, Ricardo Mendonça Ferreira (ric@mpcnet.com.br)
+// Copyright (C) 2008-2018, Ricardo Mendonça Ferreira (ric@mpcnet.com.br)
 // Released under the GPL license - http://www.gnu.org/copyleft/gpl.html
+//
+// For instructions, see https://greasyfork.org/help/installing-user-scripts
 //
 // --------------------------------------------------------------------
 //
 // ==UserScript==
-// @name          Enhance titles - Netflix
-// @description   Emphasize or hide titles on Netflix according to IMDb and local lists
-// @homepageURL   https://greasyfork.org/scripts/390631-enhance-titles-netflix
-// @namespace     https://greasyfork.org/users/373199-guido-villa
-// @version       1.4
-// @installURL    https://greasyfork.org/scripts/390631-enhance-titles-netflix/code/Enhance%20titles%20-%20Netflix.user.js
-// @updateURL     https://greasyfork.org/scripts/390631-enhance-titles-netflix/code/Enhance%20titles%20-%20Netflix.meta.js
-// @copyright     2019, Guido Villa
-// @license       GPL-3.0-or-later
-// @author        Guido
-// @date          30.09.2019
-// @match         https://www.netflix.com/*
-// @match         https://www.imdb.com/user/*/lists*
-// @exclude       https://www.netflix.com/watch*
-// @grant         GM_xmlHttpRequest
-// @grant         GM_getValue
-// @grant         GM_setValue
-// @grant         GM_deleteValue
-// @grant         GM_addStyle
+// @name            Enhance titles - Netflix
+// @description     Emphasize or hide titles on Netflix according to IMDb and local lists
+// @version         1.4
+// @author          guidovilla
+// @date            30.09.2019
+// @copyright       2019, Guido Villa (https://greasyfork.org/users/373199-guido-villa)
+// @license         GPL-3.0-or-later
+// @homepageURL     https://greasyfork.org/scripts/390631-enhance-titles-netflix
+// @supportURL      https://gitlab.com/gv-browser/userscripts/issues
+// @contributionURL https://tinyurl.com/gv-donate-7e
+//
+// @namespace       https://greasyfork.org/users/373199-guido-villa
+// @downloadURL     https://greasyfork.org/scripts/390631-enhance-titles-netflix/code/Enhance%20titles%20-%20Netflix.user.js
+// @updateURL       https://greasyfork.org/scripts/390631-enhance-titles-netflix/code/Enhance%20titles%20-%20Netflix.meta.js
+//
+// @match           https://www.netflix.com/*
+// @match           https://www.imdb.com/user/*/lists*
+// @exclude         https://www.netflix.com/watch*
+//
+// @grant           GM_xmlHttpRequest
+// @grant           GM_getValue
+// @grant           GM_setValue
+// @grant           GM_deleteValue
+// @grant           GM_listValues
+// @grant           GM_addStyle
 // ==/UserScript==
 //
 // --------------------------------------------------------------------
@@ -43,9 +51,10 @@
 //   - [M] Lots of clean-up
 //   - [M] Delay autopreview for hidden movies?
 //   - [L] No link between IMDb user and Netflix user, basically it works for a single IMDb user
+//   - [L] hide selective titles?
 //
-// History:
-// --------
+// Changelog:
+// ----------
 // 2019.09.30  [1.4] First public version, correct @namespace and other headers
 // 2019.08.28  [1.3] Make the list more visible (top right triangle instead of border, with tooltip)
 //                   Fix unhide function (bug added in 1.2)
@@ -58,7 +67,6 @@
 //                   Gets data both from locally hidden movies and from IMDb lists
 // 2019.03.30  [0.1] First test version, private use only
 //
-//}
 
 
 (function() {
