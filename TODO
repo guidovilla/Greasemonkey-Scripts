@@ -1,5 +1,11 @@
+- verificare come si comporta il salvataggio liste se non c'è utente (undefined? vd. YT)
+- spostare funzionalità di EntryList in altra libreria
+- verificare se changelog è completo facendo i diff in GF
+- rifare check dell'interfaccia passando una lista di proprietà da controllare
+- aggiustare NF
 - testare autoupdate
-- usare addStyle e spostare in EL se utile
+
+- usare addStyle e spostare in EL se utile (vedere dopo NF)
 - header:
     aggiungere degli exclude
     connect per XHR
