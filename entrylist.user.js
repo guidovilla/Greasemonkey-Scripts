@@ -53,7 +53,8 @@
 //
 // Changelog:
 // ----------
-// 2019.10.06  [1.7] Add possibility of source contexts, getPageType callback
+// 2019.10.06  [1.7] Add possibility of source contexts
+//                   Add getPageType and processPage callbacks
 //                   Some refactoring
 // 2019.10.06  [1.6] Changed storage names for future needs (multiple contexts)
 //                   (requires manually adjusting previous storage)
@@ -150,6 +151,8 @@ Optional callback functions and variables in main context:
   the script for some reason (e.g. it is the page where lists are reloaded),
   false otherwise. The result is stored in ctx.pageType.
   Default is always false => no special page
+- processPage(pageType, isEntryPage):
+  optionally does operations on page based on pageType (and if isEntryPage) 
 - isValidEntry(entry):
   return false if entry must be skipped
   NOTE: if entry is skipped, it is not however marked as invalid for subsequent
@@ -178,6 +181,7 @@ Callback functions and variables in contexts for external sources:
   site. This is needed to look for the saved lists.
   Default is looking for the last saved user (single-user scenario).
 - getPageType(): see above
+- processPage(pageType, isEntryPage): see above
 
 
 */
@@ -195,6 +199,7 @@ var EL = new (function() {
     var self = this;
 
     var initialized = false;
+    var failedInit  = false;
     var mainContext;          // target context object
     var isEntryPage;          // boolean
     var allContexts;          // array (cointains mainContext, too)
@@ -488,6 +493,7 @@ var EL = new (function() {
     // init function
     this.init = function(ctx) {
         initialized = false;
+        failedInit  = true;
         mainContext = null;
         isEntryPage = false;
         allContexts = [];
@@ -507,23 +513,28 @@ var EL = new (function() {
                 console.log(ctx.name + ': no user is defined, aborting');
                 return;
             }
+            if (ctx.pageType && ctx.processPage) ctx.processPage(ctx.pageType, isEntryPage);
         }
 
         mainContext = ctx;
         initialized = true;
+        failedInit  = false;
     };
 
 
     // startup function
     this.startup = function(ctx) {
-        if (!initialized) self.init(ctx);
+        if (!initialized) {
+            if (failedInit) return;
+            self.init(ctx);
+
+        } else if (ctx) console.warn('Startup called with context parameter after init, ignoring ctx');
 
         if (!isEntryPage) return;
 
-        allContexts.push(ctx);
-
         // Load list data for this user from local storage
         ctx.allLists = self.loadSavedLists(ctx);
+        allContexts.push(ctx);
 
         // start the entry processing function
         self.processAllEntries();
@@ -537,7 +548,7 @@ var EL = new (function() {
     // add a source context
     this.addSource = function(ctx) {
         if (!initialized) {
-            console.log('Cannot add a source if main context is not initialized, aborting');
+            console.log('Main context is not initialized, aborting addSource');
             return;
         }
 
@@ -555,6 +566,7 @@ var EL = new (function() {
                 console.log(ctx.name + ': no user is defined, aborting');
                 return;
             }
+            if (ctx.processPage) ctx.processPage(ctx.pageType, isEntryPage);
         }
 
         if (!isEntryPage) return;
@@ -566,10 +578,9 @@ var EL = new (function() {
             return;
         }
 
-        allContexts.push(ctx);
-
         // Load list data for this user from local storage
         ctx.allLists = self.loadSavedLists(ctx);
+        allContexts.push(ctx);
     };
 
 
