@@ -5,6 +5,7 @@
 - aggiustare NF
 - testare autoupdate
 
+- aggiustare logging errori (livello) e console con funzione che salva gli errori per andare a rivederli (con gm config ad es.) - in asincrono (polyfill?)
 - usare addStyle e spostare in EL se utile (vedere dopo NF)
 - header:
     aggiungere degli exclude
@@ -12,6 +13,7 @@
     resource usare
     altri header (vedere quelli in verde)
     correggere attribution ricardo mendonça
+- le liste si possono scaricare con GM_XHR senza andare sulla pagina?
 
 - README in gitlab/GF/OUJS - esempi:
     https://greasyfork.org/en/scripts/1810-google-tracking-b-gone
