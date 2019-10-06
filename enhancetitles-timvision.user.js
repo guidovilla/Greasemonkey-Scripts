@@ -45,7 +45,7 @@
 //
 // Changelog:
 // ----------
-// 2019.10.03  [1.4] Use classes instead of inline styles
+// 2019.10.03  [1.4] Use classes instead of inline styles, some code cleanup
 //                   Optimization: permanently skip invalid entries
 // 2019.10.02  [1.3] Simplify code thanks to new EntryList defaults
 // 2019.09.30  [1.2] First public version, correct @namespace and other headers
