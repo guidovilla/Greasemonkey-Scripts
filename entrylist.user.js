@@ -25,7 +25,7 @@
 // ==UserLibrary==
 // @name            EntryList
 // @description     Common functions for working on lists of entries
-// @version         1.6
+// @version         1.7
 // @author          guidovilla
 // @date            06.10.2019
 // @copyright       2019, Guido Villa (https://greasyfork.org/users/373199-guido-villa)
@@ -53,7 +53,9 @@
 //
 // Changelog:
 // ----------
-// 2019.10.06  [1.6] Changed stoage names for future needs
+// 2019.10.06  [1.7] Add possibility of source contexts, getPageType callback
+//                   Some refactoring
+// 2019.10.06  [1.6] Changed storage names for future needs (multiple contexts)
 //                   (requires manually adjusting previous storage)
 // 2019.10.03  [1.5] Automatically handle case with only one list
 //                   Better handling of list of lists
@@ -72,18 +74,21 @@
 /* jshint esversion: 6, supernew: true, laxbreak: true */
 /* exported EL, Library_Version_ENTRYLIST */
 
-const Library_Version_ENTRYLIST = '1.6';
+const Library_Version_ENTRYLIST = '1.7';
 
 /* How to use the library
 
 This library instantitates an EL object with a startup method.
 
-Call EL.startup(ctx), passing a "context" object that is specific to the
-website you are working on.
+Call, in order:
+0. EL.newContext(name) to initialize each source and target context
+1. EL.init(ctx), passing a "context" object that is specific to the
+   website you need to "enhance"
+   -> not needed if you don't have external sources, just call EL.startup(ctx)
+2. EL.addSource(ctx) for each external source, with its specific context
+3. EL.startup(ctx), ctx us not needed if EL.init(ctx) was called.
 
-Other functions and variables:
-- mainContext: the context saved with EL.startup
-
+Other functions:
 - addToggleEventOnClick(button, howToFindEntry[, toggleList[, toggleType]]):
   mainly used in ctx.modifyEntry(), adds an event listener that implements
   a toggle function:
@@ -96,8 +101,6 @@ Other functions and variables:
   - toggleType: the processing type that is toggled by the press of the button
                 (can be omitted if only one processing type is used)
                 It cannot be a false value (0, null, false, undefined, etc.)
-- newContext(name):
-  utility function that returns a new context, initialized with <name>
 - markInvalid(entry):
   marks entry as invalid to skips it in subsequent passes
   This function returns false so it can be used in isValidEntry() in this way:
@@ -109,7 +112,7 @@ NOTE:
 to use this library you must @grant GM_getValue, GM_setValue, GM_listValues
 
 
-Mandatory callback functions and variables in context:
+Mandatory callback functions and variables in main context:
 
 - name: identifier of the site (set with newContext())
 
@@ -119,7 +122,7 @@ Mandatory callback functions and variables in context:
   process the entry based on the processing type or other features of the entry
 
 
-Conditionally mandatory callback functions and variables in context:
+Conditionally mandatory callback functions in main context:
 
 - getUser(): retrieve and return the username used on the website
   mandatory if data are to be stored on a per-user basis
@@ -133,7 +136,7 @@ Conditionally mandatory callback functions and variables in context:
   EL.addToggleEventOnClick()
 
 
-Optional callback functions and variables in context:
+Optional callback functions and variables in main context:
 
 - interval: interval (in ms) to re-scan links in the DOM
             won't re-scan if < MIN_INTERVAL
@@ -141,12 +144,17 @@ Optional callback functions and variables in context:
 
 - isEntryPage():
   returns false if page must not be scanned for entries
-  default is always true (all pages contain entries)
+  Default is always true => all pages contain entries
+- getPageType():
+  returns some non false value (true, number, object) if page is significant to
+  the script for some reason (e.g. it is the page where lists are reloaded),
+  false otherwise. The result is stored in ctx.pageType.
+  Default is always false => no special page
 - isValidEntry(entry):
   return false if entry must be skipped
   NOTE: if entry is skipped, it is not however marked as invalid for subsequent
   passes (unless you use TL.markInvalid(), see above)
-  default is always true (all entries returned by "getPageEntries" are valid)
+  Default is always true => all entries returned by getPageEntries() are valid
 - modifyEntry(entry):
   optionally modify entry when scanned for the first time (e.g. add a button)
   see also EL.addToggleEventOnClick() above
@@ -159,11 +167,25 @@ Optional callback functions and variables in context:
   Default: returns true if entry is in at least one list (especially useful in
   cases with only one list, so there is no need to tell different lists apart)
 
+
+Callback functions and variables in contexts for external sources:
+
+- name: identifier of the site (set with newContext())
+
+- getUser(): see above
+- getSourceUserFromTargetUser(targetContextName, targetUser):
+  returns the user name on the source site corresponding to the one on target
+  site. This is needed to look for the saved lists.
+  Default is looking for the last saved user (single-user scenario).
+- getPageType(): see above
+
+
 */
 
 
 var EL = new (function() {
     'use strict';
+    const SEP              = '|';
     const STORAGE_SEP      = '-';
     const FAKE_USER        = '_';
     const DEFAULT_TYPE     = '_DEF_';
@@ -172,7 +194,10 @@ var EL = new (function() {
 
     var self = this;
 
-    this.mainContext = null;
+    var initialized = false;
+    var mainContext;          // target context object
+    var isEntryPage;          // boolean
+    var allContexts;          // array (cointains mainContext, too)
 
 
     /* PRIVATE members */
@@ -189,7 +214,7 @@ var EL = new (function() {
     }
 
 
-    // check if context has the correct variables and functions
+    // check if target context has the correct variables and functions
     function isValidTargetContext(ctx) {
         var valid = true;
 
@@ -198,6 +223,7 @@ var EL = new (function() {
         valid &= checkProperty(ctx, 'processItem',    'function');
         valid &= checkProperty(ctx, 'interval',       'number',   true);
         valid &= checkProperty(ctx, 'isEntryPage',    'function', true);
+        valid &= checkProperty(ctx, 'getPageType',    'function', true);
         valid &= checkProperty(ctx, 'isValidEntry',   'function', true);
         valid &= checkProperty(ctx, 'modifyEntry',    'function', true);
         valid &= checkProperty(ctx, 'determineType',  'function', true);
@@ -209,12 +235,26 @@ var EL = new (function() {
     }
 
 
+    // check if source context has the correct variables and functions
+    function isValidSourceContext(ctx) {
+        var valid = true;
+
+        valid &= checkProperty(ctx, 'name',                        'string');
+        valid &= checkProperty(ctx, 'getUser',                     'function', true);
+        valid &= checkProperty(ctx, 'getSourceUserFromTargetUser', 'function', true);
+        valid &= checkProperty(ctx, 'getPageType',                 'function', true);
+
+        return !!valid;
+    }
+
+
     // standardized names for storage variables
     var storName = {
-        'lastUser':    function(ctx)           { return ctx.name     + STORAGE_SEP + 'lastUser'; },
         'listIdent':   function(ctx)           { return STORAGE_SEP + ctx.name + STORAGE_SEP + ctx.user; },
-        'listOfLists': function(ctx)           { return 'Lists' + this.listIdent(ctx); },
         'listPrefix':  function(ctx)           { return 'List'  + this.listIdent(ctx) + STORAGE_SEP; },
+
+        'lastUser':    function(ctx)           { return ctx.name + STORAGE_SEP + 'lastUser'; },
+        'listOfLists': function(ctx)           { return 'Lists' + this.listIdent(ctx); },
         'listName':    function(ctx, listName) { return this.listPrefix(ctx) + listName; },
     };
 
@@ -222,16 +262,33 @@ var EL = new (function() {
     // Return name of user currently logged on <ctx> site
     // Return last saved value and log error if no user is found
     this.getLoggedUser = function(ctx) {
-        if (!ctx.getUser) return FAKE_USER;
+        if (!ctx.getUser) return (ctx.user = FAKE_USER);
 
         var user = ctx.getUser();
         if (!user) {
             console.error(ctx.name + ": user not logged in (or couldn't get user info) on URL " + document.URL);
-            user = GM_getValue(storName.lastUser(ctx), '');
+            user = GM_getValue(storName.lastUser(ctx));
             console.error('Using last user: ' + user);
         }
         GM_setValue(storName.lastUser(ctx), user);
         ctx.user = user;
+        return user;
+    };
+
+
+    // Return name of user to read for this source <ctx>, corresponding to the
+    // user on the target context
+    // if no mapping function is defined, take the last saved user, regardless
+    // of target user
+    this.getRemoteUser = function(ctx) {
+        if (ctx.getSourceUserFromTargetUser) {
+            ctx.user = ctx.getSourceUserFromTargetUser(mainContext.name, mainContext.user);
+            if (!user) {
+                console.error(ctx.name + ": cannot find user corresponding to '" + mainContext.user + "' on " + mainContext.name);
+            }
+        } else {
+            ctx.user = GM_getValue(storName.lastUser(ctx));
+        }
         return user;
     };
 
@@ -257,7 +314,7 @@ var EL = new (function() {
     // Load a single saved lists
     function loadSavedList(listName) {
         var list;
-        var userData = GM_getValue(listName, null);
+        var userData = GM_getValue(listName);
         if (userData) {
             try {
                 list = JSON.parse(userData);
@@ -313,12 +370,14 @@ var EL = new (function() {
 
 
     // Receives an entry tt and finds all lists where tt.id appears
-    this.inLists = function(ctx, tt) {
+    this.inLists = function(tt) {
         var lists = {};
 
-        for (var list in ctx.allLists) {
-            if (ctx.allLists[list][tt.id]) lists[list] = true;
-        }
+        allContexts.forEach(function(ctx) {
+            for (var list in ctx.allLists) {
+                if (ctx.allLists[list][tt.id]) lists[ctx.name + SEP + list] = true;
+            }
+        });
 
         return lists;
     };
@@ -333,22 +392,22 @@ var EL = new (function() {
 
 
     // Process a single entry
-    function processOneEntry(ctx, entry) {
+    function processOneEntry(entry, ctx = mainContext) {
         var tt, lists, processingType;
 
         // if entry has already been previously processed, skip it
-        if (entry.ELProcessed || entry.ELInvalid) continue;
+        if (entry.ELProcessed || entry.ELInvalid) return;
 
         // see if entry is valid
-        if (ctx.isValidEntry && !ctx.isValidEntry(entry)) continue;
+        if (ctx.isValidEntry && !ctx.isValidEntry(entry)) return;
 
         if (ctx.getIdFromEntry) {
             tt = _wrap_getIdFromEntry(ctx, entry);
-            if (!tt) continue;
+            if (!tt) return;
         }
 
         if (ctx.modifyEntry) ctx.modifyEntry(entry);
-        lists = ( tt ? self.inLists(ctx, tt) : {} );
+        lists = ( tt ? self.inLists(tt) : {} );
 
         processingType = (ctx.determineType
             ? ctx.determineType(lists, tt, entry)
@@ -364,12 +423,12 @@ var EL = new (function() {
 
 
     // Process all entries in current page
-    this.processAllEntries = function(ctx) {
+    this.processAllEntries = function(ctx = mainContext) {
         var entries = ctx.getPageEntries();
         if (!entries) return;
 
         for (var i = 0; i < entries.length; i++) {
-            processOneEntry(entries[i]);
+            processOneEntry(entries[i], ctx);
         }
     };
 
@@ -396,7 +455,7 @@ var EL = new (function() {
 
     // add/remove entry from a list
     this.toggleEntry = function(entry, toggleList, toggleType) {
-        var ctx  = self.mainContext;
+        var ctx = mainContext;
 
         var tt = _wrap_getIdFromEntry(ctx, entry);
         if (!tt) return;
@@ -426,35 +485,91 @@ var EL = new (function() {
     };
 
 
-    // startup function
-    this.startup = function(ctx) {
+    // init function
+    this.init = function(ctx) {
+        initialized = false;
+        mainContext = null;
+        isEntryPage = false;
+        allContexts = [];
+
         // check that passed context is good
         if (!isValidTargetContext(ctx)) {
-            console.log('Invalid context, aborting');
+            console.log('Invalid target context, aborting');
             return;
         }
 
-        self.mainContext = ctx;
+        isEntryPage  = ( !ctx.isEntryPage || ctx.isEntryPage() );
+        ctx.pageType = (  ctx.getPageType && ctx.getPageType() );
 
-        //TODO forse salvare una variabile we_are_in_an_entry_page nel contesto?
-        //TODO per altri casi lo startup deve fare anche altro
-        if (!( !ctx.isEntryPage || ctx.isEntryPage() )) return;
-
-        // find current logged in user, or quit script
-        if (!self.getLoggedUser(ctx)) {
-            console.log('No user is defined, aborting');
-            return;
+        if (isEntryPage || ctx.pageType) {
+            // find current logged in user, or quit script
+            if (!self.getLoggedUser(ctx)) {
+                console.log(ctx.name + ': no user is defined, aborting');
+                return;
+            }
         }
+
+        mainContext = ctx;
+        initialized = true;
+    };
+
+
+    // startup function
+    this.startup = function(ctx) {
+        if (!initialized) self.init(ctx);
+
+        if (!isEntryPage) return;
+
+        allContexts.push(ctx);
 
         // Load list data for this user from local storage
         ctx.allLists = self.loadSavedLists(ctx);
 
         // start the entry processing function
-        self.processAllEntries(ctx);
+        self.processAllEntries();
         if (typeof ctx.interval === 'undefined' || ctx.interval >= MIN_INTERVAL) {
             // TODO we might consider using MutationObserver in the future, instead
-            ctx.timer = setInterval(function() {self.processAllEntries(ctx);}, ctx.interval || DEFAULT_INTERVAL);
+            ctx.timer = setInterval(self.processAllEntries, ctx.interval || DEFAULT_INTERVAL);
         }
+    };
+
+
+    // add a source context
+    this.addSource = function(ctx) {
+        if (!initialized) {
+            console.log('Cannot add a source if main context is not initialized, aborting');
+            return;
+        }
+
+        // check that passed context is good
+        if (!isValidSourceContext(ctx)) {
+            console.log('Invalid source context, aborting');
+            return;
+        }
+
+        ctx.pageType = ( ctx.getPageType && ctx.getPageType() );
+
+        if (ctx.pageType) {
+            // find current logged in user, or quit script
+            if (!self.getLoggedUser(ctx)) {
+                console.log(ctx.name + ': no user is defined, aborting');
+                return;
+            }
+        }
+
+        if (!isEntryPage) return;
+
+        // find user corresponding to current logged in user, or quit script
+        // TODO if (entryPage && pageType), remote user overwrites logged user
+        if (!self.getRemoteUser(ctx)) {
+            console.log(ctx.name + ': no remote user is defined, aborting');
+            return;
+        }
+
+        allContexts.push(ctx);
+
+        // Load list data for this user from local storage
+        ctx.allLists = self.loadSavedLists(ctx);
     };
 
 
