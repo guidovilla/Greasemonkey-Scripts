@@ -109,7 +109,7 @@ to use this library you must @grant GM_getValue, GM_setValue, GM_listValues
 
 Mandatory callback functions and variables in context:
 
-- name: identifier of the site
+- name: identifier of the site (set with newContext())
 
 - getPageEntries():
   return (usually with querySelectorAll) an array of entries to be treated
@@ -210,8 +210,9 @@ var EL = new (function() {
     // standardized names for storage variables
     var storName = {
         'lastUser':    function(ctx)           { return ctx.name     + STORAGE_SEP + 'lastUser'; },
-        'listOfLists': function(ctx)           { return 'EntryLists' + STORAGE_SEP + ctx.user; },
-        'listPrefix':  function(ctx)           { return 'EntryList'  + STORAGE_SEP + ctx.user + STORAGE_SEP; },
+        'listIdent':   function(ctx)           { return STORAGE_SEP + ctx.name + STORAGE_SEP + ctx.user; },
+        'listOfLists': function(ctx)           { return 'Lists' + this.listIdent(ctx); },
+        'listPrefix':  function(ctx)           { return 'List'  + this.listIdent(ctx) + STORAGE_SEP; },
         'listName':    function(ctx, listName) { return this.listPrefix(ctx) + listName; },
     };
 
