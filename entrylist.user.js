@@ -25,9 +25,9 @@
 // ==UserLibrary==
 // @name            EntryList
 // @description     Common functions for working on lists of entries
-// @version         1.5
+// @version         1.6
 // @author          guidovilla
-// @date            03.10.2019
+// @date            06.10.2019
 // @copyright       2019, Guido Villa (https://greasyfork.org/users/373199-guido-villa)
 // @license         GPL-3.0-or-later
 // @homepageURL     https://greasyfork.org/scripts/390248-entrylist
@@ -53,6 +53,8 @@
 //
 // Changelog:
 // ----------
+// 2019.10.06  [1.6] Changed stoage names for future needs
+//                   (requires manually adjusting previous storage)
 // 2019.10.03  [1.5] Automatically handle case with only one list
 //                   Better handling of list of lists
 //                   Add possibility to permanently skip an entry
@@ -70,7 +72,7 @@
 /* jshint esversion: 6, supernew: true, laxbreak: true */
 /* exported EL, Library_Version_ENTRYLIST */
 
-const Library_Version_ENTRYLIST = '1.5';
+const Library_Version_ENTRYLIST = '1.6';
 
 /* How to use the library
 
