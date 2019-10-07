@@ -485,7 +485,7 @@ var EL = new (function() {
 
     /* PUBLIC members */
 
-    // utility function to create a new context, initialized with <name>
+    // utility function that creates a new context, initialized with <name>
     this.newContext = function(name) {
         return { 'name': name };
     };
