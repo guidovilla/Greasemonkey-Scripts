@@ -152,7 +152,8 @@ Optional callback functions and variables in main context:
   false otherwise. The result is stored in ctx.pageType.
   Default is always false => no special page
 - processPage(pageType, isEntryPage):
-  optionally does operations on page based on pageType (and if isEntryPage) 
+  optionally does operations on page based on pageType (and isEntryPage).
+  Called only if pageType is truthy, so no need to check if it is false
 - isValidEntry(entry):
   return false if entry must be skipped
   NOTE: if entry is skipped, it is not however marked as invalid for subsequent
