@@ -14,11 +14,11 @@
 // For instructions, see https://greasyfork.org/help/installing-user-scripts
 //
 // To use this library in a script you must add to script header:
-// @require  https://greasyfork.org/scripts/390248-entrylist/code/EntryList.js
-// @grant    GM_getValue
-// @grant    GM_setValue
-// @grant    GM_deleteValue
-// @grant    GM_listValues
+  // @require  https://greasyfork.org/scripts/390248-entrylist/code/EntryList.js
+  // @grant    GM_getValue
+  // @grant    GM_setValue
+  // @grant    GM_deleteValue
+  // @grant    GM_listValues
 //
 // --------------------------------------------------------------------
 //
