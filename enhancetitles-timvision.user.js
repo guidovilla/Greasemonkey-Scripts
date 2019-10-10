@@ -126,10 +126,10 @@
 
 
     timvision.getIdFromEntry = function(entry) {
-        var a = entry.querySelector('a[href^="/detail/"]') || entry.querySelector('a[href^="/series/"]');
+        var a = ( entry.querySelector('a[href^="/detail/"]') || entry.querySelector('a[href^="/series/"]') );
         var id = null;
         if (a) {
-            id = a.href.match(/\/detail\/([0-9]+)-/) || a.href.match(/\/series\/([0-9]+)-/);
+            id = ( a.href.match(/\/detail\/([0-9]+)-/) || a.href.match(/\/series\/([0-9]+)-/) );
             if (id && id.length >= 2) id = id[1];
         }
         if (!id) return null;

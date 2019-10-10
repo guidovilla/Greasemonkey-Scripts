@@ -534,7 +534,7 @@ var EL = new (function() {
         self.processAllEntries();
         if (typeof ctx.interval === 'undefined' || ctx.interval >= MIN_INTERVAL) {
             // TODO we might consider using MutationObserver in the future, instead
-            ctx.timer = setInterval(self.processAllEntries, ctx.interval || DEFAULT_INTERVAL);
+            ctx.timer = setInterval(self.processAllEntries, ( ctx.interval || DEFAULT_INTERVAL ));
         }
     };
 
