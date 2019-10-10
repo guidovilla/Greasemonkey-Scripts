@@ -13,7 +13,7 @@
 // @description     Hide titles on Timvision website by clicking on a button
 // @version         1.4
 // @author          guidovilla
-// @date            03.10.2019
+// @date            10.10.2019
 // @copyright       2019, Guido Villa (https://greasyfork.org/users/373199-guido-villa)
 // @license         GPL-3.0-or-later
 // @homepageURL     https://greasyfork.org/scripts/390632-enhance-titles-timvision
@@ -40,12 +40,11 @@
 // To-do (priority: [H]igh, [M]edium, [L]ow):
 //   - [M] check if title id is really unique for a title or if multiple ids are possible
 //   - [M] add some @exclude
-//   - [M] remove commented code
 //   - [L] Integration with IMDb list
 //
 // Changelog:
 // ----------
-// 2019.10.03  [1.4] Use classes instead of inline styles, some code cleanup
+// 2019.10.10  [1.4] Use classes instead of inline styles, some code cleanup
 //                   Optimization: permanently skip invalid entries
 // 2019.10.02  [1.3] Simplify code thanks to new EntryList defaults
 // 2019.09.30  [1.2] First public version, correct @namespace and other headers
@@ -62,12 +61,12 @@
 
     /* BEGIN CONTEXT DEFINITION */
 
-    var dest = EL.newContext('TIMVision');
+    var timvision = EL.newContext('TIMVision');
 
     // other variables
-    dest.ENTRY_SELECTOR = '.content-item-tile-small';
-    dest.CLASS_BUTTON = 'EL-TIMVision-HButton';
-    dest.STYLE_BUTTON = '.' + dest.CLASS_BUTTON + ' {'
+    timvision.ENTRY_SELECTOR = '.content-item-tile-small';
+    timvision.CLASS_BUTTON = 'EL-TIMVision-HButton';
+    timvision.STYLE_BUTTON = '.' + timvision.CLASS_BUTTON + ' {'
             + 'position: absolute;'
             + 'bottom: 8px;'
             + 'left: 8px;'
@@ -83,33 +82,33 @@
             + 'vertical-align: middle;'
             + 'font-weight: bold;'
             + '}';
-    dest.CLASS_PROCESS = 'EL-TIMVision-Process';
-    var process_selector = dest.ENTRY_SELECTOR + '.' + dest.CLASS_PROCESS;
-    dest.STYLE_PROCESS =
+    timvision.CLASS_PROCESS = 'EL-TIMVision-Process';
+    var process_selector = timvision.ENTRY_SELECTOR + '.' + timvision.CLASS_PROCESS;
+    timvision.STYLE_PROCESS =
               process_selector + ' {opacity: 0.15; zoom: .5;} '
-            + process_selector + ' .' + dest.CLASS_BUTTON + ' {zoom: 2;} '
+            + process_selector + ' .' + timvision.CLASS_BUTTON + ' {zoom: 2;} '
             + process_selector + ' .content-item-tile-title {font-size:26px;}';
 
 
-    dest.getUser = function() {
+    timvision.getUser = function() {
         var user = document.querySelector('span.username');
         if (user) user = user.textContent.trim();
         return user;
     };
 
 
-    dest.getPageEntries = function() {
+    timvision.getPageEntries = function() {
         return document.querySelectorAll(this.ENTRY_SELECTOR);
     };
 
 
-    dest.isValidEntry = function(entry) {
+    timvision.isValidEntry = function(entry) {
         return !!(entry.querySelector('a[href^="/detail/"]') || entry.querySelector('a[href^="/series/"]'))
             || EL.markInvalid(entry);
     };
 
 
-    dest.modifyEntry = function(entry) {
+    timvision.modifyEntry = function(entry) {
         var d         = document.createElement('div');
         d.textContent = 'H';
         d.title       = 'Hide/show this title';
@@ -126,7 +125,7 @@
     };
 
 
-    dest.getIdFromEntry = function(entry) {
+    timvision.getIdFromEntry = function(entry) {
         var a = entry.querySelector('a[href^="/detail/"]') || entry.querySelector('a[href^="/series/"]');
         var id = null;
         if (a) {
@@ -138,12 +137,12 @@
     };
 
 
-    dest.processItem = function(entry, _I_tt, _I_processingType) {
+    timvision.processItem = function(entry, _I_tt, _I_processingType) {
         entry.classList.toggle(this.CLASS_PROCESS, true);
     };
 
 
-    dest.unProcessItem = function(entry, _I_tt, _I_processingType) {
+    timvision.unProcessItem = function(entry, _I_tt, _I_processingType) {
         entry.classList.toggle(this.CLASS_PROCESS, false);
     };
 
@@ -152,33 +151,8 @@
 
 
     //-------- "main" --------
-    GM_addStyle(dest.STYLE_BUTTON);
-    GM_addStyle(dest.STYLE_PROCESS);
-    EL.startup(dest);
+    GM_addStyle(timvision.STYLE_BUTTON);
+    GM_addStyle(timvision.STYLE_PROCESS);
+    EL.startup(timvision);
 
 })();
-
-/*
-    var IMDbSrc = {};
-    IMDbSrc.name = 'IMDb';
-
-    IMDbSrc.getUser = function() {
-        var user;
-        var account = document.getElementById('consumer_user_nav') ||
-                      document.getElementById('nbpersonalize');
-        if (account) {
-           var                 result = account.getElementsByTagName('strong');
-           if (!result.length) result = account.getElementsByClassName("navCategory");
-           if (!result.length) result = account.getElementsByClassName("singleLine");
-           if (!result.length) result = account.getElementsByTagName("p");
-           if (result) user = result[0].textContent.trim();
-        }
-        return user;
-    }
-
-
-    dest.getListsFromEntry = function(tt, entry) {
-        if (entry.className.indexOf('is-disliked') != -1) return { "localDisliked": true };
-    }
-
-*/
