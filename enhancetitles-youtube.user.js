@@ -55,27 +55,27 @@
 
     /* BEGIN CONTEXT DEFINITION */
 
-    var dest = EL.newContext('YouTube');
+    var youtube = EL.newContext('YouTube');
 
 
-    dest.getPageEntries = function() {
+    youtube.getPageEntries = function() {
         return document.querySelectorAll('a#thumbnail');
     };
 
 
-    dest.isValidEntry = function(entry) {
+    youtube.isValidEntry = function(entry) {
         var st = entry.querySelector('#overlays');
         return !!(st && st.innerHTML);
     };
 
 
-    dest.determineType = function(_I_lists, _I_tt, entry) {
+    youtube.determineType = function(_I_lists, _I_tt, entry) {
         var st = entry.querySelector('#overlays #progress');
         return (st && st.style.width == "100%");
     };
 
 
-    dest.processItem = function(entry, _I_tt, _I_processingType) {
+    youtube.processItem = function(entry, _I_tt, _I_processingType) {
         entry.style.opacity = .1;
     };
 
@@ -84,6 +84,6 @@
 
 
     //-------- "main" --------
-    EL.startup(dest);
+    EL.startup(youtube);
 
 })();
