@@ -2,9 +2,12 @@
 - spostare funzionalità di EntryList in altra libreria
 - verificare se changelog è completo facendo i diff in GF (già fatto per TV)
 - rifare check dell'interfaccia passando una lista di proprietà da controllare
-- aggiustare NF
+- aggiustare NF:
+  1. salvare le liste nel modo corretto
+  2. creare funzione di translation degli id
+  3. cambiare tutti i riferimenti legacy
+  4. altro
 - testare autoupdate
-- rinominare dest
 
 - ottimizzare querySelector... con getElementsBy...
 - sostituire for con altri iteratori
