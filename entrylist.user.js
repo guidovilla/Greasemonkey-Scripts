@@ -31,7 +31,7 @@
 // @description     Common functions for working on lists of entries
 // @version         1.7
 // @author          guidovilla
-// @date            07.10.2019
+// @date            10.10.2019
 // @copyright       2019, Guido Villa (https://greasyfork.org/users/373199-guido-villa)
 // @license         GPL-3.0-or-later
 // @homepageURL     https://greasyfork.org/scripts/390248-entrylist
@@ -57,8 +57,8 @@
 //
 // Changelog:
 // ----------
-// 2019.10.07  [1.7] Add possibility of source contexts
-//                   saveList public, add title, ln(), deleteList()
+// 2019.10.10  [1.7] Add possibility of source contexts
+//                   saveList public, add title, ln, deleteList, deleteAllLists
 //                   Add getPageType and processPage callbacks
 //                   Some refactoring and small fixes
 // 2019.10.06  [1.6] Changed storage names for future needs (multiple contexts)
@@ -69,7 +69,7 @@
 // 2019.10.02  [1.4] More generic: getUser and getIdFromEntry are now optional
 //                   Add newContext utility function
 // 2019.09.30  [1.3] Correct @namespace and other headers (for public use)
-// 2019.09.27  [1.2] Refactoring and name changing: TitleList -> EntryList
+// 2019.09.28  [1.2] Refactoring and name changing: TitleList -> EntryList
 // 2019.09.27  [1.1] Code cleanup (string literals, reorder functions)
 //                   Check for validity of the context object
 //                   Add usage documentation
@@ -117,6 +117,7 @@ Other functions and variables:
 - ln(ctx, listName): return list name as passed to determineType() (see below)
 - saveList(ctx, list, name): save list of entries to storage
 - deleteList(ctx, name): remove a list from storage (but not from memory)
+- deleteAllLists(ctx): remove all user lists from storage (not from memory)
 
 
 Mandatory callback functions and variables in main context:
@@ -626,6 +627,17 @@ var EL = new (function() {
         }
 
         GM_deleteValue(storName.listName(ctx, name));
+    };
+
+
+    // Delete all lists for the current user
+    this.deleteAllLists = function(ctx) {
+        var listNames = loadListOfLists(ctx);
+        GM_deleteValue(storName.listOfLists(ctx));
+
+        listnames.forEach(function(listName) {
+            GM_deleteValue(storName.listName(ctx, listName));
+        });
     };
 
 
