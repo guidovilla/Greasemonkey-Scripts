@@ -1,5 +1,5 @@
 - verificare come si comporta il salvataggio liste se non c'è utente (undefined? vd. YT)
-- spostare funzionalità di EntryList in altra libreria
+- spostare alcune funzionalità di EntryList in altra libreria
 - verificare se changelog è completo facendo i diff in GF (già fatto per TV)
 - rifare check dell'interfaccia passando una lista di proprietà da controllare
 - aggiustare NF:
@@ -8,6 +8,7 @@
   3. cambiare tutti i riferimenti legacy
   4. altro
 - testare autoupdate
+- per le librerie documentazione in GL/GH e GF/OUJS (vedere librerie tipo GM_Config come esempio)
 
 - ottimizzare querySelector... con getElementsBy...
 - sostituire for con altri iteratori
