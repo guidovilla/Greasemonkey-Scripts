@@ -2,7 +2,7 @@
 //
 // Create and manage simple progress bars.
 //
-// https://greasyfork.org/scripts/**TBD**-progressbar
+// https://greasyfork.org/scripts/391236-progressbar
 // Copyright (C) 2019, Guido Villa
 // Original version of the script is taken from IMDb 'My Movies' enhancer:
 // Copyright (C) 2008-2018, Ricardo Mendonça Ferreira (ric@mpcnet.com.br)
@@ -12,7 +12,7 @@
 // https://greasyfork.org/help/installing-user-scripts
 //
 // To use this library in a userscript you must add to script header:
-  // @require  https://greasyfork.org/scripts/**TBD**-progressbar/code/ProgressBar.js
+  // @require  https://greasyfork.org/scripts/391236-progressbar/code/ProgressBar.js
   // @grant    GM_addStyle
 //
 // --------------------------------------------------------------------
@@ -29,7 +29,7 @@
 // @date            16.10.2019
 // @copyright       2019, Guido Villa (https://greasyfork.org/users/373199-guido-villa)
 // @license         GPL-3.0-or-later
-// @homepageURL     https://greasyfork.org/scripts/**TBD**-progressbar
+// @homepageURL     https://greasyfork.org/scripts/391236-progressbar
 // @supportURL      https://gitlab.com/gv-browser/userscripts/issues
 // @contributionURL https://tinyurl.com/gv-donate-2e
 // ==/UserScript==
