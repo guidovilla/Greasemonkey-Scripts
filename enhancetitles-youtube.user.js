@@ -1,10 +1,12 @@
 // Enhance titles - YouTube
+//
 // Hide watched videos on YouTube
 //
 // https://greasyfork.org/scripts/390633-enhance-titles-youtube
 // Copyright (C) 2019, Guido Villa
 //
-// For instructions, see https://greasyfork.org/help/installing-user-scripts
+// For instructions on user scripts, see:
+// https://greasyfork.org/help/installing-user-scripts
 //
 // --------------------------------------------------------------------
 //

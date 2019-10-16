@@ -1,4 +1,5 @@
 // EntryList library
+//
 // Common functions for modifying/hiding/etc. entries in page, based on
 // entry features or presence in one or more lists.
 // For instance: hide all YouTube videos that have been watched and highlight
@@ -11,9 +12,10 @@
 // Copyright (C) 2008-2018, Ricardo Mendonça Ferreira (ric@mpcnet.com.br)
 // Released under the GPL license - http://www.gnu.org/copyleft/gpl.html
 //
-// For instructions, see https://greasyfork.org/help/installing-user-scripts
+// For instructions on user scripts, see:
+// https://greasyfork.org/help/installing-user-scripts
 //
-// To use this library in a script you must add to script header:
+// To use this library in a userscript you must add to script header:
   // @require  https://greasyfork.org/scripts/390248-entrylist/code/EntryList.js
   // @grant    GM_getValue
   // @grant    GM_setValue
@@ -48,11 +50,9 @@
 //   - [M] Make private members actually private and not only undocumented
 //         (only after understanding which ones really can be private)
 //   - [M] main context as default context
-//   - [M] do we need that the library is not cached? if so, how?
 //   - [M] changes to a list aren't reflected in page till reload. Change?
 //   - [M] Better handle case without lists (e.g. optimizations)
 //   - [M] Add description of flow in usage documentation
-//   - [M] Add indication of URL to use to @require library itself
 //   - [M] List regeneration function doesn't handle case where lists are missing
 //
 // Changelog:
@@ -190,7 +190,6 @@ Callback functions and variables in contexts for external sources:
   Default is looking for the last saved user (single-user scenario).
 - getPageType(): see above
 - processPage(pageType, isEntryPage): see above
-
 
 */
 

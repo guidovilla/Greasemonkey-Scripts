@@ -1,10 +1,12 @@
 // Enhance titles - Timvision
+//
 // Hide titles on Timvision website by clicking on a button
 //
 // https://greasyfork.org/scripts/390632-enhance-titles-timvision
 // Copyright (C) 2019, Guido Villa
 //
-// For instructions, see https://greasyfork.org/help/installing-user-scripts
+// For instructions on user scripts, see:
+// https://greasyfork.org/help/installing-user-scripts
 //
 // --------------------------------------------------------------------
 //
