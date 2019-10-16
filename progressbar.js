@@ -1,42 +1,144 @@
-// Copyright (C) 2019, Guido Villa
+// ProgressBar library
 //
-// Original core of the script is taken from IMDb 'My Movies' enhancer:
+// Create and manage simple progress bars.
+//
+// https://greasyfork.org/scripts/**TBD**-progressbar
+// Copyright (C) 2019, Guido Villa
+// Original version of the script is taken from IMDb 'My Movies' enhancer:
 // Copyright (C) 2008-2018, Ricardo Mendonça Ferreira (ric@mpcnet.com.br)
 // Released under the GPL license - http://www.gnu.org/copyleft/gpl.html
+//
+// For instructions on user scripts, see:
+// https://greasyfork.org/help/installing-user-scripts
+//
+// To use this library in a userscript you must add to script header:
+  // @require  https://greasyfork.org/scripts/**TBD**-progressbar/code/ProgressBar.js
+  // @grant    GM_addStyle
+//
+// --------------------------------------------------------------------
+//
+// ==UserScript==
+// @namespace       https://greasyfork.org/users/373199-guido-villa
+// @exclude         *
+//
+// ==UserLibrary==
+// @name            ProgressBar
+// @description     Create and manage simple progress bars
+// @version         1.0
+// @author          guidovilla
+// @date            16.10.2019
+// @copyright       2019, Guido Villa (https://greasyfork.org/users/373199-guido-villa)
+// @license         GPL-3.0-or-later
+// @homepageURL     https://greasyfork.org/scripts/**TBD**-progressbar
+// @supportURL      https://gitlab.com/gv-browser/userscripts/issues
+// @contributionURL https://tinyurl.com/gv-donate-2e
+// ==/UserScript==
+//
+// ==/UserLibrary==
+//
+// --------------------------------------------------------------------
+//
+// To-do (priority: [H]igh, [M]edium, [L]ow):
+//   - [M] width must be an integer multiple of background-size, otherwise animation will skip => address
+//   - [M] speed of the animation depends on width => fix?
+//   - [m] speed of transition is not constant (time is constant, regardless of the "space" to be travelled) => can it be fixed?
+//   - [H] wrap in order to hide global variables
+//   - [M] nicer presentation style (maybe small vertical bars), graphical improvements
+//
+// Changelog:
+// ----------
+// 2019.10.16  [1.0] First version
+// 2019.10.14  [0.1] First test version, private use only
+//
 
-// TODO:
-// - headers and such => make a library
-// - width must be an integer multiple of background-size, otherwise animation will skip => address
-// - speed of the animation depends on width => fix
-// - speed of transition is not constant (time is constant, regardless of the "space" to be travelled) => can it be fixed?
-// - user documentation
-// - wrap in order to hide global variables
+/* jshint esversion: 6, supernew: true, laxbreak: true */
+/* exported EL, Library_Version_PROGRESSBAR */
 
-    // Create a simple progress bar, parameters:
-    // - finish: maximum value to be reached for 100% (default is 100)
-    // - msg: message to write in the bar, some characters are substituted:
-    //        - {#}: current progress number
-    //        - {$}: value specified by finish
-    //        - {%}: completion percentage (integer)
-    //        default is "Loading #/$..."
-    // - options: an object that may contain:
-    //   - start: initial progress status (default is 0, i.e. the beginning)
-    //   - container: positioned element where the bar will be centered
-    //              null (the default): center on the screen
-    //   - width: width in pixels of the progress bar (default is 200)
-    //   - height: height in pixels of the progress bar (default is 30)
-    // A progress value of -1 enables "generic loading mode".
+const Library_Version_PROGRESSBAR = '1.0';
+
+/* How to use the library
+
+- Create a new progress bar:
+  var pb = new ProgressBar(...)
+
+- Change the progress:
+  pb.update(...)
+  pb.advance(...)
+
+- Remove the progress bar:
+  pb.close()
+
+Details
+Progress bars are defined by three main parameters:
+- finish:   value that defines what is 100%
+            this is set at creation time and cannot be changed
+- progress: value that defines current completion status (must be <= finish)
+            initial progress is set a creation time, then it can be updated
+            with update() and advance()
+            When progress = -1, the bar is in "generic" loading mode, i.e. it
+            does not show a specific progress but an unspecified loading status
+- message:  the message printed inside the bar (e.g. "Loading...")
+            initial message is set a creation time, then it can be changed
+            with every update() and advance().
+            The message can contain a few placeholders that are replaced with
+            actual progress data:
+            - {#}: replace with current progress number
+            - {$}: replace with finish value
+            - {%}: replace with completion percentage (= 100*progress/finish)
+            E.g.: "Loading {#} of {$}..."  =>  "Loading 7 of 23..."
+
+All numbers are integers.
+
+Information for changing styles:
+The HTML id of the container DIV can be accessed through the 'id' property
+of the progress bar object.
+All elements that constitute the bar have a generic "pb-progress-bar" class and
+a specific "pb-progress-bar-XXX" class different for each element.
+Generic loading is enabled by applying a "pb-generic" class to the
+container DIV.
+
+Parameters (all parameters are optional):
+
+- ProgressBar(finish, msg, options)
+  Create a new progress bar. Parameters:
+  - finish: maximum value that can be reached (default is 100)
+  - msg: message written in the bar, see above for substitutions
+         default is "Loading {#}/{$}..."
+  - options: an object that may contain:
+    - start: initial progress status (default is 0, i.e. the beginning)
+    - container: positioned element where the bar will be centered
+                 null (the default): center bar on the screen
+    - width: width in pixels of the progress bar (default is 226.3)
+    - height: height in pixels of the progress bar (default is 30)
+
+- update(progress, msg)
+  Update the progress bar status. Parameters:
+  - progress: the new progress value (default is 0)
+  - msg: an optional new message (default is: don't change message)
+
+- advance(value, msg)
+  Increment the progress bar status. Parameters:
+  - value: the increment value, can be negative (default is 1)
+  - msg: an optional new message (default is: don't change message)
+
+- close()
+  Close the progress bar and remove it from the DOM.
+
+*/
+
+
     var progress_bar_style_has_been_loaded = false;
     var progress_bar_index = 0;
+    // Create progress bar
     // eslint-disable-next-line max-statements
     function ProgressBar(finish = 100, msg = 'Loading {#}/{$}...', options) {
         // style definition
-        var STYLE = '.pb-progress-bar-box{border:2px solid black;background-color:white;}'
-                  + '.pb-progress-bar-bar{background-color:green;height:100%;transition:width 300ms linear;}'
-                  + '.pb-progress-bar-txtcont{position:absolute;top:0;left:0;width:100%;height:100%;display:table;}'
-                  + '.pb-progress-bar-txt{display:table-cell;text-align:center;vertical-align:middle;font:16px verdana,sans-serif;color:black;}'
-                  + '.pb-progress-bar-box.pb-generic{background:repeating-linear-gradient(-45deg,#F0F0F0 0 20px,#ccc 20px 40px);background-size:56.56854px;animation:2s linear infinite loading;}'
-                  + '.pb-progress-bar-box.pb-generic .pb-progress-bar-bar{background-color:transparent;transition:none}'
+        var STYLE = '.pb-progress-bar.pb-progress-bar-box{border:2px solid black;background-color:white;padding:4px;outline:white solid 6px;}'
+                  + '.pb-progress-bar.pb-progress-bar-bar{background-color:green;height:100%;transition:width 300ms linear;}'
+                  + '.pb-progress-bar.pb-progress-bar-txtcont{position:absolute;top:0;left:0;width:100%;height:100%;display:table;}'
+                  + '.pb-progress-bar.pb-progress-bar-txt{display:table-cell;text-align:center;vertical-align:middle;font:16px verdana,sans-serif;color:black;}'
+                  + '.pb-progress-bar.pb-progress-bar-box.pb-generic{background:repeating-linear-gradient(-45deg,#F0F0F0 0 20px,#ccc 20px 40px);background-size:56.56854px;animation:2s linear infinite loading;}'
+                  + '.pb-progress-bar.pb-progress-bar-box.pb-generic .pb-progress-bar-bar{background-color:transparent;transition:none}'
                   + '@keyframes loading{from{background-position-x:0%;} to{background-position-x:100%;}}';
         if (!progress_bar_style_has_been_loaded) {
             GM_addStyle(STYLE);
@@ -61,7 +163,7 @@
         function createElement(father, elementType, className, id) {
             var elem = document.createElement(elementType);
             if (typeof id !== 'undefined') elem.id = id;
-            elem.className = className;
+            elem.className = 'pb-progress-bar ' + className;
             father.appendChild(elem);
             return elem;
         }
@@ -116,7 +218,6 @@
         /* PUBLIC members */
 
         // update the progress to "currentVal" and optionally change the message
-        // default: go back to zero
         this.update = function(currentVal = 0, newMsg) {
             if (newMsg) message = newMsg;
             var newVal = (currentVal > finish ? finish : currentVal);
@@ -156,7 +257,6 @@
 
 
         // advance the progress by "value" and optionally change the message
-        // default: advance of 1
         this.advance = function(value = 1, newMsg) {
             self.update(current + value, newMsg);
         };
