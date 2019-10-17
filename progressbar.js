@@ -1,6 +1,6 @@
 // ProgressBar library
 //
-// Create and manage simple progress bars.
+// Create and manage simple progress bars. CSS, minimal JavaScript.
 //
 // https://greasyfork.org/scripts/391236-progressbar
 // Copyright (C) 2019, Guido Villa
@@ -23,7 +23,7 @@
 //
 // ==UserLibrary==
 // @name            ProgressBar
-// @description     Create and manage simple progress bars
+// @description     Create and manage simple progress bars, minimal JavaScript
 // @version         1.0
 // @author          guidovilla
 // @date            16.10.2019
@@ -39,11 +39,12 @@
 // --------------------------------------------------------------------
 //
 // To-do (priority: [H]igh, [M]edium, [L]ow):
-//   - [M] width must be an integer multiple of background-size, otherwise animation will skip => address
+//   - [H] width must be an integer multiple of background-size, otherwise animation will skip => address
 //   - [M] speed of the animation depends on width => fix?
 //   - [m] speed of transition is not constant (time is constant, regardless of the "space" to be travelled) => can it be fixed?
 //   - [H] wrap in order to hide global variables
 //   - [M] nicer presentation style (maybe small vertical bars), graphical improvements
+//   - [M] different styles
 //
 // Changelog:
 // ----------
@@ -75,8 +76,7 @@ Progress bars are defined by three main parameters:
 - progress: value that defines current completion status (must be <= finish)
             initial progress is set a creation time, then it can be updated
             with update() and advance()
-            When progress = -1, the bar is in "generic" loading mode, i.e. it
-            does not show a specific progress but an unspecified loading status
+            When progress = -1, the bar shows an indeterminate progress
 - message:  the message printed inside the bar (e.g. "Loading...")
             initial message is set a creation time, then it can be changed
             with every update() and advance().
@@ -94,8 +94,8 @@ The HTML id of the container DIV can be accessed through the 'id' property
 of the progress bar object.
 All elements that constitute the bar have a generic "pb-progress-bar" class and
 a specific "pb-progress-bar-XXX" class different for each element.
-Generic loading is enabled by applying a "pb-generic" class to the
-container DIV.
+Indeterminate progress style is enabled by applying a "pb-indeterminate" class
+to the container DIV.
 
 Parameters (all parameters are optional):
 
@@ -137,8 +137,8 @@ Parameters (all parameters are optional):
                   + '.pb-progress-bar.pb-progress-bar-bar{background-color:green;height:100%;transition:width 300ms linear;}'
                   + '.pb-progress-bar.pb-progress-bar-txtcont{position:absolute;top:0;left:0;width:100%;height:100%;display:table;}'
                   + '.pb-progress-bar.pb-progress-bar-txt{display:table-cell;text-align:center;vertical-align:middle;font:16px verdana,sans-serif;color:black;}'
-                  + '.pb-progress-bar.pb-progress-bar-box.pb-generic{background:repeating-linear-gradient(-45deg,#F0F0F0 0 20px,#ccc 20px 40px);background-size:56.56854px;animation:2s linear infinite loading;}'
-                  + '.pb-progress-bar.pb-progress-bar-box.pb-generic .pb-progress-bar-bar{background-color:transparent;transition:none}'
+                  + '.pb-progress-bar.pb-progress-bar-box.pb-indeterminate{background:repeating-linear-gradient(-45deg,#F0F0F0 0 20px,#ccc 20px 40px);background-size:56.56854px;animation:2s linear infinite loading;}'
+                  + '.pb-progress-bar.pb-progress-bar-box.pb-indeterminate .pb-progress-bar-bar{background-color:transparent;transition:none}'
                   + '@keyframes loading{from{background-position-x:0%;} to{background-position-x:100%;}}';
         if (!progress_bar_style_has_been_loaded) {
             GM_addStyle(STYLE);
@@ -227,24 +227,24 @@ Parameters (all parameters are optional):
                 // more consistent behaviour in cases where the delay (see
                 // below) is not enough.
                 pb.style.width = '0';
-                // try to make the message more appealing in "generic" case
+                // try to make the message better for indeterminate progress
                 pbTxt.textContent = message
                                     .replace(/ *{#}.*{\$} */g, '')
                                     .replace(/ *{#} */g,       '')
                                     .replace(/ *{\$} */g,      '')
                                     .replace(/ *{%} *%? */g,   '');
-                pbBox.classList.add('pb-generic');
+                pbBox.classList.add('pb-indeterminate');
             } else {
                 pb.style.width = (100*newVal/finish) + '%';
                 if (current < 0) {
-                    // if exiting from "generic" mode a small delay is needed,
-                    // otherwise the class may be removed when changing the
-                    // width, and the width transition takes place anyway
+                    // if exiting from indeterminate progress a small delay is
+                    // needed, otherwise the class may be removed when changing
+                    // the width, and the width transition takes place anyway
                     setTimeout(function() {
-                        pbBox.classList.remove('pb-generic');
+                        pbBox.classList.remove('pb-indeterminate');
                     }, 33);
                 } else {
-                    pbBox.classList.remove('pb-generic');
+                    pbBox.classList.remove('pb-indeterminate');
                 }
                 // replace placeholders with actual numbers
                 pbTxt.textContent = message
