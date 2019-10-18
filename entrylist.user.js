@@ -31,9 +31,9 @@
 // ==UserLibrary==
 // @name            EntryList
 // @description     Common functions for working on lists of entries
-// @version         1.7
+// @version         1.8
 // @author          guidovilla
-// @date            10.10.2019
+// @date            18.10.2019
 // @copyright       2019, Guido Villa (https://greasyfork.org/users/373199-guido-villa)
 // @license         GPL-3.0-or-later
 // @homepageURL     https://greasyfork.org/scripts/390248-entrylist
@@ -57,6 +57,7 @@
 //
 // Changelog:
 // ----------
+// 2019.10.18  [1.8] Add possibility to download a user payload with getUser
 // 2019.10.10  [1.7] Add possibility of source contexts
 //                   saveList public, add title, ln, deleteList, deleteAllLists
 //                   Add getPageType and processPage callbacks
@@ -80,7 +81,7 @@
 /* jshint esversion: 6, supernew: true, laxbreak: true */
 /* exported EL, Library_Version_ENTRYLIST */
 
-const Library_Version_ENTRYLIST = '1.7';
+const Library_Version_ENTRYLIST = '1.8';
 
 /* How to use the library
 
@@ -134,6 +135,9 @@ Conditionally mandatory callback functions in main context:
 
 - getUser(): retrieve and return the username used on the website
   mandatory if data are to be stored on a per-user basis
+  It can return either a single string (the username), or an object with a
+  'name' and a 'payload' property. Name is used as the username, payload is
+  saved in <ctx>.userPayload and can be used by context-specific functions
 - getIdFromEntry(entry): return a tt: { id, name } object from the entry
   mandatory if you want to save entries to lists
   NOTE: if id is not found, entry is skipped but it is not marked as invalid
@@ -188,6 +192,7 @@ Callback functions and variables in contexts for external sources:
   returns the user name on the source site corresponding to the one on target
   site. This is needed to look for the saved lists.
   Default is looking for the last saved user (single-user scenario).
+  A user payload can be downloaded as in getUser() (q.v.)
 - getPageType(): see above
 - processPage(pageType, isEntryPage): see above
 
@@ -262,46 +267,70 @@ var EL = new (function() {
 
     // standardized names for storage variables
     var storName = {
-        'listIdent':   function(ctx)           { return STORAGE_SEP + ctx.name + STORAGE_SEP + ctx.user; },
-        'listPrefix':  function(ctx)           { return 'List'  + this.listIdent(ctx) + STORAGE_SEP; },
+        'listIdent':       function(ctx)           { return STORAGE_SEP + ctx.name + STORAGE_SEP + ctx.user; },
+        'listPrefix':      function(ctx)           { return 'List'  + this.listIdent(ctx) + STORAGE_SEP; },
 
-        'lastUser':    function(ctx)           { return ctx.name + STORAGE_SEP + 'lastUser'; },
-        'listOfLists': function(ctx)           { return 'Lists' + this.listIdent(ctx); },
-        'listName':    function(ctx, listName) { return this.listPrefix(ctx) + listName; },
+        'lastUser':        function(ctx)           { return ctx.name + STORAGE_SEP + 'lastUser'; },
+        'lastUserPayload': function(ctx)           { return ctx.name + STORAGE_SEP + 'lastUserPayload'; },
+        'listOfLists':     function(ctx)           { return 'Lists' + this.listIdent(ctx); },
+        'listName':        function(ctx, listName) { return this.listPrefix(ctx) + listName; },
     };
 
 
-    // Return name of user currently logged on <ctx> site
-    // Return last saved value and log error if no user is found
+    // Get and save user currently logged on <ctx> site, return true if found
+    // Get last saved user and log error if no user is found
+    // Along with the username, a payload may be retrieved and saved in <ctx>
     this.getLoggedUser = function(ctx) {
-        if (!ctx.getUser) return (ctx.user = FAKE_USER);
+        if (!ctx.getUser) return !!(ctx.user = FAKE_USER);
 
         var user = ctx.getUser();
+        var payload;
+        if (user && typeof user === 'object') {
+            payload = user.payload;
+            user    = user.name;
+        }
         if (!user) {
             console.error(ctx.name + ": user not logged in (or couldn't get user info) on URL " + document.URL);
-            user = GM_getValue(storName.lastUser(ctx));
-            console.error('Using last user: ' + user);
+            user    = GM_getValue(storName.lastUser(ctx));
+            payload = GM_getValue(storName.lastUserPayload(ctx));
+            if (payload) payload = JSON.parse(payload);
+            console.error('Using last user:', user);
+        } else {
+            GM_setValue(storName.lastUser(ctx), user);
+            if (payload) {
+                GM_setValue(storName.lastUserPayload(ctx), JSON.stringify(payload));
+            } else {
+                GM_deleteValue(storName.lastUserPayload(ctx));
+            }
         }
-        GM_setValue(storName.lastUser(ctx), user);
-        ctx.user = user;
-        return user;
+        ctx.user        = user;
+        ctx.userPayload = payload;
+        return !!user;
     };
 
 
-    // Return name of user to read for this source <ctx>, corresponding to the
-    // user on the target context
-    // if no mapping function is defined, take the last saved user regardless
+    // Get and save user to read for this source <ctx>, corresponding to the
+    // user on the target context. Return true if found.
+    // If no mapping function is defined, take the last saved user regardless
     // of target user
+    // Along with the username, a payload may be retrieved and saved in <ctx>
     this.getRemoteUser = function(ctx) {
         if (ctx.getSourceUserFromTargetUser) {
             ctx.user = ctx.getSourceUserFromTargetUser(mainContext.name, mainContext.user);
+            if (ctx.user && typeof ctx.user === 'object') {
+                ctx.payload = ctx.user.payload;
+                ctx.user    = ctx.user.name;
+            }
             if (!ctx.user) {
                 console.error(ctx.name + ": cannot find user corresponding to '" + mainContext.user + "' on " + mainContext.name);
+                delete ctx.payload;
             }
         } else {
-            ctx.user = GM_getValue(storName.lastUser(ctx));
+            ctx.user        = GM_getValue(storName.lastUser(ctx));
+            ctx.userPayload = GM_getValue(storName.lastUserPayload(ctx));
+            if (ctx.userPayload) ctx.userPayload = JSON.parse(ctx.userPayload);
         }
-        return ctx.user;
+        return !!(ctx.user);
     };
 
 
@@ -634,7 +663,7 @@ var EL = new (function() {
         var listNames = loadListOfLists(ctx);
         GM_deleteValue(storName.listOfLists(ctx));
 
-        listnames.forEach(function(listName) {
+        listNames.forEach(function(listName) {
             GM_deleteValue(storName.listName(ctx, listName));
         });
     };
