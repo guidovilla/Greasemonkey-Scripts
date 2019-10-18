@@ -12,7 +12,7 @@
 
 - ottimizzare querySelector... con getElementsBy...
 - sostituire for con altri iteratori
-- valutare se usare GM_notification()
+- valutare se usare GM_notification(), eventualmente al posto di alert, confirm, console
 - aggiustare logging errori (livello) e console con funzione che salva gli errori per andare a rivederli (con gm config ad es.) - in asincrono (polyfill?)
 - usare addStyle e spostare in EL se utile (vedere dopo NF)
 - header:
