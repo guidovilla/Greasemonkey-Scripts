@@ -290,11 +290,11 @@ var EL = new (function() {
             user    = user.name;
         }
         if (!user) {
-            console.error(ctx.name + ": user not logged in (or couldn't get user info) on URL " + document.URL);
+            console.warn(ctx.name + ": user not logged in (or couldn't get user info) on URL " + document.URL);
             user    = GM_getValue(storName.lastUser(ctx));
             payload = GM_getValue(storName.lastUserPayload(ctx));
             if (payload) payload = JSON.parse(payload);
-            console.error('Using last user:', user);
+            console.info('Using last user:', user);
         } else {
             GM_setValue(storName.lastUser(ctx), user);
             if (payload) {
@@ -346,8 +346,8 @@ var EL = new (function() {
             return listNames;
         }, []);
 
-        var userData = JSON.stringify(listNames);
-        GM_setValue(storName.listOfLists(ctx), userData);
+        var jsonData = JSON.stringify(listNames);
+        GM_setValue(storName.listOfLists(ctx), jsonData);
         return listNames;
     }
 
@@ -355,12 +355,12 @@ var EL = new (function() {
     // Load a single saved lists
     function loadSavedList(listName) {
         var list;
-        var userData = GM_getValue(listName);
-        if (userData) {
+        var jsonData = GM_getValue(listName);
+        if (jsonData) {
             try {
-                list = JSON.parse(userData);
+                list = JSON.parse(jsonData);
             } catch(err) {
-                alert("Error loading saved list named '" + listName + "'!\n" + err.message);
+                alert("Error loading saved list named '" + listName + "'\n" + err.message);
             }
         }
         return list;
@@ -411,7 +411,7 @@ var EL = new (function() {
     // Wrap ctx.getIdFromEntry and add error logging
     function _wrap_getIdFromEntry(ctx, entry) {
         var tt = ctx.getIdFromEntry(entry);
-        if (!tt) console.error('Could not determine id :-( - for entry', entry);
+        if (!tt) console.error('Could not determine id - for entry', entry);
         return tt;
     }
 
@@ -628,30 +628,30 @@ var EL = new (function() {
 
     // Save single list for the current user
     this.saveList = function(ctx, list, name) {
-        var userData;
+        var jsonData;
         var listNames = loadListOfLists(ctx);
 
         if (listNames.indexOf(name) == -1) {
             listNames.push(name);
-            userData = JSON.stringify(listNames);
-            GM_setValue(storName.listOfLists(ctx), userData);
+            jsonData = JSON.stringify(listNames);
+            GM_setValue(storName.listOfLists(ctx), jsonData);
         }
 
-        userData = JSON.stringify(list);
-        GM_setValue(storName.listName(ctx, name), userData);
+        jsonData = JSON.stringify(list);
+        GM_setValue(storName.listName(ctx, name), jsonData);
     };
 
 
     // Delete a single list for the current user
     this.deleteList = function(ctx, name) {
-        var userData;
+        var jsonData;
         var listNames = loadListOfLists(ctx);
 
         var i = listNames.indexOf(name);
         if (i != -1) {
             listNames.splice(i, 1);
-            userData = JSON.stringify(listNames);
-            GM_setValue(storName.listOfLists(ctx), userData);
+            jsonData = JSON.stringify(listNames);
+            GM_setValue(storName.listOfLists(ctx), jsonData);
         }
 
         GM_deleteValue(storName.listName(ctx, name));
