@@ -94,7 +94,7 @@ Call, in order:
    website you need to "enhance"
    -> not needed if you don't have external sources, just call EL.startup(ctx)
 2. EL.addSource(ctx) for each external source, with its specific context
-3. EL.startup(ctx), ctx us not needed if EL.init(ctx) was called.
+3. EL.startup(ctx), ctx is not needed if EL.init(ctx) was called.
 
 Other functions and variables:
 - title: script name as returned by GM_info
