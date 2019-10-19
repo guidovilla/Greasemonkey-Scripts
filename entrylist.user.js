@@ -31,9 +31,9 @@
 // ==UserLibrary==
 // @name            EntryList
 // @description     Common functions for working on lists of entries
-// @version         1.8
+// @version         1.9
 // @author          guidovilla
-// @date            18.10.2019
+// @date            19.10.2019
 // @copyright       2019, Guido Villa (https://greasyfork.org/users/373199-guido-villa)
 // @license         GPL-3.0-or-later
 // @homepageURL     https://greasyfork.org/scripts/390248-entrylist
@@ -46,7 +46,6 @@
 // --------------------------------------------------------------------
 //
 // To-do (priority: [H]igh, [M]edium, [L]ow):
-//   - [H] Extend library to work on all the scripts
 //   - [M] Make private members actually private and not only undocumented
 //         (only after understanding which ones really can be private)
 //   - [M] main context as default context
@@ -57,6 +56,7 @@
 //
 // Changelog:
 // ----------
+// 2019.10.19  [1.9] Add function inList for checking if entry is in list
 // 2019.10.18  [1.8] Add possibility to download a user payload with getUser
 // 2019.10.10  [1.7] Add possibility of source contexts
 //                   saveList public, add title, ln, deleteList, deleteAllLists
@@ -81,7 +81,7 @@
 /* jshint esversion: 6, supernew: true, laxbreak: true */
 /* exported EL, Library_Version_ENTRYLIST */
 
-const Library_Version_ENTRYLIST = '1.8';
+const Library_Version_ENTRYLIST = '1.9';
 
 /* How to use the library
 
@@ -173,6 +173,8 @@ Optional callback functions and variables in main context:
 - modifyEntry(entry):
   optionally modify entry when scanned for the first time (e.g. add a button)
   see also EL.addToggleEventOnClick() above
+- inList(tt, list):
+  check if tt is in list. Default is a simple lookup by tt.id.
 - determineType(lists, tt, entry):
   return the processing type for an entry, given the lists it appears in, or a
   false value (0, null, false, undefined, etc.) if no processing is required
@@ -195,6 +197,7 @@ Callback functions and variables in contexts for external sources:
   A user payload can be downloaded as in getUser() (q.v.)
 - getPageType(): see above
 - processPage(pageType, isEntryPage): see above
+- inList(tt, list): see above
 
 */
 
@@ -400,12 +403,15 @@ var EL = new (function() {
 
         allContexts.forEach(function(ctx) {
             for (var list in ctx.allLists) {
-                if (ctx.allLists[list][tt.id]) lists[self.ln(ctx, list)] = true;
+                if (ctx.inList(tt, ctx.allLists[list])) lists[self.ln(ctx, list)] = true;
             }
         });
 
         return lists;
     };
+    function _inList_default(tt, list) {
+        return !!list[tt.id];
+    }
 
 
     // Wrap ctx.getIdFromEntry and add error logging
@@ -557,6 +563,8 @@ var EL = new (function() {
         // Load list data for this user from local storage
         ctx.allLists = self.loadSavedLists(ctx);
         allContexts.push(ctx);
+        // Setup the default list checking function, if not provided by context
+        if (!ctx.inList) ctx.inList = _inList_default;
 
         // start the entry processing function
         self.processAllEntries();
@@ -603,6 +611,8 @@ var EL = new (function() {
         // Load list data for this user from local storage
         ctx.allLists = self.loadSavedLists(ctx);
         allContexts.push(ctx);
+        // Setup the default list checking function, if not provided by context
+        if (!ctx.inList) ctx.inList = _inList_default;
     };
 
 
