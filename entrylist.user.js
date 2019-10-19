@@ -57,6 +57,7 @@
 // Changelog:
 // ----------
 // 2019.10.19  [1.9] Add function inList for checking if entry is in list
+//                   Fix use of context in startup()
 // 2019.10.18  [1.8] Add possibility to download a user payload with getUser
 // 2019.10.10  [1.7] Add possibility of source contexts
 //                   saveList public, add title, ln, deleteList, deleteAllLists
@@ -550,7 +551,7 @@ var EL = new (function() {
     };
 
 
-    // startup function
+    // startup function. Don't pass "ctx" arg if init() had been called before
     this.startup = function(ctx) {
         if (!initialized) {
             if (failedInit) return;
@@ -561,16 +562,16 @@ var EL = new (function() {
         if (!isEntryPage) return;
 
         // Load list data for this user from local storage
-        ctx.allLists = self.loadSavedLists(ctx);
-        allContexts.push(ctx);
+        mainContext.allLists = self.loadSavedLists(mainContext);
+        allContexts.push(mainContext);
         // Setup the default list checking function, if not provided by context
-        if (!ctx.inList) ctx.inList = _inList_default;
+        if (!mainContext.inList) mainContext.inList = _inList_default;
 
         // start the entry processing function
         self.processAllEntries();
-        if (typeof ctx.interval === 'undefined' || ctx.interval >= MIN_INTERVAL) {
+        if (typeof mainContext.interval === 'undefined' || mainContext.interval >= MIN_INTERVAL) {
             // TODO we might consider using MutationObserver in the future, instead
-            ctx.timer = setInterval(self.processAllEntries, ( ctx.interval || DEFAULT_INTERVAL ));
+            mainContext.timer = setInterval(self.processAllEntries, ( mainContext.interval || DEFAULT_INTERVAL ));
         }
     };
 
