@@ -1,3 +1,5 @@
+- testare condizioni di errore per NF
+- confrontare con lunghezza prima di entrylist: 965 righe
 - README in gitlab/GF/OUJS - esempi:
     https://greasyfork.org/en/scripts/1810-google-tracking-b-gone
     https://openuserjs.org/libs/Marti/GM_setStyle
