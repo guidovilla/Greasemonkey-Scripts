@@ -761,7 +761,6 @@
     function parseList(response, type) {
         if (response.responseText.startsWith("<!DOCTYPE html")) {
             var msg = 'received HTML instead of CSV file';
-            console.error(msg, response);
             throw msg;
         }
 
@@ -794,11 +793,11 @@
             }
 
             if (id === "") {
-                console.error("No id defined for row " + i);
+                console.error('parse ' + finalUrl + ": no id defined for row " + i);
                 continue;
             }
             if (list[id]) {
-                console.error("Duplicate id " + id + " found at row " + i);
+                console.error('parse ' + finalUrl + ": duplicate id " + id + " found at row " + i);
                 continue;
             }
             list[name] = name;
