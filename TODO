@@ -17,7 +17,6 @@
     connect per XHR
     resource usare
     altri header (vedere quelli in verde)
-    correggere attribution ricardo mendonça
 - le liste si possono scaricare con GM_XHR senza andare sulla pagina?
 - rinominare -> entrylist.js
 
