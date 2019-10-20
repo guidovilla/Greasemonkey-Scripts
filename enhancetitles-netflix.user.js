@@ -72,6 +72,7 @@
 // Changelog:
 // ----------
 // 2019.10.21  [1.6] Add download of rating and check-in list
+//                   Filter out non-title IMDb lists
 // 2019.10.20  [1.5] Refactor using EntryList library (first version)
 // 2019.09.30  [1.4] First public version, correct @namespace and other headers
 // 2019.08.28  [1.3] Make the list more visible (top right triangle instead of border, with tooltip)
@@ -463,8 +464,12 @@
     var PEOPLE = "People";
     var IMAGES = "Images";
     // Return a Promise to get all lists (name, id, type) for current user
+    // filter out all non-title lists
     function getIMDbLists() {
-        return findIMDbLists().then(getIMDbListFromPage);
+        return findIMDbLists().then(getIMDbListFromPage)
+                   .then(function(lists) {
+                       return lists.filter(function(list) { return (list.type === TITLES); });
+                   });
     }
     function findIMDbLists() {
         if (document.location.href.match(/\.imdb\..{2,3}\/user\/[^/]+\/lists/)) {
