@@ -4,7 +4,7 @@
 //
 // https://greasyfork.org/scripts/391236-progressbar
 // Copyright (C) 2019, Guido Villa
-// Original version of the script is taken from IMDb 'My Movies' enhancer:
+// Original version of the code is taken from IMDb 'My Movies' enhancer:
 // Copyright (C) 2008-2018, Ricardo Mendonça Ferreira (ric@mpcnet.com.br)
 // Released under the GPL license - http://www.gnu.org/copyleft/gpl.html
 //
@@ -32,6 +32,7 @@
 // @homepageURL     https://greasyfork.org/scripts/391236-progressbar
 // @supportURL      https://gitlab.com/gv-browser/userscripts/issues
 // @contributionURL https://tinyurl.com/gv-donate-2e
+// @attribution     Ricardo Mendonça Ferreira (https://openuserjs.org/users/AltoRetrato)
 // ==/UserScript==
 //
 // ==/UserLibrary==

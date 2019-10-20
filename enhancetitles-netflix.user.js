@@ -5,7 +5,7 @@
 //
 // https://greasyfork.org/scripts/390631-enhance-titles-netflix
 // Copyright (C) 2019, Guido Villa
-// Most of the script is taken from IMDb 'My Movies' enhancer:
+// IMDb list management is taken from IMDb 'My Movies' enhancer:
 // Copyright (C) 2008-2018, Ricardo Mendonça Ferreira (ric@mpcnet.com.br)
 // Released under the GPL license - http://www.gnu.org/copyleft/gpl.html
 //
@@ -25,6 +25,7 @@
 // @homepageURL     https://greasyfork.org/scripts/390631-enhance-titles-netflix
 // @supportURL      https://gitlab.com/gv-browser/userscripts/issues
 // @contributionURL https://tinyurl.com/gv-donate-7e
+// @attribution     Ricardo Mendonça Ferreira (https://openuserjs.org/users/AltoRetrato)
 //
 // @namespace       https://greasyfork.org/users/373199-guido-villa
 // @downloadURL     https://greasyfork.org/scripts/390631-enhance-titles-netflix/code/Enhance%20titles%20-%20Netflix.user.js

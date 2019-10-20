@@ -8,7 +8,7 @@
 //
 // https://greasyfork.org/scripts/390248-entrylist
 // Copyright (C) 2019, Guido Villa
-// Original idea and some of the code is taken from IMDb 'My Movies' enhancer:
+// Original idea and some of the code are taken from IMDb 'My Movies' enhancer:
 // Copyright (C) 2008-2018, Ricardo Mendonça Ferreira (ric@mpcnet.com.br)
 // Released under the GPL license - http://www.gnu.org/copyleft/gpl.html
 //
@@ -39,6 +39,7 @@
 // @homepageURL     https://greasyfork.org/scripts/390248-entrylist
 // @supportURL      https://gitlab.com/gv-browser/userscripts/issues
 // @contributionURL https://tinyurl.com/gv-donate-0c
+// @attribution     Ricardo Mendonça Ferreira (https://openuserjs.org/users/AltoRetrato)
 // ==/UserScript==
 //
 // ==/UserLibrary==
