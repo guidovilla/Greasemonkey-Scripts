@@ -73,6 +73,7 @@
 // ----------
 // 2019.10.21  [1.6] Add download of rating and check-in list
 //                   Filter out non-title IMDb lists
+//                   Normalize apostrophes to increase NF<->IMDb name matching
 // 2019.10.20  [1.5] Refactor using EntryList library (first version)
 // 2019.09.30  [1.4] First public version, correct @namespace and other headers
 // 2019.08.28  [1.3] Make the list more visible (top right triangle instead of border, with tooltip)
