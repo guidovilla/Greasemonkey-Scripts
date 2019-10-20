@@ -10,4 +10,4 @@ Greasemonkey scripts and libraries
 
 * **EntryList**: library of common functions for working on lists of entries
 
-* **ProgressBar**: library for generation of a simple progress bar
+* **ProgressBar**: library for generation of a simple CSS progress bar with minimal JavaScript
