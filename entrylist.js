@@ -38,7 +38,7 @@
 // @license         GPL-3.0-or-later
 // @homepageURL     https://greasyfork.org/scripts/390248-entrylist
 // @supportURL      https://gitlab.com/gv-browser/userscripts/issues
-// @contributionURL https://tinyurl.com/gv-donate-0c
+// @contributionURL https://tinyurl.com/gv-donate-f9
 // @attribution     Ricardo Mendonça Ferreira (https://openuserjs.org/users/AltoRetrato)
 // ==/UserScript==
 //
