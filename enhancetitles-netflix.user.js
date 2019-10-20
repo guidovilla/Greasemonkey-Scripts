@@ -17,9 +17,9 @@
 // ==UserScript==
 // @name            Enhance titles - Netflix
 // @description     Emphasize or hide titles on Netflix according to IMDb and local lists
-// @version         1.5
+// @version         1.6
 // @author          guidovilla
-// @date            20.10.2019
+// @date            21.10.2019
 // @copyright       2019, Guido Villa (https://greasyfork.org/users/373199-guido-villa)
 // @license         GPL-3.0-or-later
 // @homepageURL     https://greasyfork.org/scripts/390631-enhance-titles-netflix
@@ -66,12 +66,12 @@
 //   - [M] Lots of clean-up
 //   - [M] Add comments
 //   - [M] Delay autopreview for hidden movies?
-//   - [L] Re-enable download of ratings and checkins
 //   - [L] No link between IMDb user and Netflix user, implement getSourceUserFromTargetUser
 //   - [L] hide selective titles?
 //
 // Changelog:
 // ----------
+// 2019.10.21  [1.6] Add download of rating and check-in list
 // 2019.10.20  [1.5] Refactor using EntryList library (first version)
 // 2019.09.30  [1.4] First public version, correct @namespace and other headers
 // 2019.08.28  [1.3] Make the list more visible (top right triangle instead of border, with tooltip)
@@ -99,12 +99,14 @@
 
     // other variables
     // TODO ci deve essere un modo migliore di questo
-    var LIST_HIDE  = 'localHide';
-    var LIST_NF_MY = 'nfMyList';
-    var LIST_NO    = 'no';             // myLists[neededLists.no]   XXX rimuovere poi questi commenti
-    var LIST_SEEN  = 'Visti';          // myLists[neededLists.visti]
-    var LIST_WATCH = 'Your Watchlist'; // myLists[neededLists.watch]
-    var LIST_TBD   = 'tbd';            // myLists[neededLists.tbd]
+    var LIST_HIDE    = 'localHide';
+    var LIST_NF_MY   = 'nfMyList';
+    var LIST_NO      = 'no';
+    var LIST_SEEN    = 'Visti';
+    var LIST_TBD     = 'tbd';
+    var LIST_WATCH   = 'Your Watchlist';
+    var LIST_RATING  = 'Your ratings';
+    var LIST_CHECKIN = 'Your check-ins';
 
     var IMDB_LIST_PAGE = 1; // any context-wide unique, non-falsy value is good
     var NF_LIST_PAGE   = 2; // any context-wide unique, non-falsy value is good
@@ -489,7 +491,9 @@
             }
             return {"name": name, "id": listElem.id, 'type': listElem.dataset.listType };
         });
-        lists.push({"name": LIST_WATCH, "id": WATCHLIST, 'type': TITLES });
+        lists.push({"name": LIST_WATCH,   "id": WATCHLIST,  'type': TITLES });
+        lists.push({"name": LIST_RATING,  "id": RATINGLIST, "type": TITLES });
+        lists.push({"name": LIST_CHECKIN, "id": CHECKINS,   "type": TITLES });
         return lists;
     }
 
