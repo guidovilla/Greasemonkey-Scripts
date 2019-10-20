@@ -162,6 +162,7 @@
         var title = entry.querySelector(".fallback-text");
         if (title) title = title.innerText;
         if (!title) console.error('Cannot find title for entry with id ' + id + ' on URL ' + document.URL, entry);
+        else title = title.replace(/’/g, "'");
 
         return { 'id': id, 'name': (title || id) };
     };
