@@ -1,8 +1,16 @@
-- verificare come si comporta il salvataggio liste se non c'è utente (undefined? vd. YT)
-- spostare alcune funzionalità di EntryList in altra libreria
-- rifare check dell'interfaccia passando una lista di proprietà da controllare
-- testare autoupdate
+- rinominare -> entrylist.js
+- README in gitlab/GF/OUJS - esempi:
+    https://greasyfork.org/en/scripts/1810-google-tracking-b-gone
+    https://openuserjs.org/libs/Marti/GM_setStyle
+    https://openuserjs.org/scripts/Marti/oujs_-_Meta_View
+    vedere anche esempi di sizzle
+- gv profile su GF e OUJS (bug reporting, vedere esempi fatti da altri)
 - per le librerie: fare documentazione in GL/GH e GF/OUJS (vedere librerie tipo GM_Config come esempio)
+- spostare alcune funzionalità di EntryList in altra libreria
+- testare autoupdate
+
+- verificare come si comporta il salvataggio liste se non c'è utente (undefined? vd. YT)
+- rifare check dell'interfaccia passando una lista di proprietà da controllare
 - createfunction e createfunctionparam: fare e usare
 
 - ottimizzare querySelector... con getElementsBy...
@@ -17,14 +25,7 @@
     resource usare
     altri header (vedere quelli in verde)
 - le liste si possono scaricare con GM_XHR senza andare sulla pagina?
-- rinominare -> entrylist.js
 
-- README in gitlab/GF/OUJS - esempi:
-    https://greasyfork.org/en/scripts/1810-google-tracking-b-gone
-    https://openuserjs.org/libs/Marti/GM_setStyle
-    https://openuserjs.org/scripts/Marti/oujs_-_Meta_View
-    vedere anche esempi di sizzle
-- gv profile su GF e OUJS (bug reporting, vedere esempi fatti da altri)
 - valutare {} -> [] per output inLists
 - usare: https://greasyfork.org/en/scripts/390115-imdb-utility-library-api
   per linkare titoli da Netflix/Timvision a IMDb
