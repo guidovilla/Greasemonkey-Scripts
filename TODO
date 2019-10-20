@@ -7,6 +7,7 @@
 - per le librerie: fare documentazione in GL/GH e GF/OUJS (vedere librerie tipo GM_Config come esempio)
 - spostare alcune funzionalità di EntryList in altra libreria
 - testare autoupdate
+- rinominare le librerie mettendo degli underscore?
 
 - verificare come si comporta il salvataggio liste se non c'è utente (undefined? vd. YT)
 - rifare check dell'interfaccia passando una lista di proprietà da controllare
