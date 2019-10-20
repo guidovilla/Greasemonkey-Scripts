@@ -19,7 +19,7 @@
 // @description     Emphasize or hide titles on Netflix according to IMDb and local lists
 // @version         1.5
 // @author          guidovilla
-// @date            19.10.2019
+// @date            20.10.2019
 // @copyright       2019, Guido Villa (https://greasyfork.org/users/373199-guido-villa)
 // @license         GPL-3.0-or-later
 // @homepageURL     https://greasyfork.org/scripts/390631-enhance-titles-netflix
@@ -69,7 +69,7 @@
 //
 // Changelog:
 // ----------
-// 2019.10.19  [1.5] Refactor using EntryList library (first version)
+// 2019.10.20  [1.5] Refactor using EntryList library (first version)
 // 2019.09.30  [1.4] First public version, correct @namespace and other headers
 // 2019.08.28  [1.3] Make the list more visible (top right triangle instead of border, with tooltip)
 //                   Fix unhide function (bug added in 1.2)

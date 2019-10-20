@@ -66,18 +66,18 @@
 //                   Some refactoring and small fixes
 // 2019.10.06  [1.6] Changed storage names for future needs (multiple contexts)
 //                   (requires manually adjusting previous storage)
-// 2019.10.03  [1.5] Automatically handle case with only one list
+// 2019.10.05  [1.5] Automatically handle case with only one list
 //                   Better handling of list of lists
 //                   Add possibility to permanently skip an entry
-// 2019.10.02  [1.4] More generic: getUser and getIdFromEntry are now optional
-//                   Add newContext utility function
-// 2019.09.30  [1.3] Correct @namespace and other headers (for public use)
-// 2019.09.28  [1.2] Refactoring and name changing: TitleList -> EntryList
+// 2019.10.02  [1.4] Add newContext utility function
+// 2019.10.01  [1.3] More generic: getUser and getIdFromEntry are now optional
+//                   Correct @namespace and other headers (for public use)
+// 2019.09.27  [1.2] Refactoring and name changing: TitleList -> EntryList
 // 2019.09.27  [1.1] Code cleanup (string literals, reorder functions)
 //                   Check for validity of the context object
 //                   Add usage documentation
 // 2019.09.21  [1.0] First version
-// 2019.09.18  [0.1] First test version, private use only
+// 2019.09.20  [0.1] First test version, private use only
 //
 
 /* jshint esversion: 6, supernew: true, laxbreak: true */

@@ -1,6 +1,5 @@
 - verificare come si comporta il salvataggio liste se non c'è utente (undefined? vd. YT)
 - spostare alcune funzionalità di EntryList in altra libreria
-- verificare se changelog è completo facendo i diff in GF (già fatto per TV)
 - rifare check dell'interfaccia passando una lista di proprietà da controllare
 - testare autoupdate
 - per le librerie: fare documentazione in GL/GH e GF/OUJS (vedere librerie tipo GM_Config come esempio)
