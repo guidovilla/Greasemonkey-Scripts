@@ -26,8 +26,6 @@
 - le liste si possono scaricare con GM_XHR senza andare sulla pagina?
 
 - valutare {} -> [] per output inLists
-- usare: https://greasyfork.org/en/scripts/390115-imdb-utility-library-api
-  per linkare titoli da Netflix/Timvision a IMDb
 - usare GM_config (uno dei due):
     https://github.com/sizzlemctwizzle/GM_config
     https://greasyfork.org/en/scripts/1884-gm-config

@@ -26,6 +26,7 @@
 // @supportURL      https://gitlab.com/gv-browser/userscripts/issues
 // @contributionURL https://tinyurl.com/gv-donate-7e
 // @attribution     Ricardo Mendonça Ferreira (https://openuserjs.org/users/AltoRetrato)
+// @attribution     Trevor Dixon (https://stackoverflow.com/users/711902/trevor-dixon)
 //
 // @namespace       https://greasyfork.org/users/373199-guido-villa
 // @downloadURL     https://greasyfork.org/scripts/390631-enhance-titles-netflix/code/Enhance%20titles%20-%20Netflix.user.js
@@ -51,7 +52,9 @@
 // --------------------------------------------------------------------
 //
 // To-do (priority: [H]igh, [M]edium, [L]ow):
+//   - [H] List/color configuration is hard-coded -> make configurable
 //   - [H] Not all IMDb movies are recognized because matching is done by title
+//         (maybe use https://greasyfork.org/en/scripts/390115-imdb-utility-library-api)
 //   - [M] Move GMprom_xhR and parseCSV to utility library (with some from EntryList)
 //   - [M] Move IMDb list function to utility library
 //   - [M] Optimize imdb list parsing
@@ -1035,7 +1038,7 @@
 
    function parseCSV(str) {
       // Simple CSV parsing function, by Trevor Dixon:
-      // https://stackoverflow.com/questions/1293147/javascript-code-to-parse-csv-data
+      // https://stackoverflow.com/a/14991797
       var arr = [];
       var quote = false;  // true means we're inside a quoted field
 
