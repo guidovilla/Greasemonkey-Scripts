@@ -53,6 +53,7 @@
 //
 // To-do (priority: [H]igh, [M]edium, [L]ow):
 //   - [H] List/color configuration is hard-coded -> make configurable
+//         Also, configuration should allow to skip downloading of unused lists
 //   - [H] Not all IMDb movies are recognized because matching is done by title
 //         (maybe use https://greasyfork.org/en/scripts/390115-imdb-utility-library-api)
 //   - [M] Move GMprom_xhR and parseCSV to utility library (with some from EntryList)
