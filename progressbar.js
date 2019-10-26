@@ -41,7 +41,7 @@
 //
 // To-do (priority: [H]igh, [M]edium, [L]ow):
 //   - [H] width must be an integer multiple of background-size, otherwise
-//         animation will skip => address
+//         indeterminate animation will skip => address
 //   - [M] speed of the animation depends on width => fix?
 //   - [m] speed of transition is not constant (time is constant, regardless of
 //         the "space" to be travelled) => can it be fixed?
@@ -144,7 +144,7 @@ window.ProgressBar = (function() {
     // eslint-disable-next-line max-statements
     return function(finishVal, msg, options) {
         // style definition
-        var STYLE = '.pb-progress-bar.pb-progress-bar-box{border:2px solid black;background-color:white;padding:4px;outline:white solid 6px;}'
+        var STYLE = '.pb-progress-bar.pb-progress-bar-box{border:2px solid black;background-color:white;padding:2px;outline:white solid 6px;}'
                   + '.pb-progress-bar.pb-progress-bar-bar{background-color:green;height:100%;transition:width 300ms linear;}'
                   + '.pb-progress-bar.pb-progress-bar-txtcont{position:absolute;top:0;left:0;width:100%;height:100%;display:table;}'
                   + '.pb-progress-bar.pb-progress-bar-txt{display:table-cell;text-align:center;vertical-align:middle;font:16px verdana,sans-serif;color:black;}'
