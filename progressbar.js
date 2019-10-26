@@ -47,11 +47,10 @@
 //         the "space" to be travelled) => can it be fixed?
 //   - [M] nicer ui (maybe small vertical bars), improvements
 //   - [M] different styles
-//   - [M] handle case finish == 0
 //
 // Changelog:
 // ----------
-//                   Hide global variables.
+//                   Hide global variables & other code cleanup.
 //                   Minor name change (ProgressBar -> Progress_Bar)
 // 2019.10.19  [1.1] Add possibility to update finish value
 //                   Change default value for "current" parameter in update()
@@ -80,6 +79,7 @@ Details
 Progress bars are defined by three main parameters:
 - finish:   value that defines what is 100%
             this is set at creation time and can be changed with update()
+            if set to 0 it is changed to -1 (see below)
 - progress: value that defines current completion status (if > finish, it is
             set to the finish value)
             initial progress is set a creation time, then it can be updated
@@ -232,7 +232,8 @@ window.ProgressBar = (function() {
         // optionally update progress status, message, finish
         this.update = function(currentVal, newMsg, newFinish) {
             if (newMsg) message = newMsg;
-            if (typeof newFinish  !== 'undefined' && newFinish  !== null) finish = newFinish;
+            // if finish == 0, set it to -1
+            if (typeof newFinish  !== 'undefined' && newFinish  !== null) finish = (newFinish || -1);
             var newVal;
             if (typeof currentVal !== 'undefined' && currentVal !== null) newVal = currentVal;
             else newVal = current;
