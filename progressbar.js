@@ -40,10 +40,12 @@
 // --------------------------------------------------------------------
 //
 // To-do (priority: [H]igh, [M]edium, [L]ow):
-//   - [H] width must be an integer multiple of background-size, otherwise animation will skip => address
+//   - [H] width must be an integer multiple of background-size, otherwise
+//         animation will skip => address
 //   - [M] speed of the animation depends on width => fix?
-//   - [m] speed of transition is not constant (time is constant, regardless of the "space" to be travelled) => can it be fixed?
-//   - [M] nicer presentation style (maybe small vertical bars), graphical improvements
+//   - [m] speed of transition is not constant (time is constant, regardless of
+//         the "space" to be travelled) => can it be fixed?
+//   - [M] nicer ui (maybe small vertical bars), improvements
 //   - [M] different styles
 //   - [M] handle case finish == 0
 //
@@ -99,7 +101,7 @@ Information for changing styles:
 The HTML id of the container DIV can be accessed through the 'id' property
 of the progress bar object.
 All elements that constitute the bar have a generic "pb-progress-bar" class and
-a specific "pb-progress-bar-XXX" class different for each element.
+a specific "pb-progress-bar-<elem>" class different for each element.
 Indeterminate progress style is enabled by applying a "pb-indeterminate" class
 to the container DIV.
 
@@ -133,14 +135,14 @@ Parameters (all parameters are optional):
 */
 
 
-var ProgressBar = (function() {
+window.ProgressBar = (function() {
     'use strict';
     var progress_bar_style_has_been_loaded = false;
     var progress_bar_index = 0;
 
     // Create progress bar
     // eslint-disable-next-line max-statements
-    return function(finish = 100, msg = 'Loading {#}/{$}...', options) {
+    return function(finishVal, msg, options) {
         // style definition
         var STYLE = '.pb-progress-bar.pb-progress-bar-box{border:2px solid black;background-color:white;padding:4px;outline:white solid 6px;}'
                   + '.pb-progress-bar.pb-progress-bar-bar{background-color:green;height:100%;transition:width 300ms linear;}'
@@ -159,10 +161,11 @@ var ProgressBar = (function() {
         // basic configuration
         this.id       = 'pb-progress-bar-' + ++progress_bar_index; // 'id' is public
         var start     = 0;
+        var finish    = 100;
         var container = null;
         var width     = 226.27417;
         var height    = 30;
-        var message   = msg;
+        var message   = 'Loading {#}/{$}...';
 
         var current;  // completion status of the progress bar
 
@@ -220,7 +223,7 @@ var ProgressBar = (function() {
             pbTxt     = createElement(pbTxtCont, 'div', 'pb-progress-bar-txt');
 
             // set the initial progress
-            self.update(start);
+            self.update(start, msg, finishVal);
         }
 
 
@@ -234,8 +237,8 @@ var ProgressBar = (function() {
             if (typeof currentVal !== 'undefined' && currentVal !== null) newVal = currentVal;
             else newVal = current;
             if (newVal > finish) {
-                console.warn('ProgressBar - update: current value greater than finish value');
                 newVal = finish;
+                if (finish > 0) console.warn('ProgressBar - update: current value greater than finish value');
             }
 
             if (newVal < 0) {
@@ -243,7 +246,7 @@ var ProgressBar = (function() {
                 // more consistent behaviour in cases where the delay (see
                 // below) is not enough.
                 pb.style.width = '0';
-                // try to make the message better for indeterminate progress
+                // try to make the message nicer for indeterminate progress
                 pbTxt.textContent = message
                                     .replace(/ *{#}.*{\$} */g, '')
                                     .replace(/ *{#} */g,       '')
