@@ -1,4 +1,4 @@
-// EntryList library
+// Entry List library
 //
 // Common functions for modifying/hiding/etc. entries in page, based on
 // entry features or presence in one or more lists.
@@ -6,7 +6,7 @@
 // the ones that have been started but not finished, highlight Netflix movies
 // based on IMDb lists, etc.
 //
-// https://greasyfork.org/scripts/390248-entrylist
+// https://greasyfork.org/scripts/390248-entry-list
 // Copyright (C) 2019, Guido Villa
 // Original idea and some of the code are taken from IMDb 'My Movies' enhancer:
 // Copyright (C) 2008-2018, Ricardo Mendonça Ferreira (ric@mpcnet.com.br)
@@ -16,7 +16,7 @@
 // https://greasyfork.org/help/installing-user-scripts
 //
 // To use this library in a userscript you must add to script header:
-  // @require  https://greasyfork.org/scripts/390248-entrylist/code/EntryList.js
+  // @require  https://greasyfork.org/scripts/390248-entry-list/code/Entry_List.js
   // @grant    GM_getValue
   // @grant    GM_setValue
   // @grant    GM_deleteValue
@@ -29,16 +29,16 @@
 // @exclude         *
 //
 // ==UserLibrary==
-// @name            EntryList
+// @name            Entry_List
 // @description     Common functions for working on lists of entries
 // @version         1.9
 // @author          guidovilla
 // @date            19.10.2019
 // @copyright       2019, Guido Villa (https://greasyfork.org/users/373199-guido-villa)
 // @license         GPL-3.0-or-later
-// @homepageURL     https://greasyfork.org/scripts/390248-entrylist
+// @homepageURL     https://greasyfork.org/scripts/390248-entry-list
 // @supportURL      https://gitlab.com/gv-browser/userscripts/issues
-// @contributionURL https://tinyurl.com/gv-donate-f9
+// @contributionURL https://tinyurl.com/gv-donate-d7
 // @attribution     Ricardo Mendonça Ferreira (https://openuserjs.org/users/AltoRetrato)
 // ==/UserScript==
 //
@@ -57,6 +57,7 @@
 //
 // Changelog:
 // ----------
+//                   Minor name change (EntryList -> Entry_List)
 // 2019.10.19  [1.9] Add function inList for checking if entry is in list
 //                   Fix use of context in startup()
 // 2019.10.18  [1.8] Add possibility to download a user payload with getUser
@@ -81,9 +82,9 @@
 //
 
 /* jshint esversion: 6, supernew: true, laxbreak: true */
-/* exported EL, Library_Version_ENTRYLIST */
+/* exported EL, Library_Version_ENTRY_LIST */
 
-const Library_Version_ENTRYLIST = '1.9';
+const Library_Version_ENTRY_LIST = '1.9';
 
 /* How to use the library
 

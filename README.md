@@ -8,6 +8,6 @@ Greasemonkey scripts and libraries
 
 * **Enhance titles - Timvision**: hide titles on Timvision website by clicking on a button
 
-* **EntryList**: library of common functions for working on lists of entries
+* **Entry_List**: library of common functions for working on lists of entries
 
-* **ProgressBar**: library for generation of a simple CSS progress bar with minimal JavaScript
+* **Progress_Bar**: library for generation of a simple CSS progress bar with minimal JavaScript

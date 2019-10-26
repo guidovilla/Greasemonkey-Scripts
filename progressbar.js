@@ -1,8 +1,8 @@
-// ProgressBar library
+// Progress Bar library
 //
 // Create and manage simple progress bars. CSS, minimal JavaScript.
 //
-// https://greasyfork.org/scripts/391236-progressbar
+// https://greasyfork.org/scripts/391236-progress-bar
 // Copyright (C) 2019, Guido Villa
 // Original version of the code is taken from IMDb 'My Movies' enhancer:
 // Copyright (C) 2008-2018, Ricardo Mendonça Ferreira (ric@mpcnet.com.br)
@@ -12,7 +12,7 @@
 // https://greasyfork.org/help/installing-user-scripts
 //
 // To use this library in a userscript you must add to script header:
-  // @require  https://greasyfork.org/scripts/391236-progressbar/code/ProgressBar.js
+  // @require  https://greasyfork.org/scripts/391236-progress-bar/code/Progress_Bar.js
   // @grant    GM_addStyle
 //
 // --------------------------------------------------------------------
@@ -22,16 +22,16 @@
 // @exclude         *
 //
 // ==UserLibrary==
-// @name            ProgressBar
+// @name            Progress_Bar
 // @description     Create and manage simple progress bars, minimal JavaScript
 // @version         1.1
 // @author          guidovilla
 // @date            19.10.2019
 // @copyright       2019, Guido Villa (https://greasyfork.org/users/373199-guido-villa)
 // @license         GPL-3.0-or-later
-// @homepageURL     https://greasyfork.org/scripts/391236-progressbar
+// @homepageURL     https://greasyfork.org/scripts/391236-progress-bar
 // @supportURL      https://gitlab.com/gv-browser/userscripts/issues
-// @contributionURL https://tinyurl.com/gv-donate-2e
+// @contributionURL https://tinyurl.com/gv-donate-c6
 // @attribution     Ricardo Mendonça Ferreira (https://openuserjs.org/users/AltoRetrato)
 // ==/UserScript==
 //
@@ -51,6 +51,7 @@
 //
 // Changelog:
 // ----------
+//                   Minor name change (ProgressBar -> Progress_Bar)
 // 2019.10.19  [1.1] Add possibility to update finish value
 //                   Change default value for "current" parameter in update()
 // 2019.10.16  [1.0] First version
@@ -58,9 +59,9 @@
 //
 
 /* jshint esversion: 6, supernew: true, laxbreak: true */
-/* exported EL, Library_Version_PROGRESSBAR */
+/* exported EL, Library_Version_PROGRESS_BAR */
 
-const Library_Version_PROGRESSBAR = '1.1';
+const Library_Version_PROGRESS_BAR = '1.1';
 
 /* How to use the library
 

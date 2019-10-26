@@ -38,8 +38,8 @@
 // @match           https://www.imdb.com/user/*/lists*
 // @exclude         https://www.netflix.com/watch*
 //
-// @require         https://greasyfork.org/scripts/390248-entrylist/code/EntryList.js
-// @require         https://greasyfork.org/scripts/391236-progressbar/code/ProgressBar.js
+// @require         https://greasyfork.org/scripts/390248-entry-list/code/Entry_List.js
+// @require         https://greasyfork.org/scripts/391236-progress-bar/code/Progress_Bar.js
 // @grant           GM_getValue
 // @grant           GM_setValue
 // @grant           GM_deleteValue
@@ -56,7 +56,7 @@
 //         Also, configuration should allow to skip downloading of unused lists
 //   - [H] Not all IMDb movies are recognized because matching is done by title
 //         (maybe use https://greasyfork.org/en/scripts/390115-imdb-utility-library-api)
-//   - [M] Move GMprom_xhR and parseCSV to utility library (with some from EntryList)
+//   - [M] Move GMprom_xhR and parseCSV to utility library (with some from Entry_List)
 //   - [M] Move IMDb list function to utility library
 //   - [M] Optimize imdb list parsing
 //   - [M] Show name in tooltip? Maybe not needed if above is solved
@@ -71,6 +71,7 @@
 //
 // Changelog:
 // ----------
+//                   Change @requires following library rename 
 // 2019.10.21  [1.6] Add download of rating and check-in list
 //                   Filter out non-title IMDb lists
 //                   Normalize apostrophes to increase NF<->IMDb name matching
