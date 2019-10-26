@@ -90,12 +90,12 @@ const Library_Version_ENTRY_LIST = '1.9';
 
 /* How to use the library
 
-This library instantitates an EL object with a startup method.
+This library instantiates an EL object with a startup method.
 
 Call, in order:
 0. EL.newContext(name) to initialize each source and target context
 1. EL.init(ctx), passing a "context" object that is specific to the
-   website you need to "enhance"
+   website you are working on
    -> not needed if you don't have external sources, just call EL.startup(ctx)
 2. EL.addSource(ctx) for each external source, with its specific context
 3. EL.startup(ctx), ctx is not needed if EL.init(ctx) was called.
@@ -104,7 +104,7 @@ Other functions and variables:
 - title: script name as returned by GM_info
 
 - addToggleEventOnClick(button, howToFindEntry[, toggleList[, toggleType]]):
-  mainly used in ctx.modifyEntry(), adds an event listener that implements
+  mainly used in ctx.modifyEntry(), add an event listener that implements
   a toggle function:
   - button: the DOM object to attach the event listener to
   - howToFindEntry: how to go from evt.target to the entry object. It can be:
@@ -116,7 +116,7 @@ Other functions and variables:
                 (can be omitted if only one processing type is used)
                 It cannot be a false value (0, null, false, undefined, etc.)
 - markInvalid(entry):
-  marks entry as invalid to skips it in subsequent passes
+  mark entry as invalid to skips it in subsequent passes
   This function returns false so it can be used in isValidEntry() in this way:
   return condition || EL.markInvalid(entry)
   This leaves the return value unchanged and marks the entry only if invalid
@@ -160,16 +160,16 @@ Optional callback functions and variables in main context:
             dafault: DEFAULT_INTERVAL
 
 - isEntryPage():
-  returns false if page must not be scanned for entries
+  return false if page must not be scanned for entries
   Default is always true => all pages contain entries
 - getPageType():
-  returns some non false value (true, number, object) if page is significant to
-  the script for some reason (e.g. it is the page where lists are reloaded),
-  false otherwise. The result is stored in ctx.pageType.
+  return a truthy value (true, number, object) if page is significant to the
+  script for some reason (e.g. it is the page where lists are reloaded),
+  a falsy value otherwise. The result is stored in ctx.pageType.
   Default is always false => no special page
 - processPage(pageType, isEntryPage):
-  optionally does operations on page based on pageType (and isEntryPage).
-  Called only if pageType is truthy, so no need to check if it is false
+  optionally do operations on page based on pageType (and isEntryPage).
+  Called only if pageType is truthy, so no need to check if that is false
 - isValidEntry(entry):
   return false if entry must be skipped
   NOTE: if entry is skipped, it is not however marked as invalid for subsequent
@@ -186,7 +186,7 @@ Optional callback functions and variables in main context:
   "lists" is an object with a true property for each list the entry appears in.
   The decision can also be taken using name, id and properties of the entry.
   If there is a single processing type, the function might as well return true/false
-  Default: returns true if entry is in at least one list (especially useful in
+  Default: return true if entry is in at least one list (especially useful in
   cases with only one list, so there is no need to tell different lists apart)
 
 
@@ -196,7 +196,7 @@ Callback functions and variables in contexts for external sources:
 
 - getUser(): see above
 - getSourceUserFromTargetUser(targetContextName, targetUser):
-  returns the user name on the source site corresponding to the one on target
+  return the user name on the source site corresponding to the one on target
   site. This is needed to look for the saved lists.
   Default is looking for the last saved user (single-user scenario).
   A user payload can be downloaded as in getUser() (q.v.)
