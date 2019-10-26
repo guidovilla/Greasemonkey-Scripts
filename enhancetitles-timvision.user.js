@@ -5,7 +5,7 @@
 // https://greasyfork.org/scripts/390632-enhance-titles-timvision
 // Copyright (C) 2019, Guido Villa
 //
-// For instructions on user scripts, see:
+// For information/instructions on user scripts, see:
 // https://greasyfork.org/help/installing-user-scripts
 //
 // --------------------------------------------------------------------

@@ -1,10 +1,12 @@
 // Entry List library
 //
-// Common functions for modifying/hiding/etc. entries in page, based on
-// entry features or presence in one or more lists.
-// For instance: hide all YouTube videos that have been watched and highlight
-// the ones that have been started but not finished, highlight Netflix movies
-// based on IMDb lists, etc.
+// Common functions for managing pages consisting of lists of several entries
+// that must be processed in some way.
+// Some functions are specific for checking if entries belong to one or more
+// lists.
+// For instance: save personal notes on YouTube videos and highlight those that
+// have been started but not finished, highlight Netflix movies based on IMDb
+// lists, etc.
 //
 // https://greasyfork.org/scripts/390248-entry-list
 // Copyright (C) 2019, Guido Villa
@@ -12,15 +14,15 @@
 // Copyright (C) 2008-2018, Ricardo Mendonça Ferreira (ric@mpcnet.com.br)
 // Released under the GPL license - http://www.gnu.org/copyleft/gpl.html
 //
-// For instructions on user scripts, see:
+// For information/instructions on user scripts, see:
 // https://greasyfork.org/help/installing-user-scripts
 //
 // To use this library in a userscript you must add to script header:
-  // @require  https://greasyfork.org/scripts/390248-entry-list/code/Entry_List.js
-  // @grant    GM_getValue
-  // @grant    GM_setValue
-  // @grant    GM_deleteValue
-  // @grant    GM_listValues
+  // @require https://greasyfork.org/scripts/390248-entry-list/code/Entry_List.js
+  // @grant   GM_getValue
+  // @grant   GM_setValue
+  // @grant   GM_deleteValue
+  // @grant   GM_listValues
 //
 // --------------------------------------------------------------------
 //

@@ -9,7 +9,7 @@
 // Copyright (C) 2008-2018, Ricardo Mendonça Ferreira (ric@mpcnet.com.br)
 // Released under the GPL license - http://www.gnu.org/copyleft/gpl.html
 //
-// For instructions on user scripts, see:
+// For information/instructions on user scripts, see:
 // https://greasyfork.org/help/installing-user-scripts
 //
 // --------------------------------------------------------------------
