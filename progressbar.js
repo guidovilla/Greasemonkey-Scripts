@@ -78,7 +78,8 @@ Details
 Progress bars are defined by three main parameters:
 - finish:   value that defines what is 100%
             this is set at creation time and can be changed with update()
-- progress: value that defines current completion status (must be <= finish)
+- progress: value that defines current completion status (if > finish, it is
+            set to the finish value)
             initial progress is set a creation time, then it can be updated
             with update() and advance()
             When progress = -1, the bar shows an indeterminate progress
