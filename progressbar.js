@@ -43,7 +43,6 @@
 //   - [H] width must be an integer multiple of background-size, otherwise animation will skip => address
 //   - [M] speed of the animation depends on width => fix?
 //   - [m] speed of transition is not constant (time is constant, regardless of the "space" to be travelled) => can it be fixed?
-//   - [H] wrap in order to hide global variables
 //   - [M] nicer presentation style (maybe small vertical bars), graphical improvements
 //   - [M] different styles
 //   - [M] log if current > finish?
@@ -51,6 +50,7 @@
 //
 // Changelog:
 // ----------
+//                   Hide global variables.
 //                   Minor name change (ProgressBar -> Progress_Bar)
 // 2019.10.19  [1.1] Add possibility to update finish value
 //                   Change default value for "current" parameter in update()
@@ -59,7 +59,7 @@
 //
 
 /* jshint esversion: 6, supernew: true, laxbreak: true */
-/* exported EL, Library_Version_PROGRESS_BAR */
+/* exported ProgressBar, Library_Version_PROGRESS_BAR */
 
 const Library_Version_PROGRESS_BAR = '1.1';
 
@@ -133,11 +133,14 @@ Parameters (all parameters are optional):
 */
 
 
+var ProgressBar = (function() {
+    'use strict';
     var progress_bar_style_has_been_loaded = false;
     var progress_bar_index = 0;
+
     // Create progress bar
     // eslint-disable-next-line max-statements
-    function ProgressBar(finish = 100, msg = 'Loading {#}/{$}...', options) {
+    return function(finish = 100, msg = 'Loading {#}/{$}...', options) {
         // style definition
         var STYLE = '.pb-progress-bar.pb-progress-bar-box{border:2px solid black;background-color:white;padding:4px;outline:white solid 6px;}'
                   + '.pb-progress-bar.pb-progress-bar-bar{background-color:green;height:100%;transition:width 300ms linear;}'
@@ -280,4 +283,5 @@ Parameters (all parameters are optional):
 
         /* INITIALIZATION */
         init();
-    }
+    };
+}());
