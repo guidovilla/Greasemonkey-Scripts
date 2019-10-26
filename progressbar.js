@@ -45,7 +45,6 @@
 //   - [m] speed of transition is not constant (time is constant, regardless of the "space" to be travelled) => can it be fixed?
 //   - [M] nicer presentation style (maybe small vertical bars), graphical improvements
 //   - [M] different styles
-//   - [M] log if current > finish?
 //   - [M] handle case finish == 0
 //
 // Changelog:
@@ -233,7 +232,10 @@ var ProgressBar = (function() {
             var newVal;
             if (typeof currentVal !== 'undefined' && currentVal !== null) newVal = currentVal;
             else newVal = current;
-            if (newVal > finish) newVal = finish;
+            if (newVal > finish) {
+                console.warn('ProgressBar - update: current value greater than finish value');
+                newVal = finish;
+            }
 
             if (newVal < 0) {
                 // setting the width to zero is not really needed, but ensures a
