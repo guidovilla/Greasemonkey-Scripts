@@ -38,6 +38,7 @@
 //
 // To-do (priority: [H]igh, [M]edium, [L]ow):
 //   - [H] GM_xhR: remove workaround responseXML2 and make responseXML work
+//   - [M] add GM_getValue and GM_setValue for objects (automatic JSON parsing)
 //   - [M] add other functions
 //
 // Changelog:
