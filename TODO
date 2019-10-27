@@ -1,5 +1,7 @@
 - Entry_List più generica che non ha tt e getIdFromEntry ma getEntryData
+
 - testare condizioni di errore per NF
+
 - README in gitlab/GF/OUJS - esempi:
     https://greasyfork.org/en/scripts/1810-google-tracking-b-gone
     https://openuserjs.org/libs/Marti/GM_setStyle
