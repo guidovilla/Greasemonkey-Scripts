@@ -30,6 +30,7 @@
 //
 // @match           https://www.youtube.com/*
 //
+// @require         https://greasyfork.org/scripts/391648-us-utils/code/US_Utils.js
 // @require         https://greasyfork.org/scripts/390248-entry-list/code/Entry_List.js
 // @grant           GM_getValue
 // @grant           GM_setValue
@@ -43,7 +44,7 @@
 //
 // Changelog:
 // ----------
-//                   Change @require following library rename 
+//                   Change @require following library rename and US_Utils use
 // 2019.10.05  [1.3] Fix completion status appearing later (after ELProcessed)
 // 2019.10.03  [1.2] Refactor using EntryList library
 // 2019.09.30  [1.1] First public version, correct @namespace and other headers

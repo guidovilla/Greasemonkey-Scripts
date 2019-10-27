@@ -30,6 +30,7 @@
 //
 // @match           https://www.timvision.it/*
 //
+// @require         https://greasyfork.org/scripts/391648-us-utils/code/US_Utils.js
 // @require         https://greasyfork.org/scripts/390248-entry-list/code/Entry_List.js
 // @grant           GM_getValue
 // @grant           GM_setValue
@@ -46,7 +47,7 @@
 //
 // Changelog:
 // ----------
-//                   Change @require following library rename 
+//                   Change @require following library rename and US_Utils use
 // 2019.10.10  [1.4] Use classes instead of inline styles, some code cleanup
 //                   Optimization: permanently skip invalid entries
 // 2019.10.02  [1.3] Simplify code thanks to new EntryList defaults

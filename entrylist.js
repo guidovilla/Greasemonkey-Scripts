@@ -18,6 +18,7 @@
 // https://greasyfork.org/help/installing-user-scripts
 //
 // To use this library in a userscript you must add to script header:
+  // @require https://greasyfork.org/scripts/391648-us-utils/code/US_Utils.js
   // @require https://greasyfork.org/scripts/390248-entry-list/code/Entry_List.js
   // @grant   GM_getValue
   // @grant   GM_setValue
@@ -59,6 +60,7 @@
 //
 // Changelog:
 // ----------
+//                   Use US_Utils.
 //                   Minor name change (EntryList -> Entry_List)
 // 2019.10.19  [1.9] Add function inList for checking if entry is in list
 //                   Fix use of context in startup()
@@ -85,6 +87,7 @@
 
 /* jshint esversion: 6, supernew: true, laxbreak: true */
 /* exported EL, Library_Version_ENTRY_LIST */
+/* global UU: readonly */
 
 const Library_Version_ENTRY_LIST = '1.9';
 
@@ -227,47 +230,37 @@ var EL = new (function() {
 
     /* PRIVATE members */
 
-    // Check if "object" has "property" of "type"
-    // used to test if object "implements" a specific interface
-    function checkProperty(object, property, type, optional = false) {
-
-        if (typeof object[property] !== type && (!optional || typeof object[property] !== 'undefined')) {
-            console.error((optional ? 'Optionally, c' : 'C') + 'ontext must have a "' + property + '" property of type "' + type + '"');
-            return false;
-        }
-        else return true;
-    }
-
-
     // check if target context has the correct variables and functions
+    // (i.e. "implements" interface of target context)
     function isValidTargetContext(ctx) {
         var valid = true;
 
-        valid &= checkProperty(ctx, 'name',           'string');
-        valid &= checkProperty(ctx, 'getPageEntries', 'function');
-        valid &= checkProperty(ctx, 'processItem',    'function');
-        valid &= checkProperty(ctx, 'interval',       'number',   true);
-        valid &= checkProperty(ctx, 'isEntryPage',    'function', true);
-        valid &= checkProperty(ctx, 'getPageType',    'function', true);
-        valid &= checkProperty(ctx, 'isValidEntry',   'function', true);
-        valid &= checkProperty(ctx, 'modifyEntry',    'function', true);
-        valid &= checkProperty(ctx, 'determineType',  'function', true);
-        valid &= checkProperty(ctx, 'getUser',        'function', true);
-        valid &= checkProperty(ctx, 'getIdFromEntry', 'function', true);
-        valid &= checkProperty(ctx, 'unProcessItem',  'function', true);
+        valid &= UU.checkProperty(ctx, 'name',           'string');
+        valid &= UU.checkProperty(ctx, 'getPageEntries', 'function');
+        valid &= UU.checkProperty(ctx, 'processItem',    'function');
+        valid &= UU.checkProperty(ctx, 'interval',       'number',   true);
+        valid &= UU.checkProperty(ctx, 'isEntryPage',    'function', true);
+        valid &= UU.checkProperty(ctx, 'getPageType',    'function', true);
+        valid &= UU.checkProperty(ctx, 'isValidEntry',   'function', true);
+        valid &= UU.checkProperty(ctx, 'modifyEntry',    'function', true);
+        valid &= UU.checkProperty(ctx, 'determineType',  'function', true);
+        valid &= UU.checkProperty(ctx, 'getUser',        'function', true);
+        valid &= UU.checkProperty(ctx, 'getIdFromEntry', 'function', true);
+        valid &= UU.checkProperty(ctx, 'unProcessItem',  'function', true);
 
         return !!valid;
     }
 
 
     // check if source context has the correct variables and functions
+    // (i.e. "implements" interface of source context)
     function isValidSourceContext(ctx) {
         var valid = true;
 
-        valid &= checkProperty(ctx, 'name',                        'string');
-        valid &= checkProperty(ctx, 'getUser',                     'function', true);
-        valid &= checkProperty(ctx, 'getSourceUserFromTargetUser', 'function', true);
-        valid &= checkProperty(ctx, 'getPageType',                 'function', true);
+        valid &= UU.checkProperty(ctx, 'name',                        'string');
+        valid &= UU.checkProperty(ctx, 'getUser',                     'function', true);
+        valid &= UU.checkProperty(ctx, 'getSourceUserFromTargetUser', 'function', true);
+        valid &= UU.checkProperty(ctx, 'getPageType',                 'function', true);
 
         return !!valid;
     }
@@ -298,11 +291,11 @@ var EL = new (function() {
             user    = user.name;
         }
         if (!user) {
-            console.warn(ctx.name + ": user not logged in (or couldn't get user info) on URL " + document.URL);
+            UU.lw(ctx.name + ": user not logged in (or couldn't get user info) on URL", document.URL);
             user    = GM_getValue(storName.lastUser(ctx));
             payload = GM_getValue(storName.lastUserPayload(ctx));
             if (payload) payload = JSON.parse(payload);
-            console.info('Using last user:', user);
+            UU.li('Using last user:', user);
         } else {
             GM_setValue(storName.lastUser(ctx), user);
             if (payload) {
@@ -330,7 +323,7 @@ var EL = new (function() {
                 ctx.user    = ctx.user.name;
             }
             if (!ctx.user) {
-                console.error(ctx.name + ": cannot find user corresponding to '" + mainContext.user + "' on " + mainContext.name);
+                UU.le(ctx.name + ": cannot find user corresponding to '" + mainContext.user + "' on " + mainContext.name);
                 delete ctx.payload;
             }
         } else {
@@ -368,7 +361,7 @@ var EL = new (function() {
             try {
                 list = JSON.parse(jsonData);
             } catch(err) {
-                alert("Error loading saved list named '" + listName + "'\n" + err.message);
+                UU.le("Error loading saved list named '" + listName + "'\n", err);
             }
         }
         return list;
@@ -422,7 +415,7 @@ var EL = new (function() {
     // Wrap ctx.getIdFromEntry and add error logging
     function _wrap_getIdFromEntry(ctx, entry) {
         var tt = ctx.getIdFromEntry(entry);
-        if (!tt) console.error('Could not determine id - for entry', entry);
+        if (!tt) UU.le('Could not determine id - for entry', entry);
         return tt;
     }
 
@@ -474,8 +467,8 @@ var EL = new (function() {
         evt.stopPropagation();
         evt.preventDefault();
         var data = evt.target.dataset;
-        var toggleList = (typeof data.toggleList === 'undefined' ? DEFAULT_TYPE : data.toggleList);
-        var toggleType = (typeof data.toggleType === 'undefined' ? DEFAULT_TYPE : data.toggleType);
+        var toggleList = (UU.isUndef(data.toggleList) ? DEFAULT_TYPE : data.toggleList);
+        var toggleType = (UU.isUndef(data.toggleType) ? DEFAULT_TYPE : data.toggleType);
 
         // get corresponding entry
         var entry = evt.target;
@@ -529,11 +522,11 @@ var EL = new (function() {
         isEntryPage = false;
         allContexts = [];
 
-        self.title = GM_info.script.name;
+        self.title = UU.me;
 
         // check that passed context is good
         if (!isValidTargetContext(ctx)) {
-            console.log('Invalid target context, aborting');
+            UU.le('Invalid target context, aborting');
             return;
         }
 
@@ -543,7 +536,7 @@ var EL = new (function() {
         if (isEntryPage || ctx.pageType) {
             // find current logged in user, or quit script
             if (!self.getLoggedUser(ctx)) {
-                console.log(ctx.name + ': no user is defined, aborting');
+                UU.le(ctx.name + ': no user is defined, aborting');
                 return;
             }
             if (ctx.pageType && ctx.processPage) ctx.processPage(ctx.pageType, isEntryPage);
@@ -561,7 +554,7 @@ var EL = new (function() {
             if (failedInit) return;
             self.init(ctx);
 
-        } else if (ctx) console.warn('Startup called with context parameter after init, ignoring ctx');
+        } else if (ctx) UU.lw('Startup called with context parameter after init, ignoring ctx');
 
         if (!isEntryPage) return;
 
@@ -573,7 +566,7 @@ var EL = new (function() {
 
         // start the entry processing function
         self.processAllEntries();
-        if (typeof mainContext.interval === 'undefined' || mainContext.interval >= MIN_INTERVAL) {
+        if (UU.isUndef(mainContext.interval) || mainContext.interval >= MIN_INTERVAL) {
             // TODO we might consider using MutationObserver in the future, instead
             mainContext.timer = setInterval(self.processAllEntries, ( mainContext.interval || DEFAULT_INTERVAL ));
         }
@@ -583,13 +576,13 @@ var EL = new (function() {
     // add a source context
     this.addSource = function(ctx) {
         if (!initialized) {
-            console.log('Main context is not initialized, aborting addSource');
+            UU.le('Main context is not initialized, aborting addSource');
             return;
         }
 
         // check that passed context is good
         if (!isValidSourceContext(ctx)) {
-            console.log('Invalid source context, aborting');
+            UU.le('Invalid source context, aborting');
             return;
         }
 
@@ -598,7 +591,7 @@ var EL = new (function() {
         if (ctx.pageType) {
             // find current logged in user, or quit script
             if (!self.getLoggedUser(ctx)) {
-                console.log(ctx.name + ': no user is defined, aborting');
+                UU.le(ctx.name + ': no user is defined, aborting');
                 return;
             }
             if (ctx.processPage) ctx.processPage(ctx.pageType, isEntryPage);
@@ -609,7 +602,7 @@ var EL = new (function() {
         // find user corresponding to current logged in user, or quit script
         // TODO if (entryPage && pageType), remote user overwrites logged user
         if (!self.getRemoteUser(ctx)) {
-            console.log(ctx.name + ': no remote user is defined, aborting');
+            UU.le(ctx.name + ': no remote user is defined, aborting');
             return;
         }
 

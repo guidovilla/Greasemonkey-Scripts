@@ -9,7 +9,6 @@
     vedere anche esempi di sizzle
 - gv profile su GF e OUJS (bug reporting, vedere esempi fatti da altri)
 - per le librerie: fare documentazione in GL/GH e GF/OUJS (vedere librerie tipo GM_Config come esempio)
-- spostare alcune funzionalità di EntryList in altra libreria
 - fare anche versione di parse CSV che sia "strict" RFC
 
 - verificare come si comporta il salvataggio liste se non c'è utente (undefined? vd. YT)
