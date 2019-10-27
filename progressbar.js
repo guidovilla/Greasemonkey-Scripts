@@ -144,13 +144,13 @@ window.ProgressBar = (function() {
     // eslint-disable-next-line max-statements
     return function(finishVal, msg, options) {
         // style definition
-        var STYLE = '.pb-progress-bar.pb-progress-bar-box{border:2px solid black;background-color:white;padding:2px;outline:white solid 6px;}'
-                  + '.pb-progress-bar.pb-progress-bar-bar{background-color:green;height:100%;transition:width 300ms linear;}'
-                  + '.pb-progress-bar.pb-progress-bar-txtcont{position:absolute;top:0;left:0;width:100%;height:100%;display:table;}'
-                  + '.pb-progress-bar.pb-progress-bar-txt{display:table-cell;text-align:center;vertical-align:middle;font:16px verdana,sans-serif;color:black;}'
-                  + '.pb-progress-bar.pb-progress-bar-box.pb-indeterminate{background:repeating-linear-gradient(-45deg,#F0F0F0 0 20px,#ccc 20px 40px);background-size:56.56854px;animation:2s linear infinite loading;}'
+        var STYLE = '.pb-progress-bar.pb-progress-bar-box{border:2px solid black;background-color:white;padding:2px;outline:white solid 6px;z-index:10000}'
+                  + '.pb-progress-bar.pb-progress-bar-bar{background-color:green;height:100%;transition:width 300ms linear}'
+                  + '.pb-progress-bar.pb-progress-bar-txtcont{position:absolute;top:0;left:0;width:100%;height:100%;display:table}'
+                  + '.pb-progress-bar.pb-progress-bar-txt{display:table-cell;text-align:center;vertical-align:middle;font:16px verdana,sans-serif;color:black}'
+                  + '.pb-progress-bar.pb-progress-bar-box.pb-indeterminate{background:repeating-linear-gradient(-45deg,#F0F0F0 0 20px,#ccc 20px 40px);background-size:56.56854px;animation:2s linear infinite loading}'
                   + '.pb-progress-bar.pb-progress-bar-box.pb-indeterminate .pb-progress-bar-bar{background-color:transparent;transition:none}'
-                  + '@keyframes loading{from{background-position-x:0%;} to{background-position-x:100%;}}';
+                  + '@keyframes loading{from{background-position-x:0%;} to{background-position-x:100%}}';
         if (!progress_bar_style_has_been_loaded) {
             GM_addStyle(STYLE);
             progress_bar_style_has_been_loaded = true;
