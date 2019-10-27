@@ -60,7 +60,7 @@
 //
 // Changelog:
 // ----------
-//                   Use US_Utils.
+//                   Use US_Utils, remove title (duplicate in US_Utils).
 //                   Minor name change (EntryList -> Entry_List)
 // 2019.10.19  [1.9] Add function inList for checking if entry is in list
 //                   Fix use of context in startup()
@@ -104,8 +104,6 @@ Call, in order:
 3. EL.startup(ctx), ctx is not needed if EL.init(ctx) was called.
 
 Other functions and variables:
-- title: script name as returned by GM_info
-
 - addToggleEventOnClick(button, howToFindEntry[, toggleList[, toggleType]]):
   mainly used in ctx.modifyEntry(), add an event listener that implements
   a toggle function:
@@ -521,8 +519,6 @@ var EL = new (function() {
         mainContext = null;
         isEntryPage = false;
         allContexts = [];
-
-        self.title = UU.me;
 
         // check that passed context is good
         if (!isValidTargetContext(ctx)) {

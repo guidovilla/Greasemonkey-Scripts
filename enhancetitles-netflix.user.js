@@ -343,14 +343,14 @@
 
     function btnNFMyListClear() {
         NFMyListClear();
-        GM_notification({'text': "Information from 'My List' cleared.", 'title': EL.title + ' - Clear Netflix My List', 'timeout': 0});
+        GM_notification({'text': "Information from 'My List' cleared.", 'title': UU.me + ' - Clear Netflix My List', 'timeout': 0});
     }
 
     function btnNFMyListRefresh() {
         var txt;
         if (NFMyListRefresh()) txt = "'My List' loaded.";
         else txt = "An error occurred. It was not possible to load 'My List' data.";
-        GM_notification({'text': txt, 'title': EL.title + ' - Load Netflix My List', 'timeout': 0});
+        GM_notification({'text': txt, 'title': UU.me + ' - Load Netflix My List', 'timeout': 0});
     }
 
 
@@ -388,13 +388,13 @@
 
     function btnIMDbListClear() {
         IMDbListClear();
-        GM_notification({'text': "Information from IMDb cleared.", 'title': EL.title + ' - Clear IMDb lists', 'timeout': 0});
+        GM_notification({'text': "Information from IMDb cleared.", 'title': UU.me + ' - Clear IMDb lists', 'timeout': 0});
     }
 
     function btnIMDbListRefresh() {
         GM_notification({
             'text':    'Click to start loading the IMDb lists. This may take several seconds',
-            'title':   EL.title + ' - Load IMDb lists',
+            'title':   UU.me + ' - Load IMDb lists',
             'timeout': 0,
             'onclick': IMDbListRefresh,
         });
@@ -436,7 +436,7 @@
             .finally(function() {
                 GM_notification({
                     'text':      closeMsg,
-                    'title':     EL.title + ' - Load IMDb lists',
+                    'title':     UU.me + ' - Load IMDb lists',
                     'highlight': true,
                     'timeout':   5,
                     'ondone':    pb.close,
