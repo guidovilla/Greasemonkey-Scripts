@@ -26,7 +26,6 @@
 // @supportURL      https://gitlab.com/gv-browser/userscripts/issues
 // @contributionURL https://tinyurl.com/gv-donate-7e
 // @attribution     Ricardo Mendonça Ferreira (https://openuserjs.org/users/AltoRetrato)
-// @attribution     Trevor Dixon (https://stackoverflow.com/users/711902/trevor-dixon)
 //
 // @namespace       https://greasyfork.org/users/373199-guido-villa
 // @downloadURL     https://greasyfork.org/scripts/390631-enhance-titles-netflix/code/Enhance%20titles%20-%20Netflix.user.js
@@ -57,13 +56,11 @@
 //         Also, configuration should allow to skip downloading of unused lists
 //   - [H] Not all IMDb movies are recognized because matching is done by title
 //         (maybe use https://greasyfork.org/en/scripts/390115-imdb-utility-library-api)
-//   - [M] Move GMprom_xhR and parseCSV to utility library (with some from Entry_List)
 //   - [M] Move IMDb list function to utility library
 //   - [M] Optimize imdb list parsing
 //   - [M] Show name in tooltip? Maybe not needed if above is solved
 //   - [M] Make triangles more visible
 //   - [M] Show in tooltip all lists where title is present?
-//   - [M] GMprom_xhR: remove workaround responseXML2 and have responseXML work
 //   - [M] Lots of clean-up
 //   - [M] Add comments
 //   - [M] Delay autopreview for hidden movies?
@@ -72,7 +69,7 @@
 //
 // Changelog:
 // ----------
-//                   Change @requires following library rename and US_Utils use
+//                   Refactor/cleanup (library rename and US_Utils adoption)
 // 2019.10.21  [1.6] Add download of rating and check-in list
 //                   Filter out non-title IMDb lists
 //                   Normalize apostrophes to increase NF<->IMDb name matching
@@ -91,7 +88,7 @@
 //
 
 /* jshint -W008 */
-/* global EL: readonly, ProgressBar: readonly */
+/* global UU: readonly, EL: readonly, ProgressBar: readonly */
 
 (function() {
     'use strict';
@@ -164,7 +161,7 @@
 
         var title = entry.querySelector(".fallback-text");
         if (title) title = title.innerText;
-        if (!title) console.error('Cannot find title for entry with id ' + id + ' on URL ' + document.URL, entry);
+        if (!title) UU.le('Cannot find title for entry with id ' + id + ' on URL ' + document.URL, entry);
         else title = title.replace(/’/g, "'");
 
         return { 'id': id, 'name': (title || id) };
@@ -260,7 +257,7 @@
         // no need to check pageType: as of now there is only one
         var main = document.querySelector('div.mainView');
         if (!main) {
-            console.error('Could not find "main <div>" to insert buttons');
+            UU.le('Could not find "main <div>" to insert buttons');
             return;
         }
         var div  = document.createElement('div');
@@ -282,7 +279,7 @@
         var ur = account.href;
         if (ur) ur = ur.match(/\.imdb\..{2,3}\/.*\/(ur[0-9]+)/);
         if (ur && ur[1]) ur = ur[1];
-        else console.error('Cannot retrieve the ur id for user:', user);
+        else UU.le('Cannot retrieve the ur id for user:', user);
 
         return { 'name': user, 'payload': ur };
     };
@@ -299,7 +296,7 @@
         var main = document.getElementById("main");
         var h1 = ( main && main.getElementsByTagName("h1") );
         if (!h1 || !h1[0]) {
-            console.error('Could not find element to insert buttons.');
+            UU.le('Could not find element to insert buttons.');
             return;
         }
         var div = document.createElement('div');
@@ -430,12 +427,12 @@
                     closeMsg = 'Loading complete!';
                 } else if (msg.numKO < outcomes.length) {
                     closeMsg = 'Done, but with errors:' + msg.txt;
-                    console.error('Errors in list download:' + msg.txt);
+                    UU.le('Errors in list download:', msg.txt);
                 } else {
                     throw 'Error - It was not possible to download the IMDb lists:' + msg.txt;
                 }
             })
-            .catch(function(err) { console.error(err); closeMsg = err; })
+            .catch(function(err) { UU.le(err); closeMsg = err; })
             .finally(function() {
                 GM_notification({
                     'text':      closeMsg,
@@ -481,7 +478,7 @@
 
         } else {
             var url = 'https://www.imdb.com/user/' + imdb.userPayload + '/lists';
-            return GMprom_xhR('GET', url, 'Get IMDb list page', { 'responseType': 'document' })
+            return UU.GM_xhR('GET', url, 'Get IMDb list page', { 'responseType': 'document' })
                        .then(function(response) { return response.responseXML2; });
         }
     }
@@ -493,7 +490,7 @@
             var tmp = listElem.getElementsByClassName("list-name");
             var name;
             if (!tmp || !tmp[0]) {
-                console.error("Error reading name of list with id " + listElem.id);
+                UU.le("Error reading name of list", listElem);
                 name = listElem.id;
             } else {
                 name = tmp[0].text;
@@ -514,7 +511,7 @@
             // Watchlist & check-ins are not easily available (requires another fetch to find export link)
             // http://www.imdb.com/user/ur???????/watchlist | HTML page w/ "export link" at the bottom
             var url = 'https://www.imdb.com/user/' + imdb.userPayload + '/' + id;
-            getUrl = GMprom_xhR('GET', url, "Get list page", { 'responseType': 'document' })
+            getUrl = UU.GM_xhR('GET', url, "Get list page", { 'responseType': 'document' })
                 .then(function(response) {
                     var exportLink;
                     var lsId = response.responseXML2.querySelector('meta[property="pageId"]');
@@ -536,7 +533,7 @@
             getUrl = Promise.resolve("https://www.imdb.com/list/" + id + "/export");
         }
         return getUrl
-                   .then(function(url)      { return GMprom_xhR('GET', url, "download"); })
+                   .then(function(url)      { return UU.GM_xhR('GET', url, "download"); })
                    .then(function(response) { return parseList(response, type); });
     }
 
@@ -560,11 +557,10 @@
     // Process a downloaded list
     function parseList(response, type) {
         if (response.responseText.startsWith("<!DOCTYPE html")) {
-            var msg = 'received HTML instead of CSV file';
-            throw msg;
+            throw 'received HTML instead of CSV file';
         }
 
-        var data = parseCSV(response.responseText);
+        var data = UU.parseCSV(response.responseText);
         var list = {};
 
         var fields = {};
@@ -593,11 +589,11 @@
             }
 
             if (id === "") {
-                console.error('parse ' + response.finalUrl + ": no id defined for row " + i);
+                UU.le('parse ' + response.finalUrl + ": no id defined for row " + i);
                 continue;
             }
             if (list[id]) {
-                console.error('parse ' + response.finalUrl + ": duplicate id " + id + " found at row " + i);
+                UU.le('parse ' + response.finalUrl + ": duplicate id " + id + " found at row " + i);
                 continue;
             }
             list[name] = name;
@@ -610,92 +606,6 @@
             func(p1, p2, p3);
         };
     };
-
-
-
-
-
-
-    // handle download error in a Promise-enhanced GM_xmlhttpRequest
-    function xhrError(rejectFunc, response, method, url, purpose, reason) {
-        var m = purpose + ' - HTTP ' + method + ' error' + (reason ? ' (' + reason + ')' : '') + ': '
-              + response.status + (response.statusText ? " - " + response.statusText : '');
-        console.error(m, 'URL: ' + url, 'Response:', response);
-        rejectFunc(m);
-    }
-    function xhrErrorFunc(rejectFunc, method, url, purpose, reason) {
-        return function(resp) { xhrError(rejectFunc, resp, method, url, purpose, reason); };
-    }
-    function GMprom_xhR(method, url, purpose, opts) {
-        return new Promise(function(resolve, reject) {
-            var details = opts || {};
-            details.method    = method;
-            details.url       = url;
-            details.onload    = function(response) {
-                if (response.status !== 200) xhrError(reject, response, method, url, purpose);
-//                else resolve(response);
-                else {
-                    if (details.responseType === 'document') {
-                        try {
-                            const doc = document.implementation.createHTMLDocument().documentElement;
-                            doc.innerHTML = response.responseText;
-                            response.responseXML2 = doc;
-                        } catch(e) {
-                            xhrError(reject, response, method, url, purpose, e);
-                        }
-                    }
-                    resolve(response);
-                }
-            };
-            details.onabort   = xhrErrorFunc(reject, method, url, purpose, 'abort');
-            details.onerror   = xhrErrorFunc(reject, method, url, purpose, 'error');
-            details.ontimeout = xhrErrorFunc(reject, method, url, purpose, 'timeout');
-            if (typeof details.synchronous === 'undefined') details.synchronous = false;
-            GM_xmlhttpRequest(details);
-        });
-    }
-
-
-
-   function parseCSV(str) {
-      // Simple CSV parsing function, by Trevor Dixon:
-      // https://stackoverflow.com/a/14991797
-      var arr = [];
-      var quote = false;  // true means we're inside a quoted field
-
-      // iterate over each character, keep track of current row and column (of the returned array)
-      var row, col, c;
-      for (row = col = c = 0; c < str.length; c++) {
-         var cc = str[c], nc = str[c+1];        // current character, next character
-         arr[row] = arr[row] || [];             // create a new row if necessary
-         arr[row][col] = arr[row][col] || '';   // create a new column (start with empty string) if necessary
-
-         // If the current character is a quotation mark, and we're inside a
-         // quoted field, and the next character is also a quotation mark,
-         // add a quotation mark to the current column and skip the next character
-         if (cc == '"' && quote && nc == '"') { arr[row][col] += cc; ++c; continue; }
-
-         // If it's just one quotation mark, begin/end quoted field
-         if (cc == '"') { quote = !quote; continue; }
-
-         // If it's a comma and we're not in a quoted field, move on to the next column
-         if (cc == ',' && !quote) { ++col; continue; }
-
-         // If it's a newline (CRLF) and we're not in a quoted field, skip the next character
-         // and move on to the next row and move to column 0 of that new row
-         if (cc == '\r' && nc == '\n' && !quote) { ++row; col = 0; ++c; continue; }
-
-         // If it's a newline (LF or CR) and we're not in a quoted field,
-         // move on to the next row and move to column 0 of that new row
-         if (cc == '\n' && !quote) { ++row; col = 0; continue; }
-         if (cc == '\r' && !quote) { ++row; col = 0; continue; }
-
-         // Otherwise, append the current character to the current column
-         arr[row][col] += cc;
-      }
-      return arr;
-   }
-
 
 
 
