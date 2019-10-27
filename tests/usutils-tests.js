@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            Test - US_Utils
 // @description     Test the US_Utils library - internal use only
-// @version         0.1
+// @version         1.0
 // @author          guidovilla
 // @copyright       2019, Guido Villa (https://greasyfork.org/users/373199-guido-villa)
 // @license         GPL-3.0-or-later
@@ -14,7 +14,7 @@
 // @connect         google.com
 // @connect         www.guugle.com
 //
-// @require         https://greasyfork.org/scripts/******-us-utils/code/US_Utils.js
+// @require         https://greasyfork.org/scripts/391648-us-utils/code/US_Utils.js
 // @grant           GM_xmlhttpRequest
 // ==/UserScript==
 

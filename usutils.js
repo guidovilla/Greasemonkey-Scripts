@@ -2,14 +2,14 @@
 //
 // Some useful utilities for userscript development.
 //
-// https://greasyfork.org/scripts/******-us-utils
+// https://greasyfork.org/scripts/391648-us-utils
 // Copyright (C) 2019, Guido Villa
 //
 // For information/instructions on user scripts, see:
 // https://greasyfork.org/help/installing-user-scripts
 //
 // To use this library in a userscript you must add to script header:
-  // @require https://greasyfork.org/scripts/******-us-utils/code/US_Utils.js
+  // @require https://greasyfork.org/scripts/391648-us-utils/code/US_Utils.js
   // @grant   GM_xmlhttpRequest  (only if using UU.GM_xhR)
 //
 // --------------------------------------------------------------------
@@ -21,12 +21,12 @@
 // ==UserLibrary==
 // @name            US_Utils
 // @description     Some useful utilities for userscript development
-// @version         0.1
+// @version         1.0
 // @author          guidovilla
-// @date            26.10.2019
+// @date            27.10.2019
 // @copyright       2019, Guido Villa (https://greasyfork.org/users/373199-guido-villa)
 // @license         GPL-3.0-or-later
-// @homepageURL     https://greasyfork.org/scripts/******-us-utils
+// @homepageURL     https://greasyfork.org/scripts/391648-us-utils
 // @supportURL      https://gitlab.com/gv-browser/userscripts/issues
 // @contributionURL https://tinyurl.com/gv-donate-ed
 // @attribution     Trevor Dixon (https://stackoverflow.com/users/711902/trevor-dixon)
@@ -42,13 +42,14 @@
 //
 // Changelog:
 // ----------
+// 2019.10.27  [1.0] First version
 // 2019.10.26  [0.1] First test version, private use only
 //
 
 /* jshint esversion: 6, laxbreak: true, -W008, supernew: true */
 /* exported UU, Library_Version_US_UTILS */
 
-const Library_Version_US_UTILS = '0.1';
+const Library_Version_US_UTILS = '1.0';
 
 /* How to use the library
 
