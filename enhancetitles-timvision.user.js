@@ -123,7 +123,7 @@
         // remove useless zooming on mouseover
         var parent = entry.parentNode.parentNode.parentNode;
         if (!parent.NoMouseOver) {
-            parent.addEventListener('mouseenter',function(e){e.stopPropagation();},true);
+            parent.addEventListener('mouseenter', function(e) { e.stopPropagation(); }, true);
             parent.NoMouseOver = true;
         }
     };
