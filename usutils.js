@@ -52,7 +52,7 @@
 
 const Library_Version_US_UTILS = '1.0';
 
-/* How to use the library
+/* How to use this library
 
 This library instantitates an UU object with utility variables and methods:
 
@@ -60,10 +60,10 @@ This library instantitates an UU object with utility variables and methods:
 
 - isUndef(p): check if p is undefined
 
-- le(...args): like ocnsole.error, prepending the script name
-- lw(...args): like ocnsole.warn, prepending the script name
-- li(...args): like ocnsole.info, prepending the script name
-- ld(...args): like ocnsole.debug, prepending the script name
+- le(...args): like console.error, prepending the script name
+- lw(...args): like console.warn, prepending the script name
+- li(...args): like console.info, prepending the script name
+- ld(...args): like console.debug, prepending the script name
 
 - checkProperty(object, property, type, optional)
   Check if object "object" has property "property" of type "type".
@@ -108,7 +108,7 @@ window.UU = new (function() {
 
 
 
-    // check if parameter is undefined
+    // check if argument is undefined
     this.isUndef = function(p) {
         return (typeof p === 'undefined');
     };
@@ -143,9 +143,9 @@ window.UU = new (function() {
 
 
 
-    // Simple CSV parsing function, by Trevor Dixon:
+    // Simple, compact and fast CSV parsing function, by Trevor Dixon:
     // https://stackoverflow.com/a/14991797
-    // take a CSV as input and returns an array of arrays (rows, fields)
+    // take a CSV as input and return an array of arrays (rows, fields)
     /* eslint-disable max-statements, max-statements-per-line, max-len */
     this.parseCSV = function(csv) {
         var arr = [];

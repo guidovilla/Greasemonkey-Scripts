@@ -56,13 +56,14 @@
 //   - [M] changes to a list aren't reflected in page till reload. Change?
 //   - [M] Better handle case without lists (e.g. optimizations)
 //   - [M] Add description of flow in usage documentation
-//   - [M] List regeneration function doesn't handle case where lists are missing
+//   - [M] List regeneration method doesn't handle case where lists are missing
+//   - [M] Add explantion on how it works in general and how lists are managed
 //
 // Changelog:
 // ----------
 //                   Use US_Utils, remove title (duplicate in US_Utils).
 //                   Minor name change (EntryList -> Entry_List)
-// 2019.10.19  [1.9] Add function inList for checking if entry is in list
+// 2019.10.19  [1.9] Add inList method for checking if entry is in list
 //                   Fix use of context in startup()
 // 2019.10.18  [1.8] Add possibility to download a user payload with getUser
 // 2019.10.10  [1.7] Add possibility of source contexts
@@ -74,11 +75,11 @@
 // 2019.10.05  [1.5] Automatically handle case with only one list
 //                   Better handling of list of lists
 //                   Add possibility to permanently skip an entry
-// 2019.10.02  [1.4] Add newContext utility function
+// 2019.10.02  [1.4] Add newContext utility method
 // 2019.10.01  [1.3] More generic: getUser and getIdFromEntry are now optional
 //                   Correct @namespace and other headers (for public use)
 // 2019.09.27  [1.2] Refactoring and name changing: TitleList -> EntryList
-// 2019.09.27  [1.1] Code cleanup (string literals, reorder functions)
+// 2019.09.27  [1.1] Code cleanup (string literals, reorder methods)
 //                   Check for validity of the context object
 //                   Add usage documentation
 // 2019.09.21  [1.0] First version
@@ -91,22 +92,26 @@
 
 const Library_Version_ENTRY_LIST = '1.9';
 
-/* How to use the library
+/* How to use this library
 
-This library instantiates an EL object with a startup method.
+This library instantiates an EL object that must be initialized with a
+"context" object that implements some variables and callback methods (see
+below) specifically for the website to be processed (the target site).
+Additional contexts can be passed, each related to a source of information to
+be used in processing.
 
 Call, in order:
-0. EL.newContext(name) to initialize each source and target context
-1. EL.init(ctx), passing a "context" object that is specific to the
-   website you are working on
+0. EL.newContext(name) to initialize each source and target context, before
+   adding methods and variables
+1. EL.init(ctx), passing the target context object
    -> not needed if you don't have external sources, just call EL.startup(ctx)
-2. EL.addSource(ctx) for each external source, with its specific context
+2. EL.addSource(ctx) for each external source, with its specific context object
 3. EL.startup(ctx), ctx is not needed if EL.init(ctx) was called.
 
-Other functions and variables:
+Other methods and variables:
 - addToggleEventOnClick(button, howToFindEntry[, toggleList[, toggleType]]):
   mainly used in ctx.modifyEntry(), add an event listener that implements
-  a toggle function:
+  a toggle action:
   - button: the DOM object to attach the event listener to
   - howToFindEntry: how to go from evt.target to the entry object. It can be:
     - a number: # of node.parentNode to hop to get from evt.target to to entry
@@ -118,7 +123,7 @@ Other functions and variables:
                 It cannot be a falsy value (because it would mean no toggle)
 - markInvalid(entry):
   mark entry as invalid to skips it in subsequent passes
-  This function returns false so it can be used in isValidEntry() in this way:
+  This method returns false so it can be used in isValidEntry() in this way:
   return condition || EL.markInvalid(entry)
   This leaves the return value unchanged and marks the entry only if invalid
 - ln(ctx, listName): return list name as passed to determineType() (see below)
@@ -127,7 +132,7 @@ Other functions and variables:
 - deleteAllLists(ctx): remove all user lists from storage (not from memory)
 
 
-Mandatory callback functions and variables in main context:
+Mandatory callback methods and variables in main context:
 
 - name: identifier of the site (set with newContext())
 
@@ -137,7 +142,7 @@ Mandatory callback functions and variables in main context:
   process the entry based on the processing type or other features of the entry
 
 
-Conditionally mandatory callback functions in main context:
+Conditionally mandatory callback methods in main context:
 
 - getUser(): retrieve and return the username used on the website
   mandatory if data are to be stored on a per-user basis
@@ -154,10 +159,10 @@ Conditionally mandatory callback functions in main context:
   EL.addToggleEventOnClick()
 
 
-Optional callback functions and variables in main context:
+Optional callback methods and variables in main context:
 
 - interval: interval (in ms) to re-scan links in the DOM
-            won't re-scan if < MIN_INTERVAL
+            won't re-scan if < MIN_INTERVAL (e.g. if it is set to 0)
             dafault: DEFAULT_INTERVAL
 
 - isEntryPage():
@@ -186,14 +191,14 @@ Optional callback functions and variables in main context:
   a falsy value if no processing is required
   "lists" is an object with a true property for each list the entry appears in.
   The decision can also be taken using name, id and properties of the entry.
-  If there is a single processing type, the function might as well return true/false
+  If there is a single processing type, the method might as well return true/false
   Default: return true if entry is in at least one list (especially useful in
   cases with only one list, so there is no need to tell different lists apart)
 
 
-Callback functions and variables in contexts for external sources:
+Callback methods and variables in contexts for external sources:
 
-- name: identifier of the site (set with newContext())
+- name: see above
 
 - getUser(): see above
 - getSourceUserFromTargetUser(targetContextName, targetUser):
@@ -228,7 +233,7 @@ var EL = new (function() {
 
     /* PRIVATE members */
 
-    // check if target context has the correct variables and functions
+    // check if target context has the correct variables and methods
     // (i.e. "implements" interface of target context)
     function isValidTargetContext(ctx) {
         var valid = true;
@@ -250,7 +255,7 @@ var EL = new (function() {
     }
 
 
-    // check if source context has the correct variables and functions
+    // check if source context has the correct variables and methods
     // (i.e. "implements" interface of source context)
     function isValidSourceContext(ctx) {
         var valid = true;
@@ -506,13 +511,13 @@ var EL = new (function() {
 
     /* PUBLIC members */
 
-    // utility function that creates a new context, initialized with <name>
+    // utility method that creates a new context, initialized with <name>
     this.newContext = function(name) {
         return { 'name': name };
     };
 
 
-    // init function
+    // init method
     this.init = function(ctx) {
         initialized = false;
         failedInit  = true;
@@ -544,23 +549,23 @@ var EL = new (function() {
     };
 
 
-    // startup function. Don't pass "ctx" arg if init() had been called before
+    // startup method. Don't pass "ctx" arg if init() had been called before
     this.startup = function(ctx) {
         if (!initialized) {
             if (failedInit) return;
             self.init(ctx);
 
-        } else if (ctx) UU.lw('Startup called with context parameter after init, ignoring ctx');
+        } else if (ctx) UU.lw('Startup called after init, ignoring context argument');
 
         if (!isEntryPage) return;
 
         // Load list data for this user from local storage
         mainContext.allLists = self.loadSavedLists(mainContext);
         allContexts.push(mainContext);
-        // Setup the default list checking function, if not provided by context
+        // Setup the default list checking method, if not provided by context
         if (!mainContext.inList) mainContext.inList = _inList_default;
 
-        // start the entry processing function
+        // start the entry processing method
         self.processAllEntries();
         if (UU.isUndef(mainContext.interval) || mainContext.interval >= MIN_INTERVAL) {
             // TODO we might consider using MutationObserver in the future, instead
@@ -605,7 +610,7 @@ var EL = new (function() {
         // Load list data for this user from local storage
         ctx.allLists = self.loadSavedLists(ctx);
         allContexts.push(ctx);
-        // Setup the default list checking function, if not provided by context
+        // Setup the default list checking method, if not provided by context
         if (!ctx.inList) ctx.inList = _inList_default;
     };
 

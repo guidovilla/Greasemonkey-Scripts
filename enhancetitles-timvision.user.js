@@ -53,7 +53,8 @@
 // 2019.10.02  [1.3] Simplify code thanks to new EntryList defaults
 // 2019.09.30  [1.2] First public version, correct @namespace and other headers
 // 2019.09.27  [1.1] Changes due to EntryList (formerly TitleList) refactoring
-// 2019.09.21  [1.0] First version. Hiding function and removes useless zooming of title cards on mouseover
+// 2019.09.21  [1.0] First version. Hide titles on click and remove useless
+//                   zooming of title cards on mouseover
 // 2019.09.18  [0.1] First test version, private use only
 //
 

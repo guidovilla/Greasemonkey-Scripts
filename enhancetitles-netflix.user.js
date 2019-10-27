@@ -56,7 +56,7 @@
 //         Also, configuration should allow to skip downloading of unused lists
 //   - [H] Not all IMDb movies are recognized because matching is done by title
 //         (maybe use https://greasyfork.org/en/scripts/390115-imdb-utility-library-api)
-//   - [M] Move IMDb list function to utility library
+//   - [M] Move IMDb list functions to an IMDb utility library
 //   - [M] Optimize imdb list parsing
 //   - [M] Show name in tooltip? Maybe not needed if above is solved
 //   - [M] Make triangles more visible
@@ -76,7 +76,7 @@
 // 2019.10.20  [1.5] Refactor using EntryList library (first version)
 // 2019.09.30  [1.4] First public version, correct @namespace and other headers
 // 2019.08.28  [1.3] Make the list more visible (top right triangle instead of border, with tooltip)
-//                   Fix unhide function (bug added in 1.2)
+//                   Fix unhide method (bug added in 1.2)
 //                   Add priority in todo list
 // 2019.07.06  [1.2] Fix working in pages without rows (i.e. search page)
 //                   Fix opacity not applied in some cases/pages

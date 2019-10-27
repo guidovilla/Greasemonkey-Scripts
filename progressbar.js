@@ -54,7 +54,7 @@
 //                   Use US_Utils, hide global variables & other code cleanup.
 //                   Minor name change (ProgressBar -> Progress_Bar)
 // 2019.10.19  [1.1] Add possibility to update finish value
-//                   Change default value for "current" parameter in update()
+//                   Change default value for "current" argument in update()
 // 2019.10.16  [1.0] First version
 // 2019.10.14  [0.1] First test version, private use only
 //
@@ -65,7 +65,7 @@
 
 const Library_Version_PROGRESS_BAR = '1.1';
 
-/* How to use the library
+/* How to use this library
 
 - Create a new progress bar:
   var pb = new ProgressBar(...)
@@ -107,10 +107,10 @@ a specific "pb-progress-bar-<elem>" class different for each element.
 Indeterminate progress style is enabled by applying a "pb-indeterminate" class
 to the container DIV.
 
-Parameters (all parameters are optional):
+Methods (all arguments are optional):
 
 - ProgressBar(finish, msg, options)
-  Create a new progress bar. Parameters:
+  Create a new progress bar. Arguments:
   - finish: maximum value that can be reached (default is 100)
   - msg: message written in the bar, see above for substitutions
          default is "Loading {#}/{$}..."
@@ -124,10 +124,10 @@ Parameters (all parameters are optional):
 
 - update(progress, msg, finish)
   Optionally update parameters of the progress bar. Only non-undefined,
-  non-null parameters are changed.
+  non-null parameters are updated.
 
 - advance(value, msg)
-  Increment the progress bar status. Parameters:
+  Increment the progress bar status. Arguments:
   - value: the increment value, can be negative (default is 1)
   - msg: an optional new message (default is: don't change message)
 
@@ -145,6 +145,9 @@ window.ProgressBar = (function() {
     // Create progress bar
     // eslint-disable-next-line max-statements
     return function(finishVal, msg, options) {
+        // NOTE: we do all initialization only when a ProgressBar is created
+        // so that when the library is not used, no useless operations are done
+
         // style definition
         var STYLE = '.pb-progress-bar.pb-progress-bar-box{border:2px solid black;background-color:white;padding:2px;outline:white solid 6px;z-index:10000}'
                   + '.pb-progress-bar.pb-progress-bar-bar{background-color:green;height:100%;transition:width 300ms linear}'
@@ -173,7 +176,7 @@ window.ProgressBar = (function() {
 
         var pbBox, pb, pbTxtCont, pbTxt;  // elements of the progress bar
 
-        // helper function to create the elements
+        // helper method to create the elements
         function createElement(father, elementType, className, id) {
             var elem = document.createElement(elementType);
             if (!UU.isUndef(id)) elem.id = id;
@@ -182,7 +185,7 @@ window.ProgressBar = (function() {
             return elem;
         }
 
-        // initialization function
+        // initialization method
         function init() {
             // check for options in the call
             if (options && typeof options === 'object') {
