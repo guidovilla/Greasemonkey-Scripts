@@ -1,3 +1,4 @@
+- cercare function/method, argument/parameter
 - Entry_List più generica che non ha tt e getIdFromEntry ma getEntryData
 
 - testare condizioni di errore per NF
