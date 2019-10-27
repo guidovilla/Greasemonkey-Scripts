@@ -12,6 +12,7 @@
 // https://greasyfork.org/help/installing-user-scripts
 //
 // To use this library in a userscript you must add to script header:
+  // @require https://greasyfork.org/scripts/391648-us-utils/code/US_Utils.js
   // @require https://greasyfork.org/scripts/391236-progress-bar/code/Progress_Bar.js
   // @grant   GM_addStyle
 //
@@ -60,6 +61,7 @@
 
 /* jshint esversion: 6, supernew: true, laxbreak: true */
 /* exported ProgressBar, Library_Version_PROGRESS_BAR */
+/* global UU: readonly */
 
 const Library_Version_PROGRESS_BAR = '1.1';
 
@@ -174,7 +176,7 @@ window.ProgressBar = (function() {
         // helper function to create the elements
         function createElement(father, elementType, className, id) {
             var elem = document.createElement(elementType);
-            if (typeof id !== 'undefined') elem.id = id;
+            if (!UU.isUndef(id)) elem.id = id;
             elem.className = 'pb-progress-bar ' + className;
             father.appendChild(elem);
             return elem;
@@ -184,11 +186,11 @@ window.ProgressBar = (function() {
         function init() {
             // check for options in the call
             if (options && typeof options === 'object') {
-                if (typeof options.id        !== 'undefined') self.id   = options.id;
-                if (typeof options.start     !== 'undefined') start     = options.start;
-                if (typeof options.container !== 'undefined') container = options.container;
-                if (typeof options.width     !== 'undefined') width     = options.width;
-                if (typeof options.height    !== 'undefined') height    = options.height;
+                if (!UU.isUndef(options.id))        self.id   = options.id;
+                if (!UU.isUndef(options.start))     start     = options.start;
+                if (!UU.isUndef(options.container)) container = options.container;
+                if (!UU.isUndef(options.width))     width     = options.width;
+                if (!UU.isUndef(options.height))    height    = options.height;
             }
 
             // calculate positioning
@@ -233,13 +235,13 @@ window.ProgressBar = (function() {
         this.update = function(currentVal, newMsg, newFinish) {
             if (newMsg) message = newMsg;
             // if finish == 0, set it to -1
-            if (typeof newFinish  !== 'undefined' && newFinish  !== null) finish = (newFinish || -1);
+            if (!UU.isUndef(newFinish)  && newFinish  !== null) finish = (newFinish || -1);
             var newVal;
-            if (typeof currentVal !== 'undefined' && currentVal !== null) newVal = currentVal;
+            if (!UU.isUndef(currentVal) && currentVal !== null) newVal = currentVal;
             else newVal = current;
             if (newVal > finish) {
                 newVal = finish;
-                if (finish > 0) console.warn('ProgressBar - update: current value greater than finish value');
+                if (finish > 0) UU.lw('update: current value greater than finish value');
             }
 
             if (newVal < 0) {
@@ -260,9 +262,7 @@ window.ProgressBar = (function() {
                     // if exiting from indeterminate progress a small delay is
                     // needed, otherwise the class may be removed when changing
                     // the width, and the width transition takes place anyway
-                    setTimeout(function() {
-                        pbBox.classList.remove('pb-indeterminate');
-                    }, 33);
+                    UU.wait(33).then(function() { pbBox.classList.remove('pb-indeterminate'); });
                 } else {
                     pbBox.classList.remove('pb-indeterminate');
                 }

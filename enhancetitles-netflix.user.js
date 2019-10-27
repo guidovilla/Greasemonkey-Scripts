@@ -38,6 +38,7 @@
 // @match           https://www.imdb.com/user/*/lists*
 // @exclude         https://www.netflix.com/watch*
 //
+// @require         https://greasyfork.org/scripts/391648-us-utils/code/US_Utils.js
 // @require         https://greasyfork.org/scripts/390248-entry-list/code/Entry_List.js
 // @require         https://greasyfork.org/scripts/391236-progress-bar/code/Progress_Bar.js
 // @grant           GM_getValue
