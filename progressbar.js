@@ -51,7 +51,7 @@
 //
 // Changelog:
 // ----------
-//                   Hide global variables & other code cleanup.
+//                   Use US_Utils, hide global variables & other code cleanup.
 //                   Minor name change (ProgressBar -> Progress_Bar)
 // 2019.10.19  [1.1] Add possibility to update finish value
 //                   Change default value for "current" parameter in update()

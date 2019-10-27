@@ -72,7 +72,7 @@
 //
 // Changelog:
 // ----------
-//                   Change @requires following library rename 
+//                   Change @requires following library rename and US_Utils use
 // 2019.10.21  [1.6] Add download of rating and check-in list
 //                   Filter out non-title IMDb lists
 //                   Normalize apostrophes to increase NF<->IMDb name matching
