@@ -61,6 +61,7 @@
 //
 // Changelog:
 // ----------
+//                   Refactor, getIdFromEntry -> getEntryData (-> more generic)
 //                   Use US_Utils, remove title (duplicate in US_Utils).
 //                   Minor name change (EntryList -> Entry_List)
 // 2019.10.19  [1.9] Add inList method for checking if entry is in list
@@ -138,7 +139,7 @@ Mandatory callback methods and variables in main context:
 
 - getPageEntries():
   return (usually with querySelectorAll) an array of entries to be treated
-- processItem(entry, tt, processingType):
+- processItem(entry, entryData, processingType):
   process the entry based on the processing type or other features of the entry
 
 
@@ -149,11 +150,12 @@ Conditionally mandatory callback methods in main context:
   It can return either a single string (the username), or an object with a
   'name' and a 'payload' property. Name is used as the username, payload is
   saved in <ctx>.userPayload and can be used by context-specific functions
-- getIdFromEntry(entry): return a tt: { id, name } object from the entry
+- getEntryData(entry): return an entryData object, that must have at least
+  an id property (used to identify the entry)
   mandatory if you want to save entries to lists
   NOTE: if id is not found, entry is skipped but it is not marked as invalid
   for subsequent passes (unless you use TL.markInvalid(), see above)
-- unProcessItem(entry, tt, processingType):
+- unProcessItem(entry, entryData, processingType):
   like processItem, but it should reverse the action
   mandatory for entries that have a toggle action added with
   EL.addToggleEventOnClick()
@@ -184,11 +186,11 @@ Optional callback methods and variables in main context:
 - modifyEntry(entry):
   optionally modify entry when scanned for the first time (e.g. add a button)
   see also EL.addToggleEventOnClick() above
-- inList(tt, list):
-  check if tt is in list. Default is a simple lookup by tt.id.
-- determineType(lists, tt, entry):
-  return the processing type for an entry, given the lists it appears in, or
-  a falsy value if no processing is required
+- inList(entryData, list):
+  check if entry is in list. Default is a simple lookup by entryData.id.
+- determineType(lists, entryData, entry):
+  return the processing type for an entry given the lists it appears in (and
+  possibly other data), or a falsy value if no processing is required.
   "lists" is an object with a true property for each list the entry appears in.
   The decision can also be taken using name, id and properties of the entry.
   If there is a single processing type, the method might as well return true/false
@@ -208,7 +210,7 @@ Callback methods and variables in contexts for external sources:
   A user payload can be downloaded as in getUser() (q.v.)
 - getPageType(): see above
 - processPage(pageType, isEntryPage): see above
-- inList(tt, list): see above
+- inList(entryData, list): see above
 
 */
 
@@ -248,7 +250,7 @@ var EL = new (function() {
         valid &= UU.checkProperty(ctx, 'modifyEntry',    'function', true);
         valid &= UU.checkProperty(ctx, 'determineType',  'function', true);
         valid &= UU.checkProperty(ctx, 'getUser',        'function', true);
-        valid &= UU.checkProperty(ctx, 'getIdFromEntry', 'function', true);
+        valid &= UU.checkProperty(ctx, 'getEntryData',   'function', true);
         valid &= UU.checkProperty(ctx, 'unProcessItem',  'function', true);
 
         return !!valid;
@@ -398,34 +400,36 @@ var EL = new (function() {
     };
 
 
-    // Receives an entry tt and finds all lists where tt.id appears
-    this.inLists = function(tt) {
+    // Receives an entryData and finds all lists where entry appears
+    this.inLists = function(entryData) {
         var lists = {};
 
         allContexts.forEach(function(ctx) {
             for (var list in ctx.allLists) {
-                if (ctx.inList(tt, ctx.allLists[list])) lists[self.ln(ctx, list)] = true;
+                if (ctx.inList(entryData, ctx.allLists[list])) lists[self.ln(ctx, list)] = true;
             }
         });
 
         return lists;
     };
-    function _inList_default(tt, list) {
-        return !!list[tt.id];
+    function _inList_default(entryData, list) {
+        return !!list[entryData.id];
     }
 
 
-    // Wrap ctx.getIdFromEntry and add error logging
-    function _wrap_getIdFromEntry(ctx, entry) {
-        var tt = ctx.getIdFromEntry(entry);
-        if (!tt) UU.le('Could not determine id - for entry', entry);
-        return tt;
+    // Wrap ctx.getEntryData and add error logging
+    function _wrap_getEntryData(ctx, entry) {
+        var entryData = ctx.getEntryData(entry);
+        if (!entryData || UU.isUndef(entryData.id)) {
+            UU.le('Could not determine id - for entry', entry);
+        }
+        return entryData;
     }
 
 
     // Process a single entry
     function processOneEntry(entry, ctx = mainContext) {
-        var tt, lists, processingType;
+        var entryData, lists, processingType;
 
         // if entry has already been previously processed, skip it
         if (entry.ELProcessed || entry.ELInvalid) return;
@@ -433,20 +437,20 @@ var EL = new (function() {
         // see if entry is valid
         if (ctx.isValidEntry && !ctx.isValidEntry(entry)) return;
 
-        if (ctx.getIdFromEntry) {
-            tt = _wrap_getIdFromEntry(ctx, entry);
-            if (!tt) return;
+        if (ctx.getEntryData) {
+            entryData = _wrap_getEntryData(ctx, entry);
+            if (!entryData) return;
         }
 
         if (ctx.modifyEntry) ctx.modifyEntry(entry);
-        lists = ( tt ? self.inLists(tt) : {} );
+        lists = ( entryData ? self.inLists(entryData) : {} );
 
         processingType = (ctx.determineType
-            ? ctx.determineType(lists, tt, entry)
+            ? ctx.determineType(lists, entryData, entry)
             : Object.keys(lists).length > 0);
 
         if (processingType) {
-            ctx.processItem(entry, tt, processingType);
+            ctx.processItem(entry, entryData, processingType);
             entry.ELProcessingType = processingType;
         }
 
@@ -489,19 +493,19 @@ var EL = new (function() {
     this.toggleEntry = function(entry, toggleList, toggleType) {
         var ctx = mainContext;
 
-        var tt = _wrap_getIdFromEntry(ctx, entry);
-        if (!tt) return;
+        var entryData = _wrap_getEntryData(ctx, entry);
+        if (!entryData || UU.isUndef(entryData.id)) return;
 
         // check if item is in list
         var list = ctx.allLists[toggleList];
         if (!list) list = ctx.allLists[toggleList] = {};
-        if (list[tt.id]) {
-            delete list[tt.id];
-            ctx.unProcessItem(entry, tt, toggleType);
+        if (list[entryData.id]) {
+            delete list[entryData.id];
+            ctx.unProcessItem(entry, entryData, toggleType);
             entry.ELProcessingType = '-' + toggleType;
         } else {
-            list[tt.id] = tt.name;
-            ctx.processItem(entry, tt, toggleType);
+            list[entryData.id] = entryData;
+            ctx.processItem(entry, entryData, toggleType);
             entry.ELProcessingType = toggleType;
         }
         self.saveList(ctx, list, toggleList);

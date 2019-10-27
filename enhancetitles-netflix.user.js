@@ -69,7 +69,7 @@
 //
 // Changelog:
 // ----------
-//                   Refactor/cleanup (library rename and US_Utils adoption)
+//                   Refactor&cleanup (library/method rename, adopt US_Utils)
 // 2019.10.21  [1.6] Add download of rating and check-in list
 //                   Filter out non-title IMDb lists
 //                   Normalize apostrophes to increase NF<->IMDb name matching
@@ -150,7 +150,7 @@
     };
 
 
-    netflix.getIdFromEntry = function(entry) {
+    netflix.getEntryData = function(entry) {
         var a = entry.querySelector('a[href^="/watch/"]');
         var id = null;
         if (a) {
@@ -168,7 +168,7 @@
     };
 
 
-    netflix.determineType = function(lists, _I_tt, entry) {
+    netflix.determineType = function(lists, _I_entryData, entry) {
         var type = null;
 
         if (entry.classList.contains('is-disliked')) type = 'D';
@@ -209,7 +209,7 @@
             + 'z-index: 2;'
             + '}';
 
-    netflix.processItem = function(entry, _I_tt, processingType) {
+    netflix.processItem = function(entry, _I_entryData, processingType) {
         if (!processingType || !hideTypes[processingType]) processingType = 'MISSING';
         var triangle = document.createElement('div');
         triangle.className = 'NHT-triangle ' + TRIANGLE_STYLE_NAME;
@@ -222,12 +222,12 @@
         var parent = entry.parentNode;
         parent.parentNode.style.width = '5%';
 
-        var field = parent.querySelector('fieldset#hideTitle' + tt.id);
+        var field = parent.querySelector('fieldset#hideTitle' + entryData.id);
         if (!field) {
             field = document.createElement('fieldset');
-            field.id = 'hideTitle' + tt.id;
+            field.id = 'hideTitle' + entryData.id;
             field.style.border = 0;
-            field.appendChild(document.createTextNode(tt.name));
+            field.appendChild(document.createTextNode(entryData.name));
             parent.appendChild(field);
         } else {
             field.style.display = 'block';
@@ -236,13 +236,13 @@
     };
 
 
-    netflix.unProcessItem = function(entry, _I_tt, _I_processingType) {
+    netflix.unProcessItem = function(entry, _I_entryData, _I_processingType) {
         entry.parentNode.style.opacity = 1;
         var triangle = entry.parentNode.querySelector('.NHT-triangle');
         if (triangle) triangle.parentNode.removeChild(triangle);
 /*
         entry.parentNode.parentNode.style.width = null;
-        entry.parentNode.querySelector('fieldset#hideTitle' + tt.id).style.display = 'none';
+        entry.parentNode.querySelector('fieldset#hideTitle' + entryData.id).style.display = 'none';
 */
     };
 
@@ -309,8 +309,8 @@
 
 
     // lookup IMDb movies by name
-    imdb.inList = function(tt, list) {
-        return !!(list[tt.name]);
+    imdb.inList = function(entryData, list) {
+        return !!(list[entryData.name]);
     };
 
 
@@ -367,11 +367,11 @@
         if (!cards) return false;
 
         var list = {};
-        var entry, tt;
+        var entry, entryData;
         for (var i = 0; i < cards.length; i++) {
             entry = cards[i];
-            tt    = netflix.getIdFromEntry(entry);
-            list[tt.id] = tt.name;
+            entryData          = netflix.getEntryData(entry);
+            list[entryData.id] = entryData.name;
         }
 
         EL.saveList(netflix, list, LIST_NF_MY);

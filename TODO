@@ -1,5 +1,3 @@
-- Entry_List più generica che non ha tt e getIdFromEntry ma getEntryData
-
 - testare condizioni di errore per NF
 
 - README in gitlab/GF/OUJS - esempi:

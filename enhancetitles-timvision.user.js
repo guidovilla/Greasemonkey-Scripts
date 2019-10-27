@@ -47,7 +47,7 @@
 //
 // Changelog:
 // ----------
-//                   Change @require following library rename and US_Utils use
+//                   Refactor&cleanup (library/method rename, adopt US_Utils)
 // 2019.10.10  [1.4] Use classes instead of inline styles, some code cleanup
 //                   Optimization: permanently skip invalid entries
 // 2019.10.02  [1.3] Simplify code thanks to new EntryList defaults
@@ -130,7 +130,7 @@
     };
 
 
-    timvision.getIdFromEntry = function(entry) {
+    timvision.getEntryData = function(entry) {
         var a = ( entry.querySelector('a[href^="/detail/"]') || entry.querySelector('a[href^="/series/"]') );
         var id = null;
         if (a) {
@@ -142,12 +142,12 @@
     };
 
 
-    timvision.processItem = function(entry, _I_tt, _I_processingType) {
+    timvision.processItem = function(entry, _I_entryData, _I_processingType) {
         entry.classList.toggle(this.CLASS_PROCESS, true);
     };
 
 
-    timvision.unProcessItem = function(entry, _I_tt, _I_processingType) {
+    timvision.unProcessItem = function(entry, _I_entryData, _I_processingType) {
         entry.classList.toggle(this.CLASS_PROCESS, false);
     };
 

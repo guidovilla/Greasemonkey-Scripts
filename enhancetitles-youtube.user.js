@@ -73,13 +73,13 @@
     };
 
 
-    youtube.determineType = function(_I_lists, _I_tt, entry) {
+    youtube.determineType = function(_I_lists, _I_entryData, entry) {
         var st = entry.querySelector('#overlays #progress');
         return (st && st.style.width == "100%");
     };
 
 
-    youtube.processItem = function(entry, _I_tt, _I_processingType) {
+    youtube.processItem = function(entry, _I_entryData, _I_processingType) {
         entry.style.opacity = .1;
     };
 
