@@ -115,7 +115,7 @@ Other functions and variables:
                 (can be omitted if a default list is to be used)
   - toggleType: the processing type that is toggled by the press of the button
                 (can be omitted if only one processing type is used)
-                It cannot be a false value (0, null, false, undefined, etc.)
+                It cannot be a falsy value (because it would mean no toggle)
 - markInvalid(entry):
   mark entry as invalid to skips it in subsequent passes
   This function returns false so it can be used in isValidEntry() in this way:
@@ -182,8 +182,8 @@ Optional callback functions and variables in main context:
 - inList(tt, list):
   check if tt is in list. Default is a simple lookup by tt.id.
 - determineType(lists, tt, entry):
-  return the processing type for an entry, given the lists it appears in, or a
-  false value (0, null, false, undefined, etc.) if no processing is required
+  return the processing type for an entry, given the lists it appears in, or
+  a falsy value if no processing is required
   "lists" is an object with a true property for each list the entry appears in.
   The decision can also be taken using name, id and properties of the entry.
   If there is a single processing type, the function might as well return true/false
