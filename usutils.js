@@ -43,6 +43,7 @@
 //
 // Changelog:
 // ----------
+//                   Add implements(), make checkProperty() private
 // 2019.10.27  [1.0] First version
 // 2019.10.26  [0.1] First test version, private use only
 //
@@ -65,10 +66,17 @@ This library instantitates an UU object with utility variables and methods:
 - li(...args): like console.info, prepending the script name
 - ld(...args): like console.debug, prepending the script name
 
-- checkProperty(object, property, type, optional)
-  Check if object "object" has property "property" of type "type".
-  If property is "optional" (default false), it is only checked for type
-  Used to test if object "implements" a specific interface
+- implements(object, interface):
+  check if passed object "implements" given interface, by checking name and
+  type of its properties. Arguments:
+  - object: the object to be tested
+  - interface: array of properties to be checked, each represented by an
+    object with:
+    - name [mandatory]: the name of the property to be checked
+    - type [mandatory]: the type of the property, as returned by typeof
+    - optional: boolean, if true the property is optional (if not specified
+                it is assumed to be false)
+  Return true/false, and log error for each missing/mismatched property.
 
 - parseCSV(csv): simple CSV parsing function, by Trevor Dixon (see below)
   Take a CSV string as input and return an array of rows, each containing
@@ -124,9 +132,10 @@ window.UU = new (function() {
 
 
 
-    // Check if "object" has "property" of "type"
-    // used to test if object "implements" a specific interface
-    this.checkProperty = function(object, property, type, optional = false) {
+    // Check if object "object" has property "property" of type "type".
+    // If property is "optional" (default false), it is only checked for type
+    // Used to test if object "implements" a specific interface
+    function checkProperty(object, property, type, optional = false) {
 
         if (self.isUndef(object[property])) {
             if (optional) return true;
@@ -139,6 +148,18 @@ window.UU = new (function() {
             return false;
         }
         return true;
+    }
+    // check if passed object "implements" given interface, by checking name
+    // and type of its properties.
+    this.implements = function(object, interface) {
+        var valid = true;
+
+        // check is not stopped at first error, so all problems are logged
+        interface.forEach(function(prop) {
+            valid = valid && checkProperty(object, prop.name, prop.type, prop.optional);
+        });
+
+        return valid;
     };
 
 

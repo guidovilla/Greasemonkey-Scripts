@@ -10,7 +10,6 @@
 - fare anche versione di parse CSV che sia "strict" RFC
 
 - verificare come si comporta il salvataggio liste se non c'è utente (undefined? vd. YT)
-- rifare check dell'interfaccia passando una lista di proprietà da controllare
 - createfunction e createfunctionparam: fare e usare
 
 - ottimizzare querySelector... con getElementsBy...

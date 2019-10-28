@@ -224,6 +224,27 @@ var EL = new (function() {
     const MIN_INTERVAL     = 100;
     const DEFAULT_INTERVAL = 1000;
 
+    var TARGET_CONTEXT_INTERFACE = [
+        { 'name': 'name',           'type': 'string'   },
+        { 'name': 'getPageEntries', 'type': 'function' },
+        { 'name': 'processItem',    'type': 'function' },
+        { 'name': 'interval',       'type': 'number',   optional: true },
+        { 'name': 'isEntryPage',    'type': 'function', optional: true },
+        { 'name': 'getPageType',    'type': 'function', optional: true },
+        { 'name': 'isValidEntry',   'type': 'function', optional: true },
+        { 'name': 'modifyEntry',    'type': 'function', optional: true },
+        { 'name': 'determineType',  'type': 'function', optional: true },
+        { 'name': 'getUser',        'type': 'function', optional: true },
+        { 'name': 'getEntryData',   'type': 'function', optional: true },
+        { 'name': 'unProcessItem',  'type': 'function', optional: true },
+    ];
+    var SOURCE_CONTEXT_INTERFACE = [
+        { 'name': 'name',                        'type': 'string'   },
+        { 'name': 'getUser',                     'type': 'function', optional: true },
+        { 'name': 'getSourceUserFromTargetUser', 'type': 'function', optional: true },
+        { 'name': 'getPageType',                 'type': 'function', optional: true },
+    ];
+
     var self = this;
 
     var initialized = false;
@@ -234,41 +255,6 @@ var EL = new (function() {
 
 
     /* PRIVATE members */
-
-    // check if target context has the correct variables and methods
-    // (i.e. "implements" interface of target context)
-    function isValidTargetContext(ctx) {
-        var valid = true;
-
-        valid &= UU.checkProperty(ctx, 'name',           'string');
-        valid &= UU.checkProperty(ctx, 'getPageEntries', 'function');
-        valid &= UU.checkProperty(ctx, 'processItem',    'function');
-        valid &= UU.checkProperty(ctx, 'interval',       'number',   true);
-        valid &= UU.checkProperty(ctx, 'isEntryPage',    'function', true);
-        valid &= UU.checkProperty(ctx, 'getPageType',    'function', true);
-        valid &= UU.checkProperty(ctx, 'isValidEntry',   'function', true);
-        valid &= UU.checkProperty(ctx, 'modifyEntry',    'function', true);
-        valid &= UU.checkProperty(ctx, 'determineType',  'function', true);
-        valid &= UU.checkProperty(ctx, 'getUser',        'function', true);
-        valid &= UU.checkProperty(ctx, 'getEntryData',   'function', true);
-        valid &= UU.checkProperty(ctx, 'unProcessItem',  'function', true);
-
-        return !!valid;
-    }
-
-
-    // check if source context has the correct variables and methods
-    // (i.e. "implements" interface of source context)
-    function isValidSourceContext(ctx) {
-        var valid = true;
-
-        valid &= UU.checkProperty(ctx, 'name',                        'string');
-        valid &= UU.checkProperty(ctx, 'getUser',                     'function', true);
-        valid &= UU.checkProperty(ctx, 'getSourceUserFromTargetUser', 'function', true);
-        valid &= UU.checkProperty(ctx, 'getPageType',                 'function', true);
-
-        return !!valid;
-    }
 
 
     // standardized names for storage variables
@@ -530,7 +516,7 @@ var EL = new (function() {
         allContexts = [];
 
         // check that passed context is good
-        if (!isValidTargetContext(ctx)) {
+        if (!UU.implements(ctx, TARGET_CONTEXT_INTERFACE)) {
             UU.le('Invalid target context, aborting');
             return;
         }
@@ -586,7 +572,7 @@ var EL = new (function() {
         }
 
         // check that passed context is good
-        if (!isValidSourceContext(ctx)) {
+        if (!UU.implements(ctx, SOURCE_CONTEXT_INTERFACE)) {
             UU.le('Invalid source context, aborting');
             return;
         }
