@@ -113,6 +113,20 @@
     var NF_LIST_PAGE   = 2; // any context-wide unique, non-falsy value is good
 
 
+    var HIDE_BUTTON_STYLE_NAME = 'entrylist-nf-hide-button';
+    var HIDE_BUTTON_STYLE = '.' + HIDE_BUTTON_STYLE_NAME + '{bottom:0;position:absolute; z-index: 10}';
+    var TRIANGLE_STYLE_NAME = 'entrylist-netflix-triangle';
+    var TRIANGLE_STYLE = '.' + TRIANGLE_STYLE_NAME + '{'
+            + 'border-right: 20px solid;'
+            + 'border-bottom: 20px solid transparent;'
+            + 'height: 0;'
+            + 'width: 0;'
+            + 'position: absolute;'
+            + 'top: 0;'
+            + 'right: 0;'
+            + 'z-index: 2;'
+            + '}';
+
     // Netflix
 
     netflix.getUser = function() {
@@ -142,8 +156,7 @@
         b.textContent   = 'H';
         b.title         = 'Hide/show this title';
         var d           = document.createElement('div');
-        d.className     = "nf-svg-button-wrapper";
-        d.style.cssText = 'bottom: 0; position: absolute; z-index: 10';
+        d.className     = "nf-svg-button-wrapper " + HIDE_BUTTON_STYLE_NAME;
         d.appendChild(b);
         EL.addToggleEventOnClick(b, 2, LIST_HIDE, 'H');
         entry.appendChild(d);
@@ -197,17 +210,6 @@
         "M": { "name": 'My list',   "colour": 'yellow' },
         "MISSING": { "name": 'Hide type not known', "colour": 'red' },
     };
-    var TRIANGLE_STYLE_NAME = 'entrylist-netflix-triangle';
-    var TRIANGLE_STYLE = '.' + TRIANGLE_STYLE_NAME + '{'
-            + 'border-right: 20px solid;'
-            + 'border-bottom: 20px solid transparent;'
-            + 'height: 0;'
-            + 'width: 0;'
-            + 'position: absolute;'
-            + 'top: 0;'
-            + 'right: 0;'
-            + 'z-index: 2;'
-            + '}';
 
     netflix.processItem = function(entry, _I_entryData, processingType) {
         if (!processingType || !hideTypes[processingType]) processingType = 'MISSING';
@@ -544,7 +546,7 @@
 
 
     //-------- "main" --------
-    GM_addStyle(TRIANGLE_STYLE);
+    GM_addStyle(TRIANGLE_STYLE + HIDE_BUTTON_STYLE);
     EL.init(netflix);
     EL.addSource(imdb);
     EL.startup();
