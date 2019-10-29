@@ -156,8 +156,7 @@
 
 
     //-------- "main" --------
-    GM_addStyle(timvision.STYLE_BUTTON);
-    GM_addStyle(timvision.STYLE_PROCESS);
+    GM_addStyle(timvision.STYLE_BUTTON + timvision.STYLE_PROCESS);
     EL.startup(timvision);
 
 })();
