@@ -11,6 +11,9 @@
 // To use this library in a userscript you must add to script header:
   // @require https://greasyfork.org/scripts/391648/code/userscript-utils.js
   // @grant   GM_xmlhttpRequest  (only if using UU.GM_xhR)
+  // @grant   GM_getValue        (only if using UU.GM_getObject)
+  // @grant   GM_setValue        (only if using UU.GM_setObject)
+  // @grant   GM_deleteValue     (only if using UU.GM_deleteObject)
 //
 // --------------------------------------------------------------------
 //
@@ -38,12 +41,11 @@
 //
 // To-do (priority: [H]igh, [M]edium, [L]ow):
 //   - [H] GM_xhR: remove workaround responseXML2 and make responseXML work
-//   - [M] add GM_getValue and GM_setValue for objects (automatic JSON parsing)
 //   - [M] add other functions
 //
 // Changelog:
 // ----------
-//                   Add implements(), make checkProperty() private
+//                   Add GM_setObject(), GM_getObject(), implements(), make checkProperty() private
 //                   Name change, backward compatible
 // 2019.10.27  [1.0] First version
 // 2019.10.26  [0.1] First test version, private use only
@@ -66,6 +68,13 @@ This library instantitates an UU object with utility variables and methods:
 - lw(...args): like console.warn, prepending the script name
 - li(...args): like console.info, prepending the script name
 - ld(...args): like console.debug, prepending the script name
+
+- GM_setObject(name, value): wrapper around GM_setValue for storing objects,
+  applies serialization before saving.
+- GM_getObject(name, defaultValue): wrapper around GM_getValue for retrieving
+  stringified objects, applies deserialization and returns a proper object.
+- GM_deleteObject(name): just another name for GM_deleteValue (offered only
+  for name consistency).
 
 - implements(object, interfaceDef):
   check if passed object "implements" given interface, by checking name and
@@ -130,6 +139,35 @@ window.UU = new (function() {
     this.lw = function(...args) { console.warn (bracketMe, ...args); };
     this.li = function(...args) { console.info (bracketMe, ...args); };
     this.ld = function(...args) { console.debug(bracketMe, ...args); };
+
+
+
+    // storage for objects
+    // setter...
+    this.GM_setObject = function(name, value) {
+        var jsonData;
+        try {
+            jsonData = JSON.stringify(value);
+            GM_setValue(name, jsonData);
+        } catch(err) {
+            self.le('Error serializing object to save in storage. Name:', name, '- Object:', value, '- Error:', err);
+        }
+    };
+
+    // ...and getter
+    this.GM_getObject = function(name, defaultValue) {
+        var jsonData = GM_getValue(name);
+        if (jsonData) {
+            try {
+                return JSON.parse(jsonData);
+            } catch(err) {
+                self.le('Error parsing object retrieved from storage. Name:', name, '- Object:', jsonData, '- Error:', err);
+            }
+        } else return defaultValue;
+    };
+
+    // deleteObject offered only for name consistency
+    this.GM_deleteObject = GM_deleteValue;
 
 
 
