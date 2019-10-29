@@ -228,21 +228,21 @@ var EL = new (function() {
         { 'name': 'name',           'type': 'string'   },
         { 'name': 'getPageEntries', 'type': 'function' },
         { 'name': 'processItem',    'type': 'function' },
-        { 'name': 'interval',       'type': 'number',   optional: true },
-        { 'name': 'isEntryPage',    'type': 'function', optional: true },
-        { 'name': 'getPageType',    'type': 'function', optional: true },
-        { 'name': 'isValidEntry',   'type': 'function', optional: true },
-        { 'name': 'modifyEntry',    'type': 'function', optional: true },
-        { 'name': 'determineType',  'type': 'function', optional: true },
-        { 'name': 'getUser',        'type': 'function', optional: true },
-        { 'name': 'getEntryData',   'type': 'function', optional: true },
-        { 'name': 'unProcessItem',  'type': 'function', optional: true },
+        { 'name': 'interval',       'type': 'number',   'optional': true },
+        { 'name': 'isEntryPage',    'type': 'function', 'optional': true },
+        { 'name': 'getPageType',    'type': 'function', 'optional': true },
+        { 'name': 'isValidEntry',   'type': 'function', 'optional': true },
+        { 'name': 'modifyEntry',    'type': 'function', 'optional': true },
+        { 'name': 'determineType',  'type': 'function', 'optional': true },
+        { 'name': 'getUser',        'type': 'function', 'optional': true },
+        { 'name': 'getEntryData',   'type': 'function', 'optional': true },
+        { 'name': 'unProcessItem',  'type': 'function', 'optional': true },
     ];
     var SOURCE_CONTEXT_INTERFACE = [
         { 'name': 'name',                        'type': 'string'   },
-        { 'name': 'getUser',                     'type': 'function', optional: true },
-        { 'name': 'getSourceUserFromTargetUser', 'type': 'function', optional: true },
-        { 'name': 'getPageType',                 'type': 'function', optional: true },
+        { 'name': 'getUser',                     'type': 'function', 'optional': true },
+        { 'name': 'getSourceUserFromTargetUser', 'type': 'function', 'optional': true },
+        { 'name': 'getPageType',                 'type': 'function', 'optional': true },
     ];
 
     var self = this;
