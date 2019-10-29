@@ -565,40 +565,38 @@
         var data = UU.parseCSV(response.responseText);
         var list = {};
 
-        var fields = {};
+        var header = data[0];
+        var f = {};
+        for (var ih = 0; ih < header.length; ih++) f[header[ih]] = ih;
+
+        var id_fld, name_fld;
+        switch (type) {
+            case TITLES:
+                //id_fld   = "Const";
+                id_fld   = "Title";
+                name_fld = "Title";
+                break;
+            default:
+                throw 'downloaded list of unmanaged type ' + type + ', discarded';
+        }
+
+        var id_idx   = f[id_fld];
+        var name_idx = f[name_fld];
+
         var id, name;
         for (var i=1; i < data.length; i++) {
-            for (var f=0; f < data[0].length; f++)
-                { fields[data[0][f]] = data[i][f]; }
-
-            switch (type) {
-                case TITLES:
-                    //            ___0___   _____1_____  ____2_____  ___3____  _____4_____  ____5_____  _____6_____  ______7_______  _____8_____  _______9______  ____10___  _____11_____  ___12____   _____13_____  ____14____
-                    // ratings  : Const,    Your Rating, Date Added, Title,    URL,         Title Type, IMDb Rating, Runtime (mins), Year,        Genres,         Num Votes, Release Date, Directors
-                    // others   : Position, Const,       Created,    Modified, Description, Title,      URL,         Title Type,     IMDb Rating, Runtime (mins), Year,      Genres,       Num Votes,  Release Date,  Directors
-                    id   = fields["Const"];
-                    name = fields["Title"];
-                    break;
-                case PEOPLE:
-                    // ___0___   __1__  ___2___  ___3____  _____4_____  __5__  ____6____  ____7_____
-                    // Position, Const, Created, Modified, Description, Name,  Known For, Birth Date
-                    id   = fields["Const"];
-                    name = fields["Name"];
-                    break;
-                case IMAGES:
-                    // Do nothing for now
-                    continue;
-            }
+            id   = data[i][id_idx];
+            name = data[i][name_idx];
 
             if (id === "") {
-                UU.le('parse ' + response.finalUrl + ": no id defined for row " + i);
+                UU.le('parse ' + response.finalUrl + ": no id found at row " + i);
                 continue;
             }
             if (list[id]) {
                 UU.le('parse ' + response.finalUrl + ": duplicate id " + id + " found at row " + i);
                 continue;
             }
-            list[name] = name;
+            list[id] = name;
         }
         return list;
     }
