@@ -12,8 +12,8 @@
 // https://greasyfork.org/help/installing-user-scripts
 //
 // To use this library in a userscript you must add to script header:
-  // @require https://greasyfork.org/scripts/391648-us-utils/code/US_Utils.js
-  // @require https://greasyfork.org/scripts/391236-progress-bar/code/Progress_Bar.js
+  // @require https://greasyfork.org/scripts/391648/code/us-utils.js
+  // @require https://greasyfork.org/scripts/391236/code/progress-bar.js
   // @grant   GM_addStyle
 //
 // --------------------------------------------------------------------

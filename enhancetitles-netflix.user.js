@@ -28,8 +28,8 @@
 // @attribution     Ricardo Mendonça Ferreira (https://openuserjs.org/users/AltoRetrato)
 //
 // @namespace       https://greasyfork.org/users/373199-guido-villa
-// @downloadURL     https://greasyfork.org/scripts/390631-enhance-titles-netflix/code/Enhance%20titles%20-%20Netflix.user.js
-// @updateURL       https://greasyfork.org/scripts/390631-enhance-titles-netflix/code/Enhance%20titles%20-%20Netflix.meta.js
+// @downloadURL     https://greasyfork.org/scripts/390631/code/enhance-titles-netflix.user.js
+// @updateURL       https://greasyfork.org/scripts/390631/code/enhance-titles-netflix.meta.js
 // @downloadURL     https://openuserjs.org/install/guidovilla/Enhance_titles_-_Netflix.user.js
 // @updateURL       https://openuserjs.org/meta/guidovilla/Enhance_titles_-_Netflix.meta.js
 //
@@ -37,9 +37,9 @@
 // @match           https://www.imdb.com/user/*/lists*
 // @exclude         https://www.netflix.com/watch*
 //
-// @require         https://greasyfork.org/scripts/391648-us-utils/code/US_Utils.js
-// @require         https://greasyfork.org/scripts/390248-entry-list/code/Entry_List.js
-// @require         https://greasyfork.org/scripts/391236-progress-bar/code/Progress_Bar.js
+// @require         https://greasyfork.org/scripts/391648/code/us-utils.js
+// @require         https://greasyfork.org/scripts/390248/code/entry-list.js
+// @require         https://greasyfork.org/scripts/391236/code/progress-bar.js
 // @grant           GM_getValue
 // @grant           GM_setValue
 // @grant           GM_deleteValue

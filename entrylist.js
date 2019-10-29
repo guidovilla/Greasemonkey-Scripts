@@ -18,8 +18,8 @@
 // https://greasyfork.org/help/installing-user-scripts
 //
 // To use this library in a userscript you must add to script header:
-  // @require https://greasyfork.org/scripts/391648-us-utils/code/US_Utils.js
-  // @require https://greasyfork.org/scripts/390248-entry-list/code/Entry_List.js
+  // @require https://greasyfork.org/scripts/391648/code/us-utils.js
+  // @require https://greasyfork.org/scripts/390248/code/entry-list.js
   // @grant   GM_getValue
   // @grant   GM_setValue
   // @grant   GM_deleteValue

@@ -23,15 +23,15 @@
 // @contributionURL https://tinyurl.com/gv-donate-72
 //
 // @namespace       https://greasyfork.org/users/373199-guido-villa
-// @downloadURL     https://greasyfork.org/scripts/390633-enhance-titles-youtube/code/Enhance%20titles%20-%20YouTube.user.js
-// @updateURL       https://greasyfork.org/scripts/390633-enhance-titles-youtube/code/Enhance%20titles%20-%20YouTube.meta.js
+// @downloadURL     https://greasyfork.org/scripts/390633/code/enhance-titles-youtube.user.js
+// @updateURL       https://greasyfork.org/scripts/390633/code/enhance-titles-youtube.meta.js
 // @downloadURL     https://openuserjs.org/install/guidovilla/Enhance_titles_-_YouTube.user.js
 // @updateURL       https://openuserjs.org/meta/guidovilla/Enhance_titles_-_YouTube.meta.js
 //
 // @match           https://www.youtube.com/*
 //
-// @require         https://greasyfork.org/scripts/391648-us-utils/code/US_Utils.js
-// @require         https://greasyfork.org/scripts/390248-entry-list/code/Entry_List.js
+// @require         https://greasyfork.org/scripts/391648/code/us-utils.js
+// @require         https://greasyfork.org/scripts/390248/code/entry-list.js
 // @grant           GM_getValue
 // @grant           GM_setValue
 // @grant           GM_listValues

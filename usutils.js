@@ -9,7 +9,7 @@
 // https://greasyfork.org/help/installing-user-scripts
 //
 // To use this library in a userscript you must add to script header:
-  // @require https://greasyfork.org/scripts/391648-us-utils/code/US_Utils.js
+  // @require https://greasyfork.org/scripts/391648/code/us-utils.js
   // @grant   GM_xmlhttpRequest  (only if using UU.GM_xhR)
 //
 // --------------------------------------------------------------------
