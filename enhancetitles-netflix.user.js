@@ -37,7 +37,7 @@
 // @match           https://www.imdb.com/user/*/lists*
 // @exclude         https://www.netflix.com/watch*
 //
-// @require         https://greasyfork.org/scripts/391648/code/us-utils.js
+// @require         https://greasyfork.org/scripts/391648/code/userscript-utils.js
 // @require         https://greasyfork.org/scripts/390248/code/entry-list.js
 // @require         https://greasyfork.org/scripts/391236/code/progress-bar.js
 // @grant           GM_getValue
@@ -68,7 +68,7 @@
 //
 // Changelog:
 // ----------
-//                   Refactor&cleanup (library/method rename, adopt US_Utils)
+//                   Refactor&cleanup (method rename, adopt Userscript Utils)
 // 2019.10.21  [1.6] Add download of rating and check-in list
 //                   Filter out non-title IMDb lists
 //                   Normalize apostrophes to increase NF<->IMDb name matching

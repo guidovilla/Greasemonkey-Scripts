@@ -12,7 +12,7 @@
 // https://greasyfork.org/help/installing-user-scripts
 //
 // To use this library in a userscript you must add to script header:
-  // @require https://greasyfork.org/scripts/391648/code/us-utils.js
+  // @require https://greasyfork.org/scripts/391648/code/userscript-utils.js
   // @require https://greasyfork.org/scripts/391236/code/progress-bar.js
   // @grant   GM_addStyle
 //
@@ -23,7 +23,7 @@
 // @exclude         *
 //
 // ==UserLibrary==
-// @name            Progress_Bar
+// @name            Progress Bar
 // @description     Create and manage simple progress bars, minimal JavaScript
 // @version         1.1
 // @author          guidovilla
@@ -32,7 +32,7 @@
 // @license         GPL-3.0-or-later
 // @homepageURL     https://greasyfork.org/scripts/391236-progress-bar
 // @supportURL      https://gitlab.com/gv-browser/userscripts/issues
-// @contributionURL https://tinyurl.com/gv-donate-c6
+// @contributionURL https://tinyurl.com/gv-donate-04
 // @attribution     Ricardo Mendonça Ferreira (https://openuserjs.org/users/AltoRetrato)
 // ==/UserScript==
 //
@@ -51,8 +51,8 @@
 //
 // Changelog:
 // ----------
-//                   Use US_Utils, hide global variables & other code cleanup.
-//                   Minor name change (ProgressBar -> Progress_Bar)
+//                   Refactor adding Userscript Utils, hide global variables & other code cleanup.
+//                   Minor name change, backward compatible
 // 2019.10.19  [1.1] Add possibility to update finish value
 //                   Change default value for "current" argument in update()
 // 2019.10.16  [1.0] First version

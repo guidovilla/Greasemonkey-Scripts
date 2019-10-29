@@ -18,7 +18,7 @@
 // https://greasyfork.org/help/installing-user-scripts
 //
 // To use this library in a userscript you must add to script header:
-  // @require https://greasyfork.org/scripts/391648/code/us-utils.js
+  // @require https://greasyfork.org/scripts/391648/code/userscript-utils.js
   // @require https://greasyfork.org/scripts/390248/code/entry-list.js
   // @grant   GM_getValue
   // @grant   GM_setValue
@@ -32,7 +32,7 @@
 // @exclude         *
 //
 // ==UserLibrary==
-// @name            Entry_List
+// @name            Entry List
 // @description     Common functions for working on lists of entries
 // @version         1.9
 // @author          guidovilla
@@ -41,7 +41,7 @@
 // @license         GPL-3.0-or-later
 // @homepageURL     https://greasyfork.org/scripts/390248-entry-list
 // @supportURL      https://gitlab.com/gv-browser/userscripts/issues
-// @contributionURL https://tinyurl.com/gv-donate-d7
+// @contributionURL https://tinyurl.com/gv-donate-b1
 // @attribution     Ricardo Mendonça Ferreira (https://openuserjs.org/users/AltoRetrato)
 // ==/UserScript==
 //
@@ -61,9 +61,9 @@
 //
 // Changelog:
 // ----------
-//                   Refactor, getIdFromEntry -> getEntryData (-> more generic)
-//                   Use US_Utils, remove title (duplicate in US_Utils).
-//                   Minor name change (EntryList -> Entry_List)
+//                   Refactor adding Userscript Utils, remove title (duplicate
+//                   in UU.me) getIdFromEntry -> getEntryData (-> more generic)
+//                   Minor name change, backward compatible
 // 2019.10.19  [1.9] Add inList method for checking if entry is in list
 //                   Fix use of context in startup()
 // 2019.10.18  [1.8] Add possibility to download a user payload with getUser
