@@ -66,12 +66,12 @@ This library instantitates an UU object with utility variables and methods:
 - li(...args): like console.info, prepending the script name
 - ld(...args): like console.debug, prepending the script name
 
-- implements(object, interface):
+- implements(object, interfaceDef):
   check if passed object "implements" given interface, by checking name and
   type of its properties. Arguments:
   - object: the object to be tested
-  - interface: array of properties to be checked, each represented by an
-    object with:
+  - interfaceDef: array of properties to be checked, each represented by
+    an object with:
     - name [mandatory]: the name of the property to be checked
     - type [mandatory]: the type of the property, as returned by typeof
     - optional: boolean, if true the property is optional (if not specified
@@ -151,11 +151,11 @@ window.UU = new (function() {
     }
     // check if passed object "implements" given interface, by checking name
     // and type of its properties.
-    this.implements = function(object, interface) {
+    this.implements = function(object, interfaceDef) {
         var valid = true;
 
         // check is not stopped at first error, so all problems are logged
-        interface.forEach(function(prop) {
+        interfaceDef.forEach(function(prop) {
             valid = valid && checkProperty(object, prop.name, prop.type, prop.optional);
         });
 
