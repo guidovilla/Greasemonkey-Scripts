@@ -284,15 +284,14 @@ var EL = new (function() {
         if (!user) {
             UU.lw(ctx.name + ": user not logged in (or couldn't get user info) on URL", document.URL);
             user    = GM_getValue(storName.lastUser(ctx));
-            payload = GM_getValue(storName.lastUserPayload(ctx));
-            if (payload) payload = JSON.parse(payload);
+            payload = UU.GM_getObject(storName.lastUserPayload(ctx));
             UU.li('Using last user:', user);
         } else {
             GM_setValue(storName.lastUser(ctx), user);
             if (payload) {
-                GM_setValue(storName.lastUserPayload(ctx), JSON.stringify(payload));
+                UU.GM_setObject(storName.lastUserPayload(ctx), payload);
             } else {
-                GM_deleteValue(storName.lastUserPayload(ctx));
+                UU.GM_deleteObject(storName.lastUserPayload(ctx));
             }
         }
         ctx.user        = user;
@@ -319,8 +318,7 @@ var EL = new (function() {
             }
         } else {
             ctx.user        = GM_getValue(storName.lastUser(ctx));
-            ctx.userPayload = GM_getValue(storName.lastUserPayload(ctx));
-            if (ctx.userPayload) ctx.userPayload = JSON.parse(ctx.userPayload);
+            ctx.userPayload = UU.GM_getObject(storName.lastUserPayload(ctx));
         }
         return !!(ctx.user);
     };
@@ -338,24 +336,14 @@ var EL = new (function() {
             return listNames;
         }, []);
 
-        var jsonData = JSON.stringify(listNames);
-        GM_setValue(storName.listOfLists(ctx), jsonData);
+        UU.GM_setObject(storName.listOfLists(ctx), listNames);
         return listNames;
     }
 
 
     // Load a single saved lists
     function loadSavedList(listName) {
-        var list;
-        var jsonData = GM_getValue(listName);
-        if (jsonData) {
-            try {
-                list = JSON.parse(jsonData);
-            } catch(err) {
-                UU.le("Error loading saved list named '" + listName + "'\n", err);
-            }
-        }
-        return list;
+        return UU.GM_getObject(listName);
     }
 
 
@@ -627,43 +615,37 @@ var EL = new (function() {
 
     // Save single list for the current user
     this.saveList = function(ctx, list, name) {
-        var jsonData;
         var listNames = loadListOfLists(ctx);
 
         if (listNames.indexOf(name) == -1) {
             listNames.push(name);
-            jsonData = JSON.stringify(listNames);
-            GM_setValue(storName.listOfLists(ctx), jsonData);
+            UU.GM_setObject(storName.listOfLists(ctx), listNames);
         }
-
-        jsonData = JSON.stringify(list);
-        GM_setValue(storName.listName(ctx, name), jsonData);
+        UU.GM_setObject(storName.listName(ctx, name), list);
     };
 
 
     // Delete a single list for the current user
     this.deleteList = function(ctx, name) {
-        var jsonData;
         var listNames = loadListOfLists(ctx);
 
         var i = listNames.indexOf(name);
         if (i != -1) {
             listNames.splice(i, 1);
-            jsonData = JSON.stringify(listNames);
-            GM_setValue(storName.listOfLists(ctx), jsonData);
+            UU.GM_setObject(storName.listOfLists(ctx), listNames);
         }
 
-        GM_deleteValue(storName.listName(ctx, name));
+        UU.GM_deleteObject(storName.listName(ctx, name));
     };
 
 
     // Delete all lists for the current user
     this.deleteAllLists = function(ctx) {
         var listNames = loadListOfLists(ctx);
-        GM_deleteValue(storName.listOfLists(ctx));
+        UU.GM_deleteObject(storName.listOfLists(ctx));
 
         listNames.forEach(function(listName) {
-            GM_deleteValue(storName.listName(ctx, listName));
+            UU.GM_deleteObject(storName.listName(ctx, listName));
         });
     };
 
