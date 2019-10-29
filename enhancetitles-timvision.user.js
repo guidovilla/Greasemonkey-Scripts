@@ -47,7 +47,7 @@
 //
 // Changelog:
 // ----------
-//                   Refactor&cleanup (method rename, adopt Userscript Utils)
+//                   Adopt Userscript Utils, some refactoring&cleanup
 // 2019.10.10  [1.4] Use classes instead of inline styles, some code cleanup
 //                   Optimization: permanently skip invalid entries
 // 2019.10.02  [1.3] Simplify code thanks to new EntryList defaults

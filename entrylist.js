@@ -62,7 +62,7 @@
 // Changelog:
 // ----------
 //                   Refactor adding Userscript Utils, remove title (duplicate
-//                   in UU.me) getIdFromEntry -> getEntryData (-> more generic)
+//                   of UU.me), getIdFromEntry -> getEntryData (more generic)
 //                   Minor name change, backward compatible
 // 2019.10.19  [1.9] Add inList method for checking if entry is in list
 //                   Fix use of context in startup()

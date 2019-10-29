@@ -68,7 +68,8 @@
 //
 // Changelog:
 // ----------
-//                   Refactor&cleanup (method rename, adopt Userscript Utils)
+//                   Adopt Userscript Utils and move some functions there
+//                   Some additional refactoring, cleanup and optimizations
 // 2019.10.21  [1.6] Add download of rating and check-in list
 //                   Filter out non-title IMDb lists
 //                   Normalize apostrophes to increase NF<->IMDb name matching
