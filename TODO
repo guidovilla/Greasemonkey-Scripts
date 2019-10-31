@@ -10,17 +10,11 @@
 - gv profile su GF e OUJS (bug reporting, vedere esempi fatti da altri)
 - per le librerie: fare documentazione in GL/GH e GF/OUJS (vedere librerie tipo GM_Config come esempio)
 
-
 - sostituire for con altri iteratori - o viceversa per ottimizzazione
 - valutare se/quando usare GM_notification(), eventualmente al posto di alert, confirm, console
 - aggiungere log.info in giro per il codice
-- aggiustare logging errori (livello) e console con funzione che salva gli errori per andare a rivederli (con gm config ad es.) - in asincrono (polyfill?)
-- usare addStyle e spostare in EL se utile (vedere dopo NF)
-- header:
-    aggiungere degli exclude
-    resource usare
-    altri header (vedere quelli in verde)
-- le liste si possono scaricare con GM_XHR senza andare sulla pagina?
+- aggiustare logging errori (livello) con funzione che salva gli errori per andare a rivederli (con gm config ad es.) - in asincrono (polyfill?)
+- header: exclude, resource, vedere quelli in verde
 
 - valutare {} -> [] per output inLists
 - usare GM_config (uno dei due):

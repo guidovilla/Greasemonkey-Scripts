@@ -58,6 +58,7 @@
 //   - [H] Not all IMDb movies are recognized because matching is done by title
 //         (maybe use https://greasyfork.org/en/scripts/390115-imdb-utility-library-api)
 //   - [M] Move IMDb list functions to an IMDb utility library
+//   - [M] Download lists from GM_Config or similar, not from IMDb/Netflix list page
 //   - [M] Show name in tooltip? Maybe not needed if above is solved
 //   - [M] Make triangles more visible
 //   - [M] Show in tooltip all lists where title is present?
