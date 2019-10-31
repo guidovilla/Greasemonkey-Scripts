@@ -47,6 +47,7 @@
 // @grant           GM_notification
 // @grant           GM_addStyle
 // @grant           GM_xmlhttpRequest
+// @connect         www.imdb.com
 // ==/UserScript==
 //
 // --------------------------------------------------------------------

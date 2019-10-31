@@ -18,7 +18,6 @@
 - usare addStyle e spostare in EL se utile (vedere dopo NF)
 - header:
     aggiungere degli exclude
-    connect per XHR
     resource usare
     altri header (vedere quelli in verde)
 - le liste si possono scaricare con GM_XHR senza andare sulla pagina?
