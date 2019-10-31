@@ -5,8 +5,8 @@
 // Some functions are specific for checking if entries belong to one or more
 // lists.
 // For instance: save personal notes on YouTube videos and highlight those that
-// have been started but not finished, highlight Netflix movies based on IMDb
-// lists, etc.
+// have been started but not finished, add buttons to twitter feeds, highlight
+// Netflix movies based on IMDb lists, etc.
 //
 // https://greasyfork.org/scripts/390248-entry-list
 // Copyright (C) 2019, Guido Villa
@@ -33,7 +33,7 @@
 //
 // ==UserLibrary==
 // @name            Entry List
-// @description     Common functions for working on lists of entries
+// @description     Library for managing pages with many similar items (youtube, twitter, ...)
 // @version         1.9
 // @author          guidovilla
 // @date            19.10.2019
