@@ -69,7 +69,7 @@
     var timvision = EL.newContext('TIMVision');
 
     // other variables
-    timvision.ENTRY_SELECTOR = '.content-item-tile-small';
+    timvision.ENTRY_CLASS = 'content-item-tile-small';
     timvision.CLASS_BUTTON = 'EL-TIMVision-HButton';
     timvision.STYLE_BUTTON = '.' + timvision.CLASS_BUTTON + ' {'
             + 'position: absolute;'
@@ -88,7 +88,7 @@
             + 'font-weight: bold;'
             + '}';
     timvision.CLASS_PROCESS = 'EL-TIMVision-Process';
-    var process_selector = timvision.ENTRY_SELECTOR + '.' + timvision.CLASS_PROCESS;
+    var process_selector = '.' + timvision.ENTRY_CLASS + '.' + timvision.CLASS_PROCESS;
     timvision.STYLE_PROCESS =
               process_selector + ' {opacity: 0.15; zoom: .5;} '
             + process_selector + ' .' + timvision.CLASS_BUTTON + ' {zoom: 2;} '
@@ -96,19 +96,23 @@
 
 
     timvision.getUser = function() {
-        var user = document.querySelector('span.username');
+        var user = document.getElementsByClassName('username')[0];
         if (user) user = user.textContent.trim();
         return user;
     };
 
 
     timvision.getPageEntries = function() {
-        return document.querySelectorAll(this.ENTRY_SELECTOR);
+        return document.getElementsByClassName(this.ENTRY_CLASS);
     };
 
 
     timvision.isValidEntry = function(entry) {
-        return !!(entry.querySelector('a[href^="/detail/"]') || entry.querySelector('a[href^="/series/"]'))
+        var tmp = entry.getElementsByTagName('a')[0];
+        if (!tmp) return false;
+        tmp = tmp.href;
+        if (!tmp) return false;
+        return (tmp.indexOf('/detail/') != -1 || tmp.indexOf('/series/') != -1)
             || EL.markInvalid(entry);
     };
 
@@ -118,8 +122,8 @@
         d.textContent = 'H';
         d.title       = 'Hide/show this title';
         d.className   = this.CLASS_BUTTON;
-        EL.addToggleEventOnClick(d, this.ENTRY_SELECTOR);
-        entry.querySelector('figure').appendChild(d);
+        EL.addToggleEventOnClick(d, '.' + this.ENTRY_CLASS);
+        entry.getElementsByTagName('figure')[0].appendChild(d);
 
         // remove useless zooming on mouseover
         var parent = entry.parentNode.parentNode.parentNode;
@@ -131,12 +135,12 @@
 
 
     timvision.getEntryData = function(entry) {
-        var a = ( entry.querySelector('a[href^="/detail/"]') || entry.querySelector('a[href^="/series/"]') );
-        var id = null;
-        if (a) {
-            id = ( a.href.match(/\/detail\/([0-9]+)-/) || a.href.match(/\/series\/([0-9]+)-/) );
-            if (id && id.length >= 2) id = id[1];
-        }
+        var a  = entry.getElementsByTagName('a')[0];
+        var id = a.href;
+        // a.href is defined because timvision.isValidEntry() checked that
+        id = ( id.match(/\/detail\/([0-9]+)-/) || id.match(/\/series\/([0-9]+)-/) );
+        if (id && id.length >= 2) id = id[1];
+
         if (!id) return null;
         return { 'id': id, 'name': a.title };
     };

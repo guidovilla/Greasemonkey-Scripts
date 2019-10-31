@@ -138,7 +138,8 @@ Mandatory callback methods and variables in main context:
 - name: identifier of the site (set with newContext())
 
 - getPageEntries():
-  return (usually with querySelectorAll) an array of entries to be treated
+  return (usually with getElementsByClassName or querySelectorAll) an array of
+  entries to be treated
 - processItem(entry, entryData, processingType):
   process the entry based on the processing type or other features of the entry
 

@@ -12,7 +12,6 @@
 - verificare come si comporta il salvataggio liste se non c'è utente (undefined? vd. YT)
 - createfunction e createfunctionparam: fare e usare
 
-- ottimizzare querySelector... con getElementsBy...
 - sostituire for con altri iteratori - o viceversa per ottimizzazione
 - valutare se/quando usare GM_notification(), eventualmente al posto di alert, confirm, console
 - aggiungere log.info in giro per il codice

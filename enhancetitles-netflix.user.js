@@ -146,7 +146,7 @@
 
 
     netflix.getPageEntries = function() {
-        return document.querySelectorAll('div.title-card');
+        return document.getElementsByClassName("title-card");
     };
 
 
@@ -164,15 +164,20 @@
 
 
     netflix.getEntryData = function(entry) {
-        var a = entry.querySelector('a[href^="/watch/"]');
-        var id = null;
-        if (a) {
-            id = a.href.match(/\/watch\/([^/?&]+)[/?&]/);
-            if (id && id.length >= 2) id = id[1];
+        var a = entry.getElementsByTagName('a');
+        var idx, i;
+        for (i = 0; i < a.length; i++) {
+            if (a[i] && a[i].href && (idx = a[i].href.indexOf('/watch/')) != -1) break;
+        }
+        var id = '';
+        var tmp = a[i].href;
+        for (var j = idx + '/watch/'.length; j < tmp.length; j++) {
+            if ('/?&'.indexOf(tmp[j]) != -1) break;
+            else id += tmp[j];
         }
         if (!id) return null;
 
-        var title = entry.querySelector(".fallback-text");
+        var title = entry.getElementsByClassName("fallback-text")[0];
         if (title) title = title.innerText;
         if (!title) UU.le('Cannot find title for entry with id ' + id + ' on URL ' + document.URL, entry);
         else title = title.replace(/’/g, "'");
@@ -240,7 +245,7 @@
 
     netflix.unProcessItem = function(entry, _I_entryData, _I_processingType) {
         entry.parentNode.style.opacity = 1;
-        var triangle = entry.parentNode.querySelector('.NHT-triangle');
+        var triangle = entry.parentNode.getElementsByClassName('NHT-triangle')[0];
         if (triangle) triangle.parentNode.removeChild(triangle);
 /*
         entry.parentNode.parentNode.style.width = null;
@@ -257,7 +262,7 @@
     // add buttons on the Netflix "My List" page
     netflix.processPage = function(_I_pageType, _I_isEntryPage) {
         // no need to check pageType: as of now there is only one
-        var main = document.querySelector('div.mainView');
+        var main = document.getElementsByClassName('mainView')[0];
         if (!main) {
             UU.le('Could not find "main <div>" to insert buttons');
             return;
@@ -296,8 +301,8 @@
     imdb.processPage = function(_I_pageType, _I_isEntryPage) {
         // no need to check pageType: as of now there is only one
         var main = document.getElementById("main");
-        var h1 = ( main && main.getElementsByTagName("h1") );
-        if (!h1 || !h1[0]) {
+        var h1 = ( main && main.getElementsByTagName("h1")[0] );
+        if (!h1) {
             UU.le('Could not find element to insert buttons.');
             return;
         }
@@ -306,7 +311,7 @@
         div.style.cssText = "margin-top: 10px;";
         addBtn(div, btnIMDbListRefresh, "NF - Refresh highlight data", "Reload information from lists - might take a few seconds");
         addBtn(div, btnIMDbListClear,   "NF - Clear highlight data",   "Remove list data");
-        h1[0].appendChild(div);
+        h1.appendChild(div);
     };
 
 
@@ -365,7 +370,7 @@
         NFMyListClear();
 
         var gallery = document.querySelector('div.mainView div.gallery');
-        var cards   = ( gallery && gallery.querySelectorAll('div.title-card') );
+        var cards   = ( gallery && gallery.getElementsByClassName('title-card') );
         if (!cards) return false;
 
         var list = {};
@@ -486,16 +491,14 @@
     }
     function getIMDbListFromPage(document) {
         var listElements = document.getElementsByClassName('user-list');
-        if (!listElements) throw "Error getting IMDb lists from page";
 
         var lists = Array.prototype.map.call(listElements, function(listElem) {
-            var tmp = listElem.getElementsByClassName("list-name");
-            var name;
-            if (!tmp || !tmp[0]) {
+            var name = listElem.getElementsByClassName("list-name")[0];
+            if (name) {
+                name = name.text;
+            } else {
                 UU.le("Error reading name of list", listElem);
                 name = listElem.id;
-            } else {
-                name = tmp[0].text;
             }
             return {"name": name, "id": listElem.id, 'type': listElem.dataset.listType };
         });
@@ -520,10 +523,8 @@
                     if (lsId) lsId = lsId.content;
                     if (lsId) exportLink = "https://www.imdb.com/list/" + lsId + "/export";
                     else {
-                        exportLink = response.responseXML2.getElementsByClassName('export');
-                        if (exportLink) exportLink = exportLink[0];
-                        if (exportLink) exportLink = exportLink.getElementsByTagName('a');
-                        if (exportLink) exportLink = exportLink[0];
+                        exportLink = response.responseXML2.getElementsByClassName('export')[0];
+                        if (exportLink) exportLink = exportLink.getElementsByTagName('a')[0];
                         if (exportLink) exportLink = exportLink.href;
                         if (!exportLink) throw 'Cannot get list id';
                     }
