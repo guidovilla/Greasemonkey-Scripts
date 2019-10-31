@@ -1,4 +1,6 @@
 - testare condizioni di errore per NF
+- verificare come si comporta il salvataggio liste se non c'è utente (undefined? vd. YT)
+- createfunction e createfunctionparam: fare e usare
 
 - README in gitlab/GF/OUJS - esempi:
     https://greasyfork.org/en/scripts/1810-google-tracking-b-gone
@@ -7,10 +9,7 @@
     vedere anche esempi di sizzle
 - gv profile su GF e OUJS (bug reporting, vedere esempi fatti da altri)
 - per le librerie: fare documentazione in GL/GH e GF/OUJS (vedere librerie tipo GM_Config come esempio)
-- fare anche versione di parse CSV che sia "strict" RFC
 
-- verificare come si comporta il salvataggio liste se non c'è utente (undefined? vd. YT)
-- createfunction e createfunctionparam: fare e usare
 
 - sostituire for con altri iteratori - o viceversa per ottimizzazione
 - valutare se/quando usare GM_notification(), eventualmente al posto di alert, confirm, console

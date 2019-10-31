@@ -41,6 +41,7 @@
 //
 // To-do (priority: [H]igh, [M]edium, [L]ow):
 //   - [H] GM_xhR: remove workaround responseXML2 and make responseXML work
+//   - [M] make a strict RFC 4180 compliant CSV parse method version
 //   - [M] add other functions
 //
 // Changelog:
