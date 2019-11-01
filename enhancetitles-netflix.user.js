@@ -566,17 +566,13 @@
         }
 
         var data = UU.parseCSV(response.responseText);
+        var f    = UU.getCSVheader(data);
         var list = {};
-
-        var header = data[0];
-        var f = {};
-        for (var ih = 0; ih < header.length; ih++) f[header[ih]] = ih;
 
         var id_fld, name_fld;
         switch (type) {
             case TITLES:
-                //id_fld   = "Const";
-                id_fld   = "Title";
+                id_fld   = "Title";  // "Const";
                 name_fld = "Title";
                 break;
             default:
