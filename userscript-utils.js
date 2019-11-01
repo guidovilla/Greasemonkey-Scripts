@@ -46,7 +46,7 @@
 //
 // Changelog:
 // ----------
-//                   Add GM storage for objs, getCSVheader
+//                   Add GM storage for objs, getCSVheader, cumulative timers
 //                   Add implements() and make checkProperty() private
 //                   Name change, backward compatible
 // 2019.10.27  [1.0] First version
