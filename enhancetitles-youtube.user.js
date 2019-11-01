@@ -44,7 +44,7 @@
 //
 // Changelog:
 // ----------
-//                   Some code cleanup
+//                   Cleanups
 // 2019.10.05  [1.3] Fix completion status appearing later (after ELProcessed)
 // 2019.10.03  [1.2] Refactor using EntryList library
 // 2019.09.30  [1.1] First public version, correct @namespace and other headers
