@@ -1,4 +1,7 @@
 - testare condizioni di errore per NF
+- verificare come si comporta il salvataggio liste se non c'è utente (undefined? vd. YT)
+- createfunction e createfunctionparam: fare e usare
+
 - README in gitlab/GF/OUJS - esempi:
     https://greasyfork.org/en/scripts/1810-google-tracking-b-gone
     https://openuserjs.org/libs/Marti/GM_setStyle
@@ -6,26 +9,10 @@
     vedere anche esempi di sizzle
 - gv profile su GF e OUJS (bug reporting, vedere esempi fatti da altri)
 - per le librerie: fare documentazione in GL/GH e GF/OUJS (vedere librerie tipo GM_Config come esempio)
-- spostare alcune funzionalità di EntryList in altra libreria
-- rinominare le librerie mettendo degli underscore?
-- fare anche versione di parse CSV che sia "strict" RFC
 
-- verificare come si comporta il salvataggio liste se non c'è utente (undefined? vd. YT)
-- rifare check dell'interfaccia passando una lista di proprietà da controllare
-- createfunction e createfunctionparam: fare e usare
-
-- ottimizzare querySelector... con getElementsBy...
-- sostituire for con altri iteratori - o viceversa per ottimizzazione
-- valutare se usare GM_notification(), eventualmente al posto di alert, confirm, console
-- aggiungere log.debug
-- aggiustare logging errori (livello) e console con funzione che salva gli errori per andare a rivederli (con gm config ad es.) - in asincrono (polyfill?)
-- usare addStyle e spostare in EL se utile (vedere dopo NF)
-- header:
-    aggiungere degli exclude
-    connect per XHR
-    resource usare
-    altri header (vedere quelli in verde)
-- le liste si possono scaricare con GM_XHR senza andare sulla pagina?
+- valutare se/quando usare GM_notification(), eventualmente al posto di alert, confirm, console
+- aggiungere log.info in giro per il codice
+- aggiustare logging errori con funzione che salva gli errori per andare a rivederli (con gm config ad es.)? - se possibile in asincrono
 
 - valutare {} -> [] per output inLists
 - usare GM_config (uno dei due):
@@ -37,3 +24,4 @@
   - changelog
   - altre informazioni
 - gruppo GF e/o OUJS (occhio che questo non può cambiare)
+- header: exclude, resource, vedere quelli in verde

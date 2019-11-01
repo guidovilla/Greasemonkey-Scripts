@@ -1,16 +1,19 @@
-// US Utils library
+// Userscript Utils library
 //
 // Some useful utilities for userscript development.
 //
-// https://greasyfork.org/scripts/391648-us-utils
+// https://greasyfork.org/scripts/391648-userscript-utils
 // Copyright (C) 2019, Guido Villa
 //
 // For information/instructions on user scripts, see:
 // https://greasyfork.org/help/installing-user-scripts
 //
 // To use this library in a userscript you must add to script header:
-  // @require https://greasyfork.org/scripts/391648-us-utils/code/US_Utils.js
+  // @require https://greasyfork.org/scripts/391648/code/userscript-utils.js
   // @grant   GM_xmlhttpRequest  (only if using UU.GM_xhR)
+  // @grant   GM_getValue        (only if using UU.GM_getObject)
+  // @grant   GM_setValue        (only if using UU.GM_setObject)
+  // @grant   GM_deleteValue     (only if using UU.GM_deleteObject)
 //
 // --------------------------------------------------------------------
 //
@@ -19,16 +22,16 @@
 // @exclude         *
 //
 // ==UserLibrary==
-// @name            US_Utils
+// @name            Userscript Utils
 // @description     Some useful utilities for userscript development
-// @version         1.0
+// @version         1.1
 // @author          guidovilla
-// @date            27.10.2019
+// @date            01.11.2019
 // @copyright       2019, Guido Villa (https://greasyfork.org/users/373199-guido-villa)
 // @license         GPL-3.0-or-later
-// @homepageURL     https://greasyfork.org/scripts/391648-us-utils
+// @homepageURL     https://greasyfork.org/scripts/391648-userscript-utils
 // @supportURL      https://gitlab.com/gv-browser/userscripts/issues
-// @contributionURL https://tinyurl.com/gv-donate-ed
+// @contributionURL https://tinyurl.com/gv-donate-99
 // @attribution     Trevor Dixon (https://stackoverflow.com/users/711902/trevor-dixon)
 // ==/UserScript==
 //
@@ -38,20 +41,25 @@
 //
 // To-do (priority: [H]igh, [M]edium, [L]ow):
 //   - [H] GM_xhR: remove workaround responseXML2 and make responseXML work
+//   - [M] make a strict RFC 4180 compliant CSV parse method version
 //   - [M] add other functions
 //
 // Changelog:
 // ----------
-// 2019.10.27  [1.0] First version
-// 2019.10.26  [0.1] First test version, private use only
+// 2019.11.01 [1.1] Add GM storage for objs, getCSVheader, cumulative timers
+//                  Add implements() and make checkProperty() private
+//                  Name change, backward compatible
+// 2019.10.27 [1.0] First version
+// 2019.10.26 [0.1] First test version, private use only
 //
+// --------------------------------------------------------------------
 
 /* jshint esversion: 6, laxbreak: true, -W008, supernew: true */
-/* exported UU, Library_Version_US_UTILS */
+/* exported UU, Library_Version_USERSCRIPT_UTILS */
 
-const Library_Version_US_UTILS = '1.0';
+const Library_Version_USERSCRIPT_UTILS = '1.0';
 
-/* How to use the library
+/* How to use this library
 
 This library instantitates an UU object with utility variables and methods:
 
@@ -59,28 +67,52 @@ This library instantitates an UU object with utility variables and methods:
 
 - isUndef(p): check if p is undefined
 
-- le(...args): like ocnsole.error, prepending the script name
-- lw(...args): like ocnsole.warn, prepending the script name
-- li(...args): like ocnsole.info, prepending the script name
-- ld(...args): like ocnsole.debug, prepending the script name
+- implements(object, interfaceDef):
+  check if passed object "implements" given interface, by checking name and
+  type of its properties. Arguments:
+  - object: the object to be tested
+  - interfaceDef: array of properties to be checked, each represented by
+    an object with:
+    - name [mandatory]: the name of the property to be checked
+    - type [mandatory]: the type of the property, as returned by typeof
+    - optional: boolean, if true the property is optional (if not specified
+                it is assumed to be false)
+  Return true/false, and log error for each missing/mismatched property.
 
-- checkProperty(object, property, type, optional)
-  Check if object "object" has property "property" of type "type".
-  If property is "optional" (default false), it is only checked for type
-  Used to test if object "implements" a specific interface
+Logging:
+- le(...args): like console.error, prepending the script name
+- lw(...args): like console.warn, prepending the script name
+- li(...args): like console.info, prepending the script name
+- ld(...args): like console.debug, prepending the script name
 
+Storage for objects:
+- GM_setObject(name, value): wrapper around GM_setValue for storing objects,
+  applies serialization before saving.
+- GM_getObject(name, defaultValue): wrapper around GM_getValue for retrieving
+  stringified objects, applies deserialization and returns a proper object.
+- GM_deleteObject(name): just another name for GM_deleteValue (offered only
+  for name consistency).
+
+CSV:
 - parseCSV(csv): simple CSV parsing function, by Trevor Dixon (see below)
   Take a CSV string as input and return an array of rows, each containing
   an array of fields.
   NOTE: it is not strict in RFC 4180 compliance as it handles unquoted
   double quotes inside a field (this is not allowed in the RFC specifications).
+- getCSVheader(csvData): return a header object from a parsed CSV.
+  The header works as an index: there is a property for each CSV field, with
+  the array index of that field as value.
+  E.g.: { 'name': 0, 'date': 1, 'value': 2 } means that the CSV has two fields,
+  the first is "name", the second is "date", the third is "value".
 
+Promise-wrapped setTimeout:
 - wait(waitTime, result)
   return a Promise to wait for "waitTime" ms, then resolve with value "result"
 - thenWait(waitTime)
   like wait(), to be used inside a Promise.then(). Passes through the
   received fulfillment value.
 
+Promise-wrapped GM_xmlhttpRequest:
 - GM_xhR(method, url, purpose, opts): GM_xmlhttpRequest wrapped in a Promise.
   Return a Promise resolving with the GM_xmlhttpRequest response, or failing
   with an error message (which is also logged). Arguments:
@@ -93,6 +125,17 @@ This library instantitates an UU object with utility variables and methods:
     - onload: overwritten to resolve the Promise
     - onabort, onerror, ontimeout: overwritten to reject the Promise
     if no context is specified, purpose is passed as context
+
+Cumulative timers:
+these timers can be started and stopped multiple times, their time always
+adding up (unless reset):
+- startTimer(timer, force): create/start a timer with given "timer" name. If
+  timer is already running, log error and do nothing if "force" is false (the
+  default), or cancel the timer restart it if "force" is true.
+- stopTimer(timer): stop running timer with given "timer" name
+- cancelTimer(timer): stop a timer without recording time from last start
+- resetTimer(timer): reset a timer to zero, stopping it if needed
+- getTimer(timer): get time for a timer. Work if either running or stopped
 */
 
 
@@ -107,9 +150,45 @@ window.UU = new (function() {
 
 
 
-    // check if parameter is undefined
+    // check if argument is undefined
     this.isUndef = function(p) {
         return (typeof p === 'undefined');
+    };
+
+
+
+    // Check if object "object" has property "property" of type "type".
+    // If property is "optional" (default false), it is only checked for type
+    // Used to test if object "implements" a specific interface
+    function checkProperty(object, property, type, optional = false) {
+
+        if (self.isUndef(object[property])) {
+            if (optional) return true;
+
+            self.le('Invalid object: missing property "' + property + '" of type "' + type + '"');
+            return false;
+        }
+        if (typeof object[property] !== type) {
+            self.le('Invalid object: ' + (optional ? 'optional ' : '') + 'property "' + property + '" must be of type "' + type + '"');
+            return false;
+        }
+        return true;
+    }
+
+    // check if passed object "implements" given interface, by checking name
+    // and type of its properties.
+    this.implements = function(object, interfaceDef) {
+        var valid = true;
+        try {
+            // check is not stopped at first error, so all problems are logged
+            interfaceDef.forEach(function(prop) {
+                valid = valid && checkProperty(object, prop.name, prop.type, prop.optional);
+            });
+        } catch(err) {
+            self.le('Error while testing object:', object,
+                    'for interface:', interfaceDef, 'Error:', err);
+        }
+        return valid;
     };
 
 
@@ -123,28 +202,38 @@ window.UU = new (function() {
 
 
 
-    // Check if "object" has "property" of "type"
-    // used to test if object "implements" a specific interface
-    this.checkProperty = function(object, property, type, optional = false) {
-
-        if (self.isUndef(object[property])) {
-            if (optional) return true;
-
-            self.le('Invalid object: missing property "' + property + '" of type "' + type + '"');
-            return false;
+    // storage for objects
+    // setter...
+    this.GM_setObject = function(name, value) {
+        var jsonData;
+        try {
+            jsonData = JSON.stringify(value);
+            GM_setValue(name, jsonData);
+        } catch(err) {
+            self.le('Error serializing object to save in storage. Name:', name, '- Object:', value, '- Error:', err);
         }
-        if (typeof object[property] !== type) {
-            self.le('Invalid object: ' + (optional ? 'optional ' : '') + 'property "' + property + '" must be of type "' + type + '"');
-            return false;
-        }
-        return true;
     };
 
+    // ...and getter
+    this.GM_getObject = function(name, defaultValue) {
+        var jsonData = GM_getValue(name);
+        if (jsonData) {
+            try {
+                return JSON.parse(jsonData);
+            } catch(err) {
+                self.le('Error parsing object retrieved from storage. Name:', name, '- Object:', jsonData, '- Error:', err);
+            }
+        } else return defaultValue;
+    };
+
+    // deleteObject offered only for name consistency
+    this.GM_deleteObject = GM_deleteValue;
 
 
-    // Simple CSV parsing function, by Trevor Dixon:
+
+    // Simple, compact and fast CSV parsing function, by Trevor Dixon:
     // https://stackoverflow.com/a/14991797
-    // take a CSV as input and returns an array of arrays (rows, fields)
+    // take a CSV as input and return an array of arrays (rows, fields)
     /* eslint-disable max-statements, max-statements-per-line, max-len */
     this.parseCSV = function(csv) {
         var arr = [];
@@ -183,6 +272,13 @@ window.UU = new (function() {
         return arr;
     };
     /* eslint-enable max-statements, max-statements-per-line, max-len */
+
+    // return a header object from a parsed CSV
+    this.getCSVheader = function(csvData) {
+        var header = csvData[0], fields = {};
+        for (var i = 0; i < header.length; i++) fields[header[i]] = i;
+        return fields;
+    };
 
 
 
@@ -244,6 +340,64 @@ window.UU = new (function() {
             if (self.isUndef(details.context))     details.context     = purpose;
             GM_xmlhttpRequest(details);
         });
+    };
+
+
+
+    // cumulative timers
+    var timers = {};
+    // create/start a timer
+    this.startTimer = function(timer, force = false) {
+        timers[timer]       = timers[timer] || { 'time': 0, 'start': null };
+        if (timers[timer].start !== null) {
+            if (force) self.cancelTimer(timer);
+            else {
+                self.le('Timer already running:', timer);
+                return;
+            }
+        }
+        timers[timer].start = performance.now();
+    };
+
+    // stop a running timer
+    this.stopTimer = function(timer) {
+        var stop = performance.now();
+        if (!timers[timer] || timers[timer].start === null) {
+            self.le('No running timer specified with name', timer);
+            return;
+        }
+        timers[timer].time += stop - timers[timer].start;
+        timers[timer].start = null;
+        return timers[timer].time;
+    };
+
+    // stop a timer without recording time
+    this.cancelTimer = function(timer) {
+        if (!timers[timer]) {
+            self.le('No timer specified with name', timer);
+            return;
+        }
+        timers[timer].start = null;
+    };
+
+    // reset a timer to zero, stopping it if needed
+    this.resetTimer = function(timer) {
+        if (!timers[timer]) {
+            self.le('No timer specified with name', timer);
+            return;
+        }
+        timers[timer] = { 'time': 0, 'start': null };
+    };
+
+    // get time for a (possibly running) timer
+    this.getTimer = function(timer) {
+        var now = performance.now();
+        if (!timers[timer]) {
+            self.le('No timer specified with name', timer);
+            return;
+        }
+        return timers[timer].time
+               + (timers[timer].start != null ? now - timers[timer].start : 0);
     };
 
 

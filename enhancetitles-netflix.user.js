@@ -9,7 +9,7 @@
 // Copyright (C) 2008-2018, Ricardo Mendonça Ferreira (ric@mpcnet.com.br)
 // Released under the GPL license - http://www.gnu.org/copyleft/gpl.html
 //
-// For instructions on user scripts, see:
+// For information/instructions on user scripts, see:
 // https://greasyfork.org/help/installing-user-scripts
 //
 // --------------------------------------------------------------------
@@ -17,20 +17,19 @@
 // ==UserScript==
 // @name            Enhance titles - Netflix
 // @description     Emphasize or hide titles on Netflix according to IMDb and local lists
-// @version         1.6
+// @version         1.7
 // @author          guidovilla
-// @date            21.10.2019
+// @date            01.11.2019
 // @copyright       2019, Guido Villa (https://greasyfork.org/users/373199-guido-villa)
 // @license         GPL-3.0-or-later
 // @homepageURL     https://greasyfork.org/scripts/390631-enhance-titles-netflix
 // @supportURL      https://gitlab.com/gv-browser/userscripts/issues
 // @contributionURL https://tinyurl.com/gv-donate-7e
 // @attribution     Ricardo Mendonça Ferreira (https://openuserjs.org/users/AltoRetrato)
-// @attribution     Trevor Dixon (https://stackoverflow.com/users/711902/trevor-dixon)
 //
 // @namespace       https://greasyfork.org/users/373199-guido-villa
-// @downloadURL     https://greasyfork.org/scripts/390631-enhance-titles-netflix/code/Enhance%20titles%20-%20Netflix.user.js
-// @updateURL       https://greasyfork.org/scripts/390631-enhance-titles-netflix/code/Enhance%20titles%20-%20Netflix.meta.js
+// @downloadURL     https://greasyfork.org/scripts/390631/code/enhance-titles-netflix.user.js
+// @updateURL       https://greasyfork.org/scripts/390631/code/enhance-titles-netflix.meta.js
 // @downloadURL     https://openuserjs.org/install/guidovilla/Enhance_titles_-_Netflix.user.js
 // @updateURL       https://openuserjs.org/meta/guidovilla/Enhance_titles_-_Netflix.meta.js
 //
@@ -38,8 +37,9 @@
 // @match           https://www.imdb.com/user/*/lists*
 // @exclude         https://www.netflix.com/watch*
 //
-// @require         https://greasyfork.org/scripts/390248-entrylist/code/EntryList.js
-// @require         https://greasyfork.org/scripts/391236-progressbar/code/ProgressBar.js
+// @require         https://greasyfork.org/scripts/391648/code/userscript-utils.js
+// @require         https://greasyfork.org/scripts/390248/code/entry-list.js
+// @require         https://greasyfork.org/scripts/391236/code/progress-bar.js
 // @grant           GM_getValue
 // @grant           GM_setValue
 // @grant           GM_deleteValue
@@ -47,6 +47,7 @@
 // @grant           GM_notification
 // @grant           GM_addStyle
 // @grant           GM_xmlhttpRequest
+// @connect         www.imdb.com
 // ==/UserScript==
 //
 // --------------------------------------------------------------------
@@ -56,13 +57,11 @@
 //         Also, configuration should allow to skip downloading of unused lists
 //   - [H] Not all IMDb movies are recognized because matching is done by title
 //         (maybe use https://greasyfork.org/en/scripts/390115-imdb-utility-library-api)
-//   - [M] Move GMprom_xhR and parseCSV to utility library (with some from EntryList)
-//   - [M] Move IMDb list function to utility library
-//   - [M] Optimize imdb list parsing
+//   - [M] Move IMDb list functions to an IMDb utility library
+//   - [M] Download lists from GM_Config or similar, not from IMDb/Netflix list page
 //   - [M] Show name in tooltip? Maybe not needed if above is solved
 //   - [M] Make triangles more visible
 //   - [M] Show in tooltip all lists where title is present?
-//   - [M] GMprom_xhR: remove workaround responseXML2 and have responseXML work
 //   - [M] Lots of clean-up
 //   - [M] Add comments
 //   - [M] Delay autopreview for hidden movies?
@@ -71,25 +70,28 @@
 //
 // Changelog:
 // ----------
-// 2019.10.21  [1.6] Add download of rating and check-in list
-//                   Filter out non-title IMDb lists
-//                   Normalize apostrophes to increase NF<->IMDb name matching
-// 2019.10.20  [1.5] Refactor using EntryList library (first version)
-// 2019.09.30  [1.4] First public version, correct @namespace and other headers
-// 2019.08.28  [1.3] Make the list more visible (top right triangle instead of border, with tooltip)
-//                   Fix unhide function (bug added in 1.2)
-//                   Add priority in todo list
-// 2019.07.06  [1.2] Fix working in pages without rows (i.e. search page)
-//                   Fix opacity not applied in some cases/pages
-// 2019.06.20  [1.1] Load My List from My List page
-// 2019.06.01  [1.0] Hide "My List" titles outside "My List" (row and page) and "Continue watching"
-//                   Fix user name detection
-//                   Gets data both from locally hidden movies and from IMDb lists
-// 2019.03.30  [0.1] First test version, private use only
+// 2019.11.01 [1.7] Adopt Userscript Utils and move some functions there
+//                  Some additional refactoring, cleanup and optimizations
+// 2019.10.21 [1.6] Add download of rating and check-in list
+//                  Filter out non-title IMDb lists
+//                  Normalize apostrophes to increase NF<->IMDb name matching
+// 2019.10.20 [1.5] Refactor using EntryList library (first version)
+// 2019.09.30 [1.4] First public version, correct @namespace and other headers
+// 2019.08.28 [1.3] Make the list more visible (top right triangle instead of border, with tooltip)
+//                  Fix unhide method (bug added in 1.2)
+//                  Add priority in todo list
+// 2019.07.06 [1.2] Fix working in pages without rows (i.e. search page)
+//                  Fix opacity not applied in some cases/pages
+// 2019.06.20 [1.1] Load My List from My List page
+// 2019.06.01 [1.0] Hide "My List" titles outside "My List" (row and page) and "Continue watching"
+//                  Fix user name detection
+//                  Gets data both from locally hidden movies and from IMDb lists
+// 2019.03.30 [0.1] First test version, private use only
 //
+// --------------------------------------------------------------------
 
 /* jshint -W008 */
-/* global EL: readonly, ProgressBar: readonly */
+/* global UU: readonly, EL: readonly, ProgressBar: readonly */
 
 (function() {
     'use strict';
@@ -114,6 +116,20 @@
     var NF_LIST_PAGE   = 2; // any context-wide unique, non-falsy value is good
 
 
+    var HIDE_BUTTON_STYLE_NAME = 'entrylist-nf-hide-button';
+    var HIDE_BUTTON_STYLE = '.' + HIDE_BUTTON_STYLE_NAME + '{bottom:0;position:absolute; z-index: 10}';
+    var TRIANGLE_STYLE_NAME = 'entrylist-netflix-triangle';
+    var TRIANGLE_STYLE = '.' + TRIANGLE_STYLE_NAME + '{'
+            + 'border-right: 20px solid;'
+            + 'border-bottom: 20px solid transparent;'
+            + 'height: 0;'
+            + 'width: 0;'
+            + 'position: absolute;'
+            + 'top: 0;'
+            + 'right: 0;'
+            + 'z-index: 2;'
+            + '}';
+
     // Netflix
 
     netflix.getUser = function() {
@@ -133,7 +149,7 @@
 
 
     netflix.getPageEntries = function() {
-        return document.querySelectorAll('div.title-card');
+        return document.getElementsByClassName("title-card");
     };
 
 
@@ -143,33 +159,37 @@
         b.textContent   = 'H';
         b.title         = 'Hide/show this title';
         var d           = document.createElement('div');
-        d.className     = "nf-svg-button-wrapper";
-        d.style.cssText = 'bottom: 0; position: absolute; z-index: 10';
+        d.className     = "nf-svg-button-wrapper " + HIDE_BUTTON_STYLE_NAME;
         d.appendChild(b);
         EL.addToggleEventOnClick(b, 2, LIST_HIDE, 'H');
         entry.appendChild(d);
     };
 
 
-    netflix.getIdFromEntry = function(entry) {
-        var a = entry.querySelector('a[href^="/watch/"]');
-        var id = null;
-        if (a) {
-            id = a.href.match(/\/watch\/([^/?&]+)[/?&]/);
-            if (id && id.length >= 2) id = id[1];
+    netflix.getEntryData = function(entry) {
+        var a = entry.getElementsByTagName('a');
+        var idx, i;
+        for (i = 0; i < a.length; i++) {
+            if (a[i] && a[i].href && (idx = a[i].href.indexOf('/watch/')) != -1) break;
+        }
+        var id = '';
+        var tmp = a[i].href;
+        for (var j = idx + '/watch/'.length; j < tmp.length; j++) {
+            if ('/?&'.indexOf(tmp[j]) != -1) break;
+            else id += tmp[j];
         }
         if (!id) return null;
 
-        var title = entry.querySelector(".fallback-text");
+        var title = entry.getElementsByClassName("fallback-text")[0];
         if (title) title = title.innerText;
-        if (!title) console.error('Cannot find title for entry with id ' + id + ' on URL ' + document.URL, entry);
+        if (!title) UU.le('Cannot find title for entry with id ' + id + ' on URL ' + document.URL, entry);
         else title = title.replace(/’/g, "'");
 
         return { 'id': id, 'name': (title || id) };
     };
 
 
-    netflix.determineType = function(lists, _I_tt, entry) {
+    netflix.determineType = function(lists, _I_entryData, entry) {
         var type = null;
 
         if (entry.classList.contains('is-disliked')) type = 'D';
@@ -198,19 +218,8 @@
         "M": { "name": 'My list',   "colour": 'yellow' },
         "MISSING": { "name": 'Hide type not known', "colour": 'red' },
     };
-    var TRIANGLE_STYLE_NAME = 'entrylist-netflix-triangle';
-    var TRIANGLE_STYLE = '.' + TRIANGLE_STYLE_NAME + '{'
-            + 'border-right: 20px solid;'
-            + 'border-bottom: 20px solid transparent;'
-            + 'height: 0;'
-            + 'width: 0;'
-            + 'position: absolute;'
-            + 'top: 0;'
-            + 'right: 0;'
-            + 'z-index: 2;'
-            + '}';
 
-    netflix.processItem = function(entry, _I_tt, processingType) {
+    netflix.processItem = function(entry, _I_entryData, processingType) {
         if (!processingType || !hideTypes[processingType]) processingType = 'MISSING';
         var triangle = document.createElement('div');
         triangle.className = 'NHT-triangle ' + TRIANGLE_STYLE_NAME;
@@ -223,12 +232,12 @@
         var parent = entry.parentNode;
         parent.parentNode.style.width = '5%';
 
-        var field = parent.querySelector('fieldset#hideTitle' + tt.id);
+        var field = parent.querySelector('fieldset#hideTitle' + entryData.id);
         if (!field) {
             field = document.createElement('fieldset');
-            field.id = 'hideTitle' + tt.id;
+            field.id = 'hideTitle' + entryData.id;
             field.style.border = 0;
-            field.appendChild(document.createTextNode(tt.name));
+            field.appendChild(document.createTextNode(entryData.name));
             parent.appendChild(field);
         } else {
             field.style.display = 'block';
@@ -237,13 +246,13 @@
     };
 
 
-    netflix.unProcessItem = function(entry, _I_tt, _I_processingType) {
+    netflix.unProcessItem = function(entry, _I_entryData, _I_processingType) {
         entry.parentNode.style.opacity = 1;
-        var triangle = entry.parentNode.querySelector('.NHT-triangle');
+        var triangle = entry.parentNode.getElementsByClassName('NHT-triangle')[0];
         if (triangle) triangle.parentNode.removeChild(triangle);
 /*
         entry.parentNode.parentNode.style.width = null;
-        entry.parentNode.querySelector('fieldset#hideTitle' + tt.id).style.display = 'none';
+        entry.parentNode.querySelector('fieldset#hideTitle' + entryData.id).style.display = 'none';
 */
     };
 
@@ -256,9 +265,9 @@
     // add buttons on the Netflix "My List" page
     netflix.processPage = function(_I_pageType, _I_isEntryPage) {
         // no need to check pageType: as of now there is only one
-        var main = document.querySelector('div.mainView');
+        var main = document.getElementsByClassName('mainView')[0];
         if (!main) {
-            console.error('Could not find "main <div>" to insert buttons');
+            UU.le('Could not find "main <div>" to insert buttons');
             return;
         }
         var div  = document.createElement('div');
@@ -280,7 +289,7 @@
         var ur = account.href;
         if (ur) ur = ur.match(/\.imdb\..{2,3}\/.*\/(ur[0-9]+)/);
         if (ur && ur[1]) ur = ur[1];
-        else console.error('Cannot retrieve the ur id for user:', user);
+        else UU.le('Cannot retrieve the ur id for user:', user);
 
         return { 'name': user, 'payload': ur };
     };
@@ -295,9 +304,9 @@
     imdb.processPage = function(_I_pageType, _I_isEntryPage) {
         // no need to check pageType: as of now there is only one
         var main = document.getElementById("main");
-        var h1 = ( main && main.getElementsByTagName("h1") );
-        if (!h1 || !h1[0]) {
-            console.error('Could not find element to insert buttons.');
+        var h1 = ( main && main.getElementsByTagName("h1")[0] );
+        if (!h1) {
+            UU.le('Could not find element to insert buttons.');
             return;
         }
         var div = document.createElement('div');
@@ -305,13 +314,13 @@
         div.style.cssText = "margin-top: 10px;";
         addBtn(div, btnIMDbListRefresh, "NF - Refresh highlight data", "Reload information from lists - might take a few seconds");
         addBtn(div, btnIMDbListClear,   "NF - Clear highlight data",   "Remove list data");
-        h1[0].appendChild(div);
+        h1.appendChild(div);
     };
 
 
     // lookup IMDb movies by name
-    imdb.inList = function(tt, list) {
-        return !!(list[tt.name]);
+    imdb.inList = function(entryData, list) {
+        return !!(list[entryData.name]);
     };
 
 
@@ -344,14 +353,14 @@
 
     function btnNFMyListClear() {
         NFMyListClear();
-        GM_notification({'text': "Information from 'My List' cleared.", 'title': EL.title + ' - Clear Netflix My List', 'timeout': 0});
+        GM_notification({'text': "Information from 'My List' cleared.", 'title': UU.me + ' - Clear Netflix My List', 'timeout': 0});
     }
 
     function btnNFMyListRefresh() {
         var txt;
         if (NFMyListRefresh()) txt = "'My List' loaded.";
         else txt = "An error occurred. It was not possible to load 'My List' data.";
-        GM_notification({'text': txt, 'title': EL.title + ' - Load Netflix My List', 'timeout': 0});
+        GM_notification({'text': txt, 'title': UU.me + ' - Load Netflix My List', 'timeout': 0});
     }
 
 
@@ -364,15 +373,15 @@
         NFMyListClear();
 
         var gallery = document.querySelector('div.mainView div.gallery');
-        var cards   = ( gallery && gallery.querySelectorAll('div.title-card') );
+        var cards   = ( gallery && gallery.getElementsByClassName('title-card') );
         if (!cards) return false;
 
         var list = {};
-        var entry, tt;
+        var entry, entryData;
         for (var i = 0; i < cards.length; i++) {
             entry = cards[i];
-            tt    = netflix.getIdFromEntry(entry);
-            list[tt.id] = tt.name;
+            entryData          = netflix.getEntryData(entry);
+            list[entryData.id] = entryData.name;
         }
 
         EL.saveList(netflix, list, LIST_NF_MY);
@@ -389,13 +398,13 @@
 
     function btnIMDbListClear() {
         IMDbListClear();
-        GM_notification({'text': "Information from IMDb cleared.", 'title': EL.title + ' - Clear IMDb lists', 'timeout': 0});
+        GM_notification({'text': "Information from IMDb cleared.", 'title': UU.me + ' - Clear IMDb lists', 'timeout': 0});
     }
 
     function btnIMDbListRefresh() {
         GM_notification({
             'text':    'Click to start loading the IMDb lists. This may take several seconds',
-            'title':   EL.title + ' - Load IMDb lists',
+            'title':   UU.me + ' - Load IMDb lists',
             'timeout': 0,
             'onclick': IMDbListRefresh,
         });
@@ -428,16 +437,16 @@
                     closeMsg = 'Loading complete!';
                 } else if (msg.numKO < outcomes.length) {
                     closeMsg = 'Done, but with errors:' + msg.txt;
-                    console.error('Errors in list download:' + msg.txt);
+                    UU.le('Errors in list download:', msg.txt);
                 } else {
                     throw 'Error - It was not possible to download the IMDb lists:' + msg.txt;
                 }
             })
-            .catch(function(err) { console.error(err); closeMsg = err; })
+            .catch(function(err) { UU.le(err); closeMsg = err; })
             .finally(function() {
                 GM_notification({
                     'text':      closeMsg,
-                    'title':     EL.title + ' - Load IMDb lists',
+                    'title':     UU.me + ' - Load IMDb lists',
                     'highlight': true,
                     'timeout':   5,
                     'ondone':    pb.close,
@@ -479,22 +488,20 @@
 
         } else {
             var url = 'https://www.imdb.com/user/' + imdb.userPayload + '/lists';
-            return GMprom_xhR('GET', url, 'Get IMDb list page', { 'responseType': 'document' })
+            return UU.GM_xhR('GET', url, 'Get IMDb list page', { 'responseType': 'document' })
                        .then(function(response) { return response.responseXML2; });
         }
     }
     function getIMDbListFromPage(document) {
         var listElements = document.getElementsByClassName('user-list');
-        if (!listElements) throw "Error getting IMDb lists from page";
 
         var lists = Array.prototype.map.call(listElements, function(listElem) {
-            var tmp = listElem.getElementsByClassName("list-name");
-            var name;
-            if (!tmp || !tmp[0]) {
-                console.error("Error reading name of list with id " + listElem.id);
-                name = listElem.id;
+            var name = listElem.getElementsByClassName("list-name")[0];
+            if (name) {
+                name = name.text;
             } else {
-                name = tmp[0].text;
+                UU.le("Error reading name of list", listElem);
+                name = listElem.id;
             }
             return {"name": name, "id": listElem.id, 'type': listElem.dataset.listType };
         });
@@ -512,17 +519,15 @@
             // Watchlist & check-ins are not easily available (requires another fetch to find export link)
             // http://www.imdb.com/user/ur???????/watchlist | HTML page w/ "export link" at the bottom
             var url = 'https://www.imdb.com/user/' + imdb.userPayload + '/' + id;
-            getUrl = GMprom_xhR('GET', url, "Get list page", { 'responseType': 'document' })
+            getUrl = UU.GM_xhR('GET', url, "Get list page", { 'responseType': 'document' })
                 .then(function(response) {
                     var exportLink;
                     var lsId = response.responseXML2.querySelector('meta[property="pageId"]');
                     if (lsId) lsId = lsId.content;
                     if (lsId) exportLink = "https://www.imdb.com/list/" + lsId + "/export";
                     else {
-                        exportLink = response.responseXML2.getElementsByClassName('export');
-                        if (exportLink) exportLink = exportLink[0];
-                        if (exportLink) exportLink = exportLink.getElementsByTagName('a');
-                        if (exportLink) exportLink = exportLink[0];
+                        exportLink = response.responseXML2.getElementsByClassName('export')[0];
+                        if (exportLink) exportLink = exportLink.getElementsByTagName('a')[0];
                         if (exportLink) exportLink = exportLink.href;
                         if (!exportLink) throw 'Cannot get list id';
                     }
@@ -534,7 +539,7 @@
             getUrl = Promise.resolve("https://www.imdb.com/list/" + id + "/export");
         }
         return getUrl
-                   .then(function(url)      { return GMprom_xhR('GET', url, "download"); })
+                   .then(function(url)      { return UU.GM_xhR('GET', url, "download"); })
                    .then(function(response) { return parseList(response, type); });
     }
 
@@ -545,7 +550,7 @@
 
 
     //-------- "main" --------
-    GM_addStyle(TRIANGLE_STYLE);
+    GM_addStyle(TRIANGLE_STYLE + HIDE_BUTTON_STYLE);
     EL.init(netflix);
     EL.addSource(imdb);
     EL.startup();
@@ -558,47 +563,40 @@
     // Process a downloaded list
     function parseList(response, type) {
         if (response.responseText.startsWith("<!DOCTYPE html")) {
-            var msg = 'received HTML instead of CSV file';
-            throw msg;
+            throw 'received HTML instead of CSV file';
         }
 
-        var data = parseCSV(response.responseText);
+        var data = UU.parseCSV(response.responseText);
+        var f    = UU.getCSVheader(data);
         var list = {};
 
-        var fields = {};
+        var id_fld, name_fld;
+        switch (type) {
+            case TITLES:
+                id_fld   = "Title";  // "Const";
+                name_fld = "Title";
+                break;
+            default:
+                throw 'downloaded list of unmanaged type ' + type + ', discarded';
+        }
+
+        var id_idx   = f[id_fld];
+        var name_idx = f[name_fld];
+
         var id, name;
         for (var i=1; i < data.length; i++) {
-            for (var f=0; f < data[0].length; f++)
-                { fields[data[0][f]] = data[i][f]; }
-
-            switch (type) {
-                case TITLES:
-                    //            ___0___   _____1_____  ____2_____  ___3____  _____4_____  ____5_____  _____6_____  ______7_______  _____8_____  _______9______  ____10___  _____11_____  ___12____   _____13_____  ____14____
-                    // ratings  : Const,    Your Rating, Date Added, Title,    URL,         Title Type, IMDb Rating, Runtime (mins), Year,        Genres,         Num Votes, Release Date, Directors
-                    // others   : Position, Const,       Created,    Modified, Description, Title,      URL,         Title Type,     IMDb Rating, Runtime (mins), Year,      Genres,       Num Votes,  Release Date,  Directors
-                    id   = fields["Const"];
-                    name = fields["Title"];
-                    break;
-                case PEOPLE:
-                    // ___0___   __1__  ___2___  ___3____  _____4_____  __5__  ____6____  ____7_____
-                    // Position, Const, Created, Modified, Description, Name,  Known For, Birth Date
-                    id   = fields["Const"];
-                    name = fields["Name"];
-                    break;
-                case IMAGES:
-                    // Do nothing for now
-                    continue;
-            }
+            id   = data[i][id_idx];
+            name = data[i][name_idx];
 
             if (id === "") {
-                console.error('parse ' + response.finalUrl + ": no id defined for row " + i);
+                UU.le('parse ' + response.finalUrl + ": no id found at row " + i);
                 continue;
             }
             if (list[id]) {
-                console.error('parse ' + response.finalUrl + ": duplicate id " + id + " found at row " + i);
+                UU.le('parse ' + response.finalUrl + ": duplicate id " + id + " found at row " + i);
                 continue;
             }
-            list[name] = name;
+            list[id] = name;
         }
         return list;
     }
@@ -608,92 +606,6 @@
             func(p1, p2, p3);
         };
     };
-
-
-
-
-
-
-    // handle download error in a Promise-enhanced GM_xmlhttpRequest
-    function xhrError(rejectFunc, response, method, url, purpose, reason) {
-        var m = purpose + ' - HTTP ' + method + ' error' + (reason ? ' (' + reason + ')' : '') + ': '
-              + response.status + (response.statusText ? " - " + response.statusText : '');
-        console.error(m, 'URL: ' + url, 'Response:', response);
-        rejectFunc(m);
-    }
-    function xhrErrorFunc(rejectFunc, method, url, purpose, reason) {
-        return function(resp) { xhrError(rejectFunc, resp, method, url, purpose, reason); };
-    }
-    function GMprom_xhR(method, url, purpose, opts) {
-        return new Promise(function(resolve, reject) {
-            var details = opts || {};
-            details.method    = method;
-            details.url       = url;
-            details.onload    = function(response) {
-                if (response.status !== 200) xhrError(reject, response, method, url, purpose);
-//                else resolve(response);
-                else {
-                    if (details.responseType === 'document') {
-                        try {
-                            const doc = document.implementation.createHTMLDocument().documentElement;
-                            doc.innerHTML = response.responseText;
-                            response.responseXML2 = doc;
-                        } catch(e) {
-                            xhrError(reject, response, method, url, purpose, e);
-                        }
-                    }
-                    resolve(response);
-                }
-            };
-            details.onabort   = xhrErrorFunc(reject, method, url, purpose, 'abort');
-            details.onerror   = xhrErrorFunc(reject, method, url, purpose, 'error');
-            details.ontimeout = xhrErrorFunc(reject, method, url, purpose, 'timeout');
-            if (typeof details.synchronous === 'undefined') details.synchronous = false;
-            GM_xmlhttpRequest(details);
-        });
-    }
-
-
-
-   function parseCSV(str) {
-      // Simple CSV parsing function, by Trevor Dixon:
-      // https://stackoverflow.com/a/14991797
-      var arr = [];
-      var quote = false;  // true means we're inside a quoted field
-
-      // iterate over each character, keep track of current row and column (of the returned array)
-      var row, col, c;
-      for (row = col = c = 0; c < str.length; c++) {
-         var cc = str[c], nc = str[c+1];        // current character, next character
-         arr[row] = arr[row] || [];             // create a new row if necessary
-         arr[row][col] = arr[row][col] || '';   // create a new column (start with empty string) if necessary
-
-         // If the current character is a quotation mark, and we're inside a
-         // quoted field, and the next character is also a quotation mark,
-         // add a quotation mark to the current column and skip the next character
-         if (cc == '"' && quote && nc == '"') { arr[row][col] += cc; ++c; continue; }
-
-         // If it's just one quotation mark, begin/end quoted field
-         if (cc == '"') { quote = !quote; continue; }
-
-         // If it's a comma and we're not in a quoted field, move on to the next column
-         if (cc == ',' && !quote) { ++col; continue; }
-
-         // If it's a newline (CRLF) and we're not in a quoted field, skip the next character
-         // and move on to the next row and move to column 0 of that new row
-         if (cc == '\r' && nc == '\n' && !quote) { ++row; col = 0; ++c; continue; }
-
-         // If it's a newline (LF or CR) and we're not in a quoted field,
-         // move on to the next row and move to column 0 of that new row
-         if (cc == '\n' && !quote) { ++row; col = 0; continue; }
-         if (cc == '\r' && !quote) { ++row; col = 0; continue; }
-
-         // Otherwise, append the current character to the current column
-         arr[row][col] += cc;
-      }
-      return arr;
-   }
-
 
 
 

@@ -17,7 +17,7 @@
 // @grant           GM_addStyle
 // ==/UserScript==
 //
-// TODO add many tests
+// TODO add many missing tests
 
 /* jshint esversion: 6, laxbreak: true, -W008 */
 /* global UU: readonly, ProgressBar: readonly */
