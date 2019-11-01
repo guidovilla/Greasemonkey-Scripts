@@ -50,8 +50,6 @@
 // --------------------------------------------------------------------
 //
 // To-do (priority: [H]igh, [M]edium, [L]ow):
-//   - [M] Make private members actually private and not only undocumented
-//         (only after understanding which ones really can be private)
 //   - [M] main context as default context
 //   - [M] changes to a list aren't reflected in page till reload. Change?
 //   - [M] Better handle case without lists (e.g. optimizations)
@@ -63,6 +61,7 @@
 // ----------
 //                   Refactor adding Userscript Utils, remove title (duplicate
 //                   of UU.me), getIdFromEntry -> getEntryData (more generic)
+//                   Add startProcessing() and stopProcessing()
 //                   Minor name change, backward compatible
 // 2019.10.19  [1.9] Add inList method for checking if entry is in list
 //                   Fix use of context in startup()
@@ -131,6 +130,16 @@ Other methods and variables:
 - saveList(ctx, list, name): save list of entries to storage
 - deleteList(ctx, name): remove a list from storage (but not from memory)
 - deleteAllLists(ctx): remove all user lists from storage (not from memory)
+
+- processAllEntries(ctx): process all entries in page. This is automatically
+  done at startup, so it should be manually called only for specific purposes.
+  Default for "ctx" is target context.
+- startProcessing(ctx): start the timer that repeatedly processes the new
+  entries in page. This is automatically done at startup (if context
+  INTERVAL > MIN_INTERVAL), so it should be manually called only for specific
+  purposes (e.g. if previously stopped). Default for "ctx" is target context.
+- stopProcessing(): stop the timer that repeatedly processes the new entries
+  in page. It works on both automatically and manually started timers.
 
 
 Mandatory callback methods and variables in main context:
@@ -253,6 +262,7 @@ var EL = new (function() {
     var mainContext;          // target context object
     var isEntryPage;          // boolean
     var allContexts;          // array (cointains mainContext, too)
+    var processTimer;         // setInterval timer for processAllEntries
 
 
     /* PRIVATE members */
@@ -273,7 +283,7 @@ var EL = new (function() {
     // Get and save user currently logged on <ctx> site, return true if found
     // Get last saved user and log error if no user is found
     // Along with the username, a payload may be retrieved and saved in <ctx>
-    this.getLoggedUser = function(ctx) {
+    function getLoggedUser(ctx) {
         if (!ctx.getUser) return !!(ctx.user = FAKE_USER);
 
         var user = ctx.getUser();
@@ -298,7 +308,7 @@ var EL = new (function() {
         ctx.user        = user;
         ctx.userPayload = payload;
         return !!user;
-    };
+    }
 
 
     // Get and save user to read for this source <ctx>, corresponding to the
@@ -306,7 +316,7 @@ var EL = new (function() {
     // If no mapping function is defined, take the last saved user regardless
     // of target user
     // Along with the username, a payload may be retrieved and saved in <ctx>
-    this.getRemoteUser = function(ctx) {
+    function getRemoteUser(ctx) {
         if (ctx.getSourceUserFromTargetUser) {
             ctx.user = ctx.getSourceUserFromTargetUser(mainContext.name, mainContext.user);
             if (ctx.user && typeof ctx.user === 'object') {
@@ -322,7 +332,7 @@ var EL = new (function() {
             ctx.userPayload = UU.GM_getObject(storName.lastUserPayload(ctx));
         }
         return !!(ctx.user);
-    };
+    }
 
 
     // Regenerate and save the list of lists stored object, even if empty
@@ -359,7 +369,7 @@ var EL = new (function() {
 
 
     // Load lists for the current user
-    this.loadSavedLists = function(ctx) {
+    function loadSavedLists(ctx) {
         var listNames = loadListOfLists(ctx);
         var lists = {};
         var list;
@@ -372,11 +382,11 @@ var EL = new (function() {
         });
         if (mustRegenerateListOfLists) regenerateListOfLists(ctx);
         return lists;
-    };
+    }
 
 
     // Receives an entryData and finds all lists where entry appears
-    this.inLists = function(entryData) {
+    function inLists(entryData) {
         var lists = {};
 
         allContexts.forEach(function(ctx) {
@@ -388,7 +398,7 @@ var EL = new (function() {
         });
 
         return lists;
-    };
+    }
     function _inList_default(entryData, list) {
         return !!list[entryData.id];
     }
@@ -420,7 +430,7 @@ var EL = new (function() {
         }
 
         if (ctx.modifyEntry) ctx.modifyEntry(entry);
-        lists = ( entryData ? self.inLists(entryData) : {} );
+        lists = ( entryData ? inLists(entryData) : {} );
 
         processingType = (ctx.determineType
             ? ctx.determineType(lists, entryData, entry)
@@ -435,19 +445,8 @@ var EL = new (function() {
     }
 
 
-    // Process all entries in current page
-    this.processAllEntries = function(ctx = mainContext) {
-        var entries = ctx.getPageEntries();
-        if (!entries) return;
-
-        for (var i = 0; i < entries.length; i++) {
-            processOneEntry(entries[i], ctx);
-        }
-    };
-
-
     // handle the toggle event
-    this.handleToggleButton = function(evt) {
+    function handleToggleButton(evt) {
         evt.stopPropagation();
         evt.preventDefault();
         var data = evt.target.dataset;
@@ -462,12 +461,12 @@ var EL = new (function() {
             entry = entry.closest(data.howToFindEntry);
         }
 
-        self.toggleEntry(entry, toggleList, toggleType);
-    };
+        toggleEntry(entry, toggleList, toggleType);
+    }
 
 
     // add/remove entry from a list
-    this.toggleEntry = function(entry, toggleList, toggleType) {
+    function toggleEntry(entry, toggleList, toggleType) {
         var ctx = mainContext;
 
         var entryData = _wrap_getEntryData(ctx, entry);
@@ -486,7 +485,7 @@ var EL = new (function() {
             entry.ELProcessingType = toggleType;
         }
         self.saveList(ctx, list, toggleList);
-    };
+    }
 
 
 
@@ -517,7 +516,7 @@ var EL = new (function() {
 
         if (isEntryPage || ctx.pageType) {
             // find current logged in user, or quit script
-            if (!self.getLoggedUser(ctx)) {
+            if (!getLoggedUser(ctx)) {
                 UU.le(ctx.name + ': no user is defined, aborting');
                 return;
             }
@@ -541,7 +540,7 @@ var EL = new (function() {
         if (!isEntryPage) return;
 
         // Load list data for this user from local storage
-        mainContext.allLists = self.loadSavedLists(mainContext);
+        mainContext.allLists = loadSavedLists(mainContext);
         allContexts.push(mainContext);
         // Setup the default list checking method, if not provided by context
         if (!mainContext.inList) mainContext.inList = _inList_default;
@@ -549,9 +548,39 @@ var EL = new (function() {
         // start the entry processing method
         self.processAllEntries();
         if (UU.isUndef(mainContext.interval) || mainContext.interval >= MIN_INTERVAL) {
-            // TODO we might consider using MutationObserver in the future, instead
-            mainContext.timer = setInterval(self.processAllEntries, ( mainContext.interval || DEFAULT_INTERVAL ));
+            self.startProcessing(mainContext);
         }
+    };
+
+
+    // Process all entries in current page
+    this.processAllEntries = function(ctx = mainContext) {
+        var entries = ctx.getPageEntries();
+        if (!entries) return;
+
+        for (var i = 0; i < entries.length; i++) {
+            processOneEntry(entries[i], ctx);
+        }
+    };
+
+    // Start the timer to re-process the page for new entries
+    this.startProcessing = function(ctx = mainContext) {
+        if (!UU.isUndef(ctx.interval) && ctx.interval < MIN_INTERVAL) {
+            UU.lw('context INTERVAL < ' + MIN_INTERVAL + ', processing is not started');
+            return;
+        }
+        // TODO we might consider using MutationObserver in the future, instead
+        processTimer = setInterval(self.processAllEntries, ( ctx.interval || DEFAULT_INTERVAL ), ctx);
+    };
+
+    // Stop the timer
+    this.stopProcessing = function() {
+        if (!processTimer) {
+            UU.lw('Nothing to be stopped');
+            return;
+        }
+        clearInterval(processTimer);
+        processTimer = null;
     };
 
 
@@ -572,7 +601,7 @@ var EL = new (function() {
 
         if (ctx.pageType) {
             // find current logged in user, or quit script
-            if (!self.getLoggedUser(ctx)) {
+            if (!getLoggedUser(ctx)) {
                 UU.le(ctx.name + ': no user is defined, aborting');
                 return;
             }
@@ -583,13 +612,13 @@ var EL = new (function() {
 
         // find user corresponding to current logged in user, or quit script
         // TODO if (entryPage && pageType), remote user overwrites logged user
-        if (!self.getRemoteUser(ctx)) {
+        if (!getRemoteUser(ctx)) {
             UU.le(ctx.name + ': no remote user is defined, aborting');
             return;
         }
 
         // Load list data for this user from local storage
-        ctx.allLists = self.loadSavedLists(ctx);
+        ctx.allLists = loadSavedLists(ctx);
         allContexts.push(ctx);
         // Setup the default list checking method, if not provided by context
         if (!ctx.inList) ctx.inList = _inList_default;
@@ -600,7 +629,7 @@ var EL = new (function() {
         button.dataset.howToFindEntry = howToFindEntry;
         if (toggleList !== null) button.dataset.toggleList = toggleList;
         if (toggleType !== null) button.dataset.toggleType = toggleType;
-        button.addEventListener('click', self.handleToggleButton, false);
+        button.addEventListener('click', handleToggleButton, false);
     };
 
 
