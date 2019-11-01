@@ -124,6 +124,17 @@ Promise-wrapped GM_xmlhttpRequest:
     - onload: overwritten to resolve the Promise
     - onabort, onerror, ontimeout: overwritten to reject the Promise
     if no context is specified, purpose is passed as context
+
+Cumulative timers:
+these timers can be started and stopped multiple times, their time always
+adding up (unless reset):
+- startTimer(timer, force): create/start a timer with given "timer" name. If
+  timer is already running, log error and do nothing if "force" is false (the
+  default), or cancel the timer restart it if "force" is true.
+- stopTimer(timer): stop running timer with given "timer" name
+- cancelTimer(timer): stop a timer without recording time from last start
+- resetTimer(timer): reset a timer to zero, stopping it if needed
+- getTimer(timer): get time for a timer. Work if either running or stopped
 */
 
 
@@ -328,6 +339,64 @@ window.UU = new (function() {
             if (self.isUndef(details.context))     details.context     = purpose;
             GM_xmlhttpRequest(details);
         });
+    };
+
+
+
+    // cumulative timers
+    var timers = {};
+    // create/start a timer
+    this.startTimer = function(timer, force = false) {
+        timers[timer]       = timers[timer] || { 'time': 0, 'start': null };
+        if (timers[timer].start !== null) {
+            if (force) self.cancelTimer(timer);
+            else {
+                self.le('Timer already running:', timer);
+                return;
+            }
+        }
+        timers[timer].start = performance.now();
+    };
+
+    // stop a running timer
+    this.stopTimer = function(timer) {
+        var stop = performance.now();
+        if (!timers[timer] || timers[timer].start === null) {
+            self.le('No running timer specified with name', timer);
+            return;
+        }
+        timers[timer].time += stop - timers[timer].start;
+        timers[timer].start = null;
+        return timers[timer].time;
+    };
+
+    // stop a timer without recording time
+    this.cancelTimer = function(timer) {
+        if (!timers[timer]) {
+            self.le('No timer specified with name', timer);
+            return;
+        }
+        timers[timer].start = null;
+    };
+
+    // reset a timer to zero, stopping it if needed
+    this.resetTimer = function(timer) {
+        if (!timers[timer]) {
+            self.le('No timer specified with name', timer);
+            return;
+        }
+        timers[timer] = { 'time': 0, 'start': null };
+    };
+
+    // get time for a (possibly running) timer
+    this.getTimer = function(timer) {
+        var now = performance.now();
+        if (!timers[timer]) {
+            self.le('No timer specified with name', timer);
+            return;
+        }
+        return timers[timer].time
+               + (timers[timer].start != null ? now - timers[timer].start : 0);
     };
 
 
