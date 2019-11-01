@@ -5,7 +5,7 @@
 // https://greasyfork.org/scripts/391236-progress-bar
 // Copyright (C) 2019, Guido Villa
 // Original version of the code is taken from IMDb 'My Movies' enhancer:
-// Copyright (C) 2008-2018, Ricardo Mendonça Ferreira (ric@mpcnet.com.br)
+// Copyright (C) 2008-2018, Ricardo Mendonça Ferreira
 // Released under the GPL license - http://www.gnu.org/copyleft/gpl.html
 //
 // For information/instructions on user scripts, see:
