@@ -46,7 +46,7 @@
 //
 // Changelog:
 // ----------
-//                   Add GM_setObject(), GM_getObject(), getCSVheader()
+//                   Add GM storage for objs, getCSVheader
 //                   Add implements() and make checkProperty() private
 //                   Name change, backward compatible
 // 2019.10.27  [1.0] First version
@@ -66,18 +66,6 @@ This library instantitates an UU object with utility variables and methods:
 
 - isUndef(p): check if p is undefined
 
-- le(...args): like console.error, prepending the script name
-- lw(...args): like console.warn, prepending the script name
-- li(...args): like console.info, prepending the script name
-- ld(...args): like console.debug, prepending the script name
-
-- GM_setObject(name, value): wrapper around GM_setValue for storing objects,
-  applies serialization before saving.
-- GM_getObject(name, defaultValue): wrapper around GM_getValue for retrieving
-  stringified objects, applies deserialization and returns a proper object.
-- GM_deleteObject(name): just another name for GM_deleteValue (offered only
-  for name consistency).
-
 - implements(object, interfaceDef):
   check if passed object "implements" given interface, by checking name and
   type of its properties. Arguments:
@@ -90,6 +78,21 @@ This library instantitates an UU object with utility variables and methods:
                 it is assumed to be false)
   Return true/false, and log error for each missing/mismatched property.
 
+Logging:
+- le(...args): like console.error, prepending the script name
+- lw(...args): like console.warn, prepending the script name
+- li(...args): like console.info, prepending the script name
+- ld(...args): like console.debug, prepending the script name
+
+Storage for objects:
+- GM_setObject(name, value): wrapper around GM_setValue for storing objects,
+  applies serialization before saving.
+- GM_getObject(name, defaultValue): wrapper around GM_getValue for retrieving
+  stringified objects, applies deserialization and returns a proper object.
+- GM_deleteObject(name): just another name for GM_deleteValue (offered only
+  for name consistency).
+
+CSV:
 - parseCSV(csv): simple CSV parsing function, by Trevor Dixon (see below)
   Take a CSV string as input and return an array of rows, each containing
   an array of fields.
@@ -101,12 +104,14 @@ This library instantitates an UU object with utility variables and methods:
   E.g.: { 'name': 0, 'date': 1, 'value': 2 } means that the CSV has two fields,
   the first is "name", the second is "date", the third is "value".
 
+Promise-wrapped setTimeout:
 - wait(waitTime, result)
   return a Promise to wait for "waitTime" ms, then resolve with value "result"
 - thenWait(waitTime)
   like wait(), to be used inside a Promise.then(). Passes through the
   received fulfillment value.
 
+Promise-wrapped GM_xmlhttpRequest:
 - GM_xhR(method, url, purpose, opts): GM_xmlhttpRequest wrapped in a Promise.
   Return a Promise resolving with the GM_xmlhttpRequest response, or failing
   with an error message (which is also logged). Arguments:
@@ -136,6 +141,42 @@ window.UU = new (function() {
     // check if argument is undefined
     this.isUndef = function(p) {
         return (typeof p === 'undefined');
+    };
+
+
+
+    // Check if object "object" has property "property" of type "type".
+    // If property is "optional" (default false), it is only checked for type
+    // Used to test if object "implements" a specific interface
+    function checkProperty(object, property, type, optional = false) {
+
+        if (self.isUndef(object[property])) {
+            if (optional) return true;
+
+            self.le('Invalid object: missing property "' + property + '" of type "' + type + '"');
+            return false;
+        }
+        if (typeof object[property] !== type) {
+            self.le('Invalid object: ' + (optional ? 'optional ' : '') + 'property "' + property + '" must be of type "' + type + '"');
+            return false;
+        }
+        return true;
+    }
+
+    // check if passed object "implements" given interface, by checking name
+    // and type of its properties.
+    this.implements = function(object, interfaceDef) {
+        var valid = true;
+        try {
+            // check is not stopped at first error, so all problems are logged
+            interfaceDef.forEach(function(prop) {
+                valid = valid && checkProperty(object, prop.name, prop.type, prop.optional);
+            });
+        } catch(err) {
+            self.le('Error while testing object:', object,
+                    'for interface:', interfaceDef, 'Error:', err);
+        }
+        return valid;
     };
 
 
@@ -175,42 +216,6 @@ window.UU = new (function() {
 
     // deleteObject offered only for name consistency
     this.GM_deleteObject = GM_deleteValue;
-
-
-
-    // Check if object "object" has property "property" of type "type".
-    // If property is "optional" (default false), it is only checked for type
-    // Used to test if object "implements" a specific interface
-    function checkProperty(object, property, type, optional = false) {
-
-        if (self.isUndef(object[property])) {
-            if (optional) return true;
-
-            self.le('Invalid object: missing property "' + property + '" of type "' + type + '"');
-            return false;
-        }
-        if (typeof object[property] !== type) {
-            self.le('Invalid object: ' + (optional ? 'optional ' : '') + 'property "' + property + '" must be of type "' + type + '"');
-            return false;
-        }
-        return true;
-    }
-
-    // check if passed object "implements" given interface, by checking name
-    // and type of its properties.
-    this.implements = function(object, interfaceDef) {
-        var valid = true;
-        try {
-            // check is not stopped at first error, so all problems are logged
-            interfaceDef.forEach(function(prop) {
-                valid = valid && checkProperty(object, prop.name, prop.type, prop.optional);
-            });
-        } catch(err) {
-            self.le('Error while testing object:', object,
-                    'for interface:', interfaceDef, 'Error:', err);
-        }
-        return valid;
-    };
 
 
 
