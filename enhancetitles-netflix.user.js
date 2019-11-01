@@ -70,6 +70,7 @@
 //
 // Changelog:
 // ----------
+//                  Changes due to changes in Entry List library
 // 2019.11.01 [1.7] Adopt Userscript Utils and move some functions there
 //                  Some additional refactoring, cleanup and optimizations
 // 2019.10.21 [1.6] Add download of rating and check-in list
@@ -193,14 +194,14 @@
         var type = null;
 
         if (entry.classList.contains('is-disliked')) type = 'D';
-        else if (lists[EL.ln(imdb, LIST_WATCH)]) type = 'W';
-        else if (lists[EL.ln(imdb, LIST_TBD)])   type = 'T';
-        else if (lists[EL.ln(imdb, LIST_SEEN)])  type = 'S';
-        else if (lists[EL.ln(imdb, LIST_NO)])    type = 'N';
+        else if (lists[EL.ln(LIST_WATCH, imdb)])     type = 'W';
+        else if (lists[EL.ln(LIST_TBD,   imdb)])     type = 'T';
+        else if (lists[EL.ln(LIST_SEEN,  imdb)])     type = 'S';
+        else if (lists[EL.ln(LIST_NO,    imdb)])     type = 'N';
 
-        else if (lists[EL.ln(netflix, LIST_HIDE)])  type = 'H';
+        else if (lists[EL.ln(LIST_HIDE)])            type = 'H';
 
-        if (lists[EL.ln(netflix, LIST_NF_MY)] && (!type || type === 'W' || type === 'T') && this.pageType != NF_LIST_PAGE) {
+        if (lists[EL.ln(LIST_NF_MY)] && (!type || type === 'W' || type === 'T') && this.pageType != NF_LIST_PAGE) {
             var row = entry.closest('div.lolomoRow');
             if (!row || ['queue', 'continueWatching'].indexOf(row.dataset.listContext) == -1) type = 'M';
         }
@@ -365,7 +366,7 @@
 
 
     function NFMyListClear() {
-        EL.deleteList(netflix, LIST_NF_MY);
+        EL.deleteList(LIST_NF_MY);
         delete netflix.allLists[LIST_NF_MY];
     }
 
@@ -384,7 +385,7 @@
             list[entryData.id] = entryData.name;
         }
 
-        EL.saveList(netflix, list, LIST_NF_MY);
+        EL.saveList(list, LIST_NF_MY);
         return true;
     }
 
@@ -460,7 +461,7 @@
 
         var allDnd = lists.map(function(list) {
             return downloadList(list.id, list.type)
-                       .then(function(listData) { EL.saveList(imdb, listData, list.name); })
+                       .then(function(listData) { EL.saveList(listData, list.name, imdb); })
                        .then(pb.advance)
                        .catch(function(error) { pb.advance(); throw "list '" + list.name + "' - " + error; });
         });
