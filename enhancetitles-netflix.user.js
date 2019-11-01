@@ -539,22 +539,6 @@
     }
 
 
-
-    /* END IMDB FUNCTIONS */
-
-
-
-    //-------- "main" --------
-    GM_addStyle(TRIANGLE_STYLE + HIDE_BUTTON_STYLE);
-    EL.init(netflix, true);
-    EL.addSource(imdb);
-    EL.startup();
-
-
-
-
-//TODO reorder functions
-
     // Process a downloaded list
     function parseList(response, type) {
         if (response.responseText.startsWith("<!DOCTYPE html")) {
@@ -596,11 +580,17 @@
         return list;
     }
 
-    var createFunction = function( func, p1, p2, p3 ) {
-        return function() {
-            func(p1, p2, p3);
-        };
-    };
+
+
+    /* END IMDB FUNCTIONS */
+
+
+
+    //-------- "main" --------
+    GM_addStyle(TRIANGLE_STYLE + HIDE_BUTTON_STYLE);
+    EL.init(netflix, true);
+    EL.addSource(imdb);
+    EL.startup();
 
 
 
