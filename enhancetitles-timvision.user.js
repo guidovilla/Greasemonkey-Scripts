@@ -136,7 +136,7 @@
 
 
     timvision.getEntryData = function(entry) {
-        var a  = entry.getElementsByTagName('a')[0];
+        var a = entry.querySelector('a');
         var id = a.href;
         // a.href is defined because timvision.isValidEntry() checked that
         id = ( id.match(/\/detail\/([0-9]+)-/) || id.match(/\/series\/([0-9]+)-/) );
