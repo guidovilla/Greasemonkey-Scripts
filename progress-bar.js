@@ -23,7 +23,7 @@
 // @exclude         *
 //
 // ==UserLibrary==
-// @name            Progress Bar
+// @name            Progress Bar Lib
 // @description     Create and manage simple progress bars, minimal JavaScript
 // @version         1.2
 // @author          guidovilla
