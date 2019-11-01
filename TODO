@@ -10,7 +10,6 @@
 - gv profile su GF e OUJS (bug reporting, vedere esempi fatti da altri)
 - per le librerie: fare documentazione in GL/GH e GF/OUJS (vedere librerie tipo GM_Config come esempio)
 
-- sostituire for con altri iteratori - o viceversa per ottimizzazione
 - valutare se/quando usare GM_notification(), eventualmente al posto di alert, confirm, console
 - aggiungere log.info in giro per il codice
 - aggiustare logging errori (livello) con funzione che salva gli errori per andare a rivederli (con gm config ad es.) - in asincrono (polyfill?)

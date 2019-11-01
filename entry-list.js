@@ -340,12 +340,12 @@ var EL = new (function() {
     function regenerateListOfLists(ctx) {
         var allVariables = GM_listValues();
 
-        var listNames = allVariables.reduce(function(listNames, variable) {
+        var listNames = [];
+        allVariables.forEach(function(variable) {
             if (variable.startsWith(storName.listPrefix(ctx))) {
                 listNames.push(variable.substring(storName.listPrefix(ctx).length));
             }
-            return listNames;
-        }, []);
+        });
 
         UU.GM_setObject(storName.listOfLists(ctx), listNames);
         return listNames;
