@@ -12,7 +12,7 @@
 
 - valutare se/quando usare GM_notification(), eventualmente al posto di alert, confirm, console
 - aggiungere log.info in giro per il codice
-- aggiustare logging errori con funzione che salva gli errori per andare a rivederli (con gm config ad es.) - se possibile in asincrono
+- aggiustare logging errori con funzione che salva gli errori per andare a rivederli (con gm config ad es.)? - se possibile in asincrono
 
 - valutare {} -> [] per output inLists
 - usare GM_config (uno dei due):
