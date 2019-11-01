@@ -546,7 +546,7 @@
 
     //-------- "main" --------
     GM_addStyle(TRIANGLE_STYLE + HIDE_BUTTON_STYLE);
-    EL.init(netflix);
+    EL.init(netflix, true);
     EL.addSource(imdb);
     EL.startup();
 

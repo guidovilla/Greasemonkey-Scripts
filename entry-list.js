@@ -51,13 +51,12 @@
 //
 // To-do (priority: [H]igh, [M]edium, [L]ow):
 //   - [M] changes to a list aren't reflected in page till reload. Change?
-//   - [M] Better handle case without lists (e.g. optimizations)
 //   - [M] List regeneration method doesn't handle case where lists are missing
 //   - [M] Add explantion on how it works in general and how lists are managed
 //
 // Changelog:
 // ----------
-//                   Make main context as default in calls, needs code change
+//                   Main context default in calls, loading list now optional
 // 2019.11.01 [1.10] Refactor adding Userscript Utils, remove title (duplicate
 //                   of UU.me), getIdFromEntry -> getEntryData (more generic)
 //                   Add startProcessing() and stopProcessing()
@@ -103,10 +102,12 @@ be used in processing.
 Call, in order:
 0. EL.newContext(name) to initialize each source and target context, before
    adding methods and variables
-1. EL.init(ctx), passing the target context object
-   -> not needed if you don't have external sources, just call EL.startup(ctx)
+1. EL.init(ctx, loadlistsAtStartup), passing the target context object
+   -> not needed if you don't have external sources, just call EL.startup
+   - loadlistsAtStartup (default: false) tells whether lists should be loaded
+     from local storage during startup operations
 2. EL.addSource(ctx) for each external source, with its specific context object
-3. EL.startup(ctx), ctx is not needed if EL.init(ctx) was called.
+3. EL.startup(ctx, loadlistsAtStartup), skip arguments if EL.init was called.
 
 Other methods and variables:
 - addToggleEventOnClick(button, howToFindEntry[, toggleList[, toggleType]]):
@@ -264,6 +265,7 @@ var EL = new (function() {
     var initialized = false;
     var failedInit  = false;
     var mainContext;          // target context object
+    var listLoad;             // true if lists are to be loaded at startup
     var isEntryPage;          // boolean
     var allContexts;          // array (cointains mainContext, too)
     var processTimer;         // setInterval timer for processAllEntries
@@ -510,7 +512,7 @@ var EL = new (function() {
 
 
     // init method
-    this.init = function(ctx) {
+    this.init = function(ctx, loadlistsAtStartup = false) {
         initialized = false;
         failedInit  = true;
         mainContext = null;
@@ -536,22 +538,26 @@ var EL = new (function() {
         }
 
         mainContext = ctx;
+        listLoad    = loadlistsAtStartup;
         initialized = true;
         failedInit  = false;
     };
 
 
     // startup method. Don't pass "ctx" arg if init() had been called before
-    this.startup = function(ctx) {
+    this.startup = function(ctx, loadlistsAtStartup) {
         if (!initialized) {
             if (failedInit) return;
-            self.init(ctx);
-        } else if (ctx) UU.lw('Startup called after init, ignoring context argument');
+            self.init(ctx, loadlistsAtStartup);
+        } else if (arguments.legth > 0) {
+            UU.lw('Startup() called after init(), ignoring arguments');
+        }
 
         if (!isEntryPage) return;
 
         // Load list data for this user from local storage
-        mainContext.allLists = loadSavedLists(mainContext);
+        mainContext.allLists = ( listLoad ? loadSavedLists(mainContext) : {} );
+
         allContexts.push(mainContext);
         // Setup the default list checking method, if not provided by context
         if (!mainContext.inList) mainContext.inList = _inList_default;
@@ -633,7 +639,7 @@ var EL = new (function() {
         }
 
         // Load list data for this user from local storage
-        ctx.allLists = loadSavedLists(ctx);
+        ctx.allLists = ( listLoad ? loadSavedLists(ctx) : {} );
         allContexts.push(ctx);
         // Setup the default list checking method, if not provided by context
         if (!ctx.inList) ctx.inList = _inList_default;

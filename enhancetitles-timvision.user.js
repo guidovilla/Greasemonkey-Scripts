@@ -163,6 +163,6 @@
 
     //-------- "main" --------
     GM_addStyle(timvision.STYLE_BUTTON + timvision.STYLE_PROCESS);
-    EL.startup(timvision);
+    EL.startup(timvision, true);
 
 })();
