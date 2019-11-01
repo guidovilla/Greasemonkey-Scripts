@@ -440,10 +440,10 @@
                     closeMsg = 'Done, but with errors:' + msg.txt;
                     UU.le('Errors in list download:', msg.txt);
                 } else {
-                    throw 'Error - It was not possible to download the IMDb lists:' + msg.txt;
+                    throw msg.txt;
                 }
             })
-            .catch(function(err) { UU.le(err); closeMsg = err; })
+            .catch(function(err) { UU.le(err); closeMsg = 'Error - It was not possible to download the IMDb lists: ' + err; })
             .finally(function() {
                 GM_notification({
                     'text':      closeMsg,
@@ -488,6 +488,7 @@
             return Promise.resolve(document);
 
         } else {
+            UU.li('Not in the IMdb list page, downloading it.');
             var url = 'https://www.imdb.com/user/' + imdb.userPayload + '/lists';
             return UU.GM_xhR('GET', url, 'Get IMDb list page', { 'responseType': 'document' })
                        .then(function(response) { return response.responseXML2; });
@@ -522,17 +523,10 @@
             var url = 'https://www.imdb.com/user/' + imdb.userPayload + '/' + id;
             getUrl = UU.GM_xhR('GET', url, "Get list page", { 'responseType': 'document' })
                 .then(function(response) {
-                    var exportLink;
                     var lsId = response.responseXML2.querySelector('meta[property="pageId"]');
                     if (lsId) lsId = lsId.content;
-                    if (lsId) exportLink = "https://www.imdb.com/list/" + lsId + "/export";
-                    else {
-                        exportLink = response.responseXML2.getElementsByClassName('export')[0];
-                        if (exportLink) exportLink = exportLink.getElementsByTagName('a')[0];
-                        if (exportLink) exportLink = exportLink.href;
-                        if (!exportLink) throw 'Cannot get list id';
-                    }
-                    return exportLink;
+                    if (!lsId) throw 'Cannot get list id';
+                    return "https://www.imdb.com/list/" + lsId + "/export";
                 });
         } else if (id == RATINGLIST) {
             getUrl = Promise.resolve("https://www.imdb.com/user/" + imdb.userPayload + "/" + id + "/export");
