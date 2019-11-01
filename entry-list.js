@@ -546,7 +546,6 @@ var EL = new (function() {
         if (!initialized) {
             if (failedInit) return;
             self.init(ctx);
-
         } else if (ctx) UU.lw('Startup called after init, ignoring context argument');
 
         if (!isEntryPage) return;
