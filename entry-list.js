@@ -569,10 +569,10 @@ var EL = new (function() {
         for (var i = 0; i < entries.length; i++) {
             processOneEntry(entries[i], ctx);
         }
-        /*console.log('inlist',        self.getTimer('inlist')
-                  , 'getEntryData',  self.getTimer('getEntryData')
-                  , 'determineType', self.getTimer('determineType')
-                  , 'processItem',   self.getTimer('processItem'));*/
+        /*console.log('inlist',        UU.getTimer('inlist')
+                  , 'getEntryData',  UU.getTimer('getEntryData')
+                  , 'determineType', UU.getTimer('determineType')
+                  , 'processItem',   UU.getTimer('processItem'));*/
     };
 
     // Start the timer to re-process the page for new entries
