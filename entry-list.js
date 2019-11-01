@@ -52,7 +52,6 @@
 // To-do (priority: [H]igh, [M]edium, [L]ow):
 //   - [M] changes to a list aren't reflected in page till reload. Change?
 //   - [M] Better handle case without lists (e.g. optimizations)
-//   - [M] Add description of flow in usage documentation
 //   - [M] List regeneration method doesn't handle case where lists are missing
 //   - [M] Add explantion on how it works in general and how lists are managed
 //
