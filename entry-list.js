@@ -388,6 +388,7 @@ var EL = new (function() {
 
     // Receives an entryData and finds all lists where entry appears
     function inLists(entryData) {
+        //UU.startTimer('inlist');
         var lists = {};
 
         allContexts.forEach(function(ctx) {
@@ -398,6 +399,7 @@ var EL = new (function() {
             }
         });
 
+        //UU.stopTimer('inlist');
         return lists;
     }
     function _inList_default(entryData, list) {
@@ -407,7 +409,9 @@ var EL = new (function() {
 
     // Wrap ctx.getEntryData and add error logging
     function _wrap_getEntryData(ctx, entry) {
+        //UU.startTimer('getEntryData');
         var entryData = ctx.getEntryData(entry);
+        //UU.stopTimer('getEntryData');
         if (!entryData || UU.isUndef(entryData.id)) {
             UU.le('Could not determine id - for entry:', entry);
         }
@@ -433,12 +437,16 @@ var EL = new (function() {
         if (ctx.modifyEntry) ctx.modifyEntry(entry);
         lists = ( entryData ? inLists(entryData) : {} );
 
+        //UU.startTimer('determineType');
         processingType = (ctx.determineType
             ? ctx.determineType(lists, entryData, entry)
             : Object.keys(lists).length > 0);
+        //UU.stopTimer('determineType');
 
         if (processingType) {
+            //UU.startTimer('processItem');
             ctx.processItem(entry, entryData, processingType);
+            //UU.stopTimer('processItem');
             entry.ELProcessingType = processingType;
         }
 
@@ -562,6 +570,10 @@ var EL = new (function() {
         for (var i = 0; i < entries.length; i++) {
             processOneEntry(entries[i], ctx);
         }
+        /*console.log('inlist',        self.getTimer('inlist')
+                  , 'getEntryData',  self.getTimer('getEntryData')
+                  , 'determineType', self.getTimer('determineType')
+                  , 'processItem',   self.getTimer('processItem'));*/
     };
 
     // Start the timer to re-process the page for new entries
