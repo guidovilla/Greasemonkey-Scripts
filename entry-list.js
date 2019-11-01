@@ -90,7 +90,7 @@
 /* exported EL, Library_Version_ENTRY_LIST */
 /* global UU: readonly */
 
-const Library_Version_ENTRY_LIST = '1.9';
+const Library_Version_ENTRY_LIST = '1.10';
 
 /* How to use this library
 

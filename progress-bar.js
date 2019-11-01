@@ -64,7 +64,7 @@
 /* exported ProgressBar, Library_Version_PROGRESS_BAR */
 /* global UU: readonly */
 
-const Library_Version_PROGRESS_BAR = '1.1';
+const Library_Version_PROGRESS_BAR = '1.2';
 
 /* How to use this library
 

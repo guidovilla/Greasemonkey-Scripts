@@ -57,7 +57,7 @@
 /* jshint esversion: 6, laxbreak: true, -W008, supernew: true */
 /* exported UU, Library_Version_USERSCRIPT_UTILS */
 
-const Library_Version_USERSCRIPT_UTILS = '1.0';
+const Library_Version_USERSCRIPT_UTILS = '1.1';
 
 /* How to use this library
 
