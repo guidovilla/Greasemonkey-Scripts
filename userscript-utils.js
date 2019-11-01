@@ -46,7 +46,8 @@
 //
 // Changelog:
 // ----------
-//                   Add GM_setObject(), GM_getObject(), implements(), make checkProperty() private
+//                   Add GM_setObject(), GM_getObject(), getCSVheader()
+//                   Add implements() and make checkProperty() private
 //                   Name change, backward compatible
 // 2019.10.27  [1.0] First version
 // 2019.10.26  [0.1] First test version, private use only
@@ -94,6 +95,11 @@ This library instantitates an UU object with utility variables and methods:
   an array of fields.
   NOTE: it is not strict in RFC 4180 compliance as it handles unquoted
   double quotes inside a field (this is not allowed in the RFC specifications).
+- getCSVheader(csvData): return a header object from a parsed CSV.
+  The header works as an index: there is a property for each CSV field, with
+  the array index of that field as value.
+  E.g.: { 'name': 0, 'date': 1, 'value': 2 } means that the CSV has two fields,
+  the first is "name", the second is "date", the third is "value".
 
 - wait(waitTime, result)
   return a Promise to wait for "waitTime" ms, then resolve with value "result"
@@ -249,6 +255,13 @@ window.UU = new (function() {
         return arr;
     };
     /* eslint-enable max-statements, max-statements-per-line, max-len */
+
+    // return a header object from a parsed CSV
+    this.getCSVheader = function(csvData) {
+        var header = csvData[0], fields = {};
+        for (var i = 0; i < header.length; i++) fields[header[i]] = i;
+        return fields;
+    };
 
 
 
