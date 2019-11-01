@@ -381,7 +381,9 @@ var EL = new (function() {
 
         allContexts.forEach(function(ctx) {
             for (var list in ctx.allLists) {
-                if (ctx.inList(entryData, ctx.allLists[list])) lists[self.ln(ctx, list)] = true;
+                if (ctx.inList(entryData, ctx.allLists[list])) {
+                    lists[self.ln(ctx, list)] = true;
+                }
             }
         });
 
@@ -396,7 +398,7 @@ var EL = new (function() {
     function _wrap_getEntryData(ctx, entry) {
         var entryData = ctx.getEntryData(entry);
         if (!entryData || UU.isUndef(entryData.id)) {
-            UU.le('Could not determine id - for entry', entry);
+            UU.le('Could not determine id - for entry:', entry);
         }
         return entryData;
     }

@@ -189,16 +189,20 @@ window.UU = new (function() {
         }
         return true;
     }
+
     // check if passed object "implements" given interface, by checking name
     // and type of its properties.
     this.implements = function(object, interfaceDef) {
         var valid = true;
-
-        // check is not stopped at first error, so all problems are logged
-        interfaceDef.forEach(function(prop) {
-            valid = valid && checkProperty(object, prop.name, prop.type, prop.optional);
-        });
-
+        try {
+            // check is not stopped at first error, so all problems are logged
+            interfaceDef.forEach(function(prop) {
+                valid = valid && checkProperty(object, prop.name, prop.type, prop.optional);
+            });
+        } catch(err) {
+            self.le('Error while testing object:', object,
+                    'for interface:', interfaceDef, 'Error:', err);
+        }
         return valid;
     };
 
