@@ -24,9 +24,9 @@
 // ==UserLibrary==
 // @name            Userscript Utils
 // @description     Some useful utilities for userscript development
-// @version         1.0
+// @version         1.1
 // @author          guidovilla
-// @date            27.10.2019
+// @date            01.11.2019
 // @copyright       2019, Guido Villa (https://greasyfork.org/users/373199-guido-villa)
 // @license         GPL-3.0-or-later
 // @homepageURL     https://greasyfork.org/scripts/391648-userscript-utils
@@ -46,12 +46,13 @@
 //
 // Changelog:
 // ----------
-//                   Add GM storage for objs, getCSVheader, cumulative timers
-//                   Add implements() and make checkProperty() private
-//                   Name change, backward compatible
-// 2019.10.27  [1.0] First version
-// 2019.10.26  [0.1] First test version, private use only
+// 2019.11.01 [1.1] Add GM storage for objs, getCSVheader, cumulative timers
+//                  Add implements() and make checkProperty() private
+//                  Name change, backward compatible
+// 2019.10.27 [1.0] First version
+// 2019.10.26 [0.1] First test version, private use only
 //
+// --------------------------------------------------------------------
 
 /* jshint esversion: 6, laxbreak: true, -W008, supernew: true */
 /* exported UU, Library_Version_USERSCRIPT_UTILS */

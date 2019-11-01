@@ -17,9 +17,9 @@
 // ==UserScript==
 // @name            Enhance titles - Netflix
 // @description     Emphasize or hide titles on Netflix according to IMDb and local lists
-// @version         1.6
+// @version         1.7
 // @author          guidovilla
-// @date            21.10.2019
+// @date            01.11.2019
 // @copyright       2019, Guido Villa (https://greasyfork.org/users/373199-guido-villa)
 // @license         GPL-3.0-or-later
 // @homepageURL     https://greasyfork.org/scripts/390631-enhance-titles-netflix
@@ -70,24 +70,25 @@
 //
 // Changelog:
 // ----------
-//                   Adopt Userscript Utils and move some functions there
-//                   Some additional refactoring, cleanup and optimizations
-// 2019.10.21  [1.6] Add download of rating and check-in list
-//                   Filter out non-title IMDb lists
-//                   Normalize apostrophes to increase NF<->IMDb name matching
-// 2019.10.20  [1.5] Refactor using EntryList library (first version)
-// 2019.09.30  [1.4] First public version, correct @namespace and other headers
-// 2019.08.28  [1.3] Make the list more visible (top right triangle instead of border, with tooltip)
-//                   Fix unhide method (bug added in 1.2)
-//                   Add priority in todo list
-// 2019.07.06  [1.2] Fix working in pages without rows (i.e. search page)
-//                   Fix opacity not applied in some cases/pages
-// 2019.06.20  [1.1] Load My List from My List page
-// 2019.06.01  [1.0] Hide "My List" titles outside "My List" (row and page) and "Continue watching"
-//                   Fix user name detection
-//                   Gets data both from locally hidden movies and from IMDb lists
-// 2019.03.30  [0.1] First test version, private use only
+// 2019.11.01 [1.7] Adopt Userscript Utils and move some functions there
+//                  Some additional refactoring, cleanup and optimizations
+// 2019.10.21 [1.6] Add download of rating and check-in list
+//                  Filter out non-title IMDb lists
+//                  Normalize apostrophes to increase NF<->IMDb name matching
+// 2019.10.20 [1.5] Refactor using EntryList library (first version)
+// 2019.09.30 [1.4] First public version, correct @namespace and other headers
+// 2019.08.28 [1.3] Make the list more visible (top right triangle instead of border, with tooltip)
+//                  Fix unhide method (bug added in 1.2)
+//                  Add priority in todo list
+// 2019.07.06 [1.2] Fix working in pages without rows (i.e. search page)
+//                  Fix opacity not applied in some cases/pages
+// 2019.06.20 [1.1] Load My List from My List page
+// 2019.06.01 [1.0] Hide "My List" titles outside "My List" (row and page) and "Continue watching"
+//                  Fix user name detection
+//                  Gets data both from locally hidden movies and from IMDb lists
+// 2019.03.30 [0.1] First test version, private use only
 //
+// --------------------------------------------------------------------
 
 /* jshint -W008 */
 /* global UU: readonly, EL: readonly, ProgressBar: readonly */

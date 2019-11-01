@@ -13,9 +13,9 @@
 // ==UserScript==
 // @name            Enhance titles - Timvision
 // @description     Hide titles on Timvision website by clicking on a button
-// @version         1.4
+// @version         1.5
 // @author          guidovilla
-// @date            10.10.2019
+// @date            01.11.2019
 // @copyright       2019, Guido Villa (https://greasyfork.org/users/373199-guido-villa)
 // @license         GPL-3.0-or-later
 // @homepageURL     https://greasyfork.org/scripts/390632-enhance-titles-timvision
@@ -48,16 +48,17 @@
 //
 // Changelog:
 // ----------
-//                   Adopt Userscript Utils, some refactoring&cleanup
-// 2019.10.10  [1.4] Use classes instead of inline styles, some code cleanup
-//                   Optimization: permanently skip invalid entries
-// 2019.10.02  [1.3] Simplify code thanks to new EntryList defaults
-// 2019.09.30  [1.2] First public version, correct @namespace and other headers
-// 2019.09.27  [1.1] Changes due to EntryList (formerly TitleList) refactoring
-// 2019.09.21  [1.0] First version. Hide titles on click and remove useless
-//                   zooming of title cards on mouseover
-// 2019.09.18  [0.1] First test version, private use only
+// 2019.11.01 [1.5] Adopt Userscript Utils, some refactoring&cleanup
+// 2019.10.10 [1.4] Use classes instead of inline styles, some code cleanup
+//                  Optimization: permanently skip invalid entries
+// 2019.10.02 [1.3] Simplify code thanks to new EntryList defaults
+// 2019.09.30 [1.2] First public version, correct @namespace and other headers
+// 2019.09.27 [1.1] Changes due to EntryList (formerly TitleList) refactoring
+// 2019.09.21 [1.0] First version. Hide titles on click and remove useless
+//                  zooming of title cards on mouseover
+// 2019.09.18 [0.1] First test version, private use only
 //
+// --------------------------------------------------------------------
 
 /* jshint laxbreak: true */
 /* global EL: readonly */

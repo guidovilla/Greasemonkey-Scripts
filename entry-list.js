@@ -34,9 +34,9 @@
 // ==UserLibrary==
 // @name            Entry List
 // @description     Library for managing pages with many similar items (youtube, twitter, ...)
-// @version         1.9
+// @version         1.10
 // @author          guidovilla
-// @date            19.10.2019
+// @date            01.11.2019
 // @copyright       2019, Guido Villa (https://greasyfork.org/users/373199-guido-villa)
 // @license         GPL-3.0-or-later
 // @homepageURL     https://greasyfork.org/scripts/390248-entry-list
@@ -59,32 +59,33 @@
 //
 // Changelog:
 // ----------
-//                   Refactor adding Userscript Utils, remove title (duplicate
+// 2019.11.01 [1.10] Refactor adding Userscript Utils, remove title (duplicate
 //                   of UU.me), getIdFromEntry -> getEntryData (more generic)
 //                   Add startProcessing() and stopProcessing()
 //                   Minor name change, backward compatible
-// 2019.10.19  [1.9] Add inList method for checking if entry is in list
+// 2019.10.19 [1.9]  Add inList method for checking if entry is in list
 //                   Fix use of context in startup()
-// 2019.10.18  [1.8] Add possibility to download a user payload with getUser
-// 2019.10.10  [1.7] Add possibility of source contexts
+// 2019.10.18 [1.8]  Add possibility to download a user payload with getUser
+// 2019.10.10 [1.7]  Add possibility of source contexts
 //                   saveList public, add title, ln, deleteList, deleteAllLists
 //                   Add getPageType and processPage callbacks
 //                   Some refactoring and small fixes
-// 2019.10.06  [1.6] Changed storage names for future needs (multiple contexts)
+// 2019.10.06 [1.6]  Changed storage names for future needs (multiple contexts)
 //                   (requires manually adjusting previous storage)
-// 2019.10.05  [1.5] Automatically handle case with only one list
+// 2019.10.05 [1.5]  Automatically handle case with only one list
 //                   Better handling of list of lists
 //                   Add possibility to permanently skip an entry
-// 2019.10.02  [1.4] Add newContext utility method
-// 2019.10.01  [1.3] More generic: getUser and getIdFromEntry are now optional
+// 2019.10.02 [1.4]  Add newContext utility method
+// 2019.10.01 [1.3]  More generic: getUser and getIdFromEntry are now optional
 //                   Correct @namespace and other headers (for public use)
-// 2019.09.27  [1.2] Refactoring and name changing: TitleList -> EntryList
-// 2019.09.27  [1.1] Code cleanup (string literals, reorder methods)
+// 2019.09.27 [1.2]  Refactoring and name changing: TitleList -> EntryList
+// 2019.09.27 [1.1]  Code cleanup (string literals, reorder methods)
 //                   Check for validity of the context object
 //                   Add usage documentation
-// 2019.09.21  [1.0] First version
-// 2019.09.20  [0.1] First test version, private use only
+// 2019.09.21 [1.0]  First version
+// 2019.09.20 [0.1]  First test version, private use only
 //
+// --------------------------------------------------------------------
 
 /* jshint esversion: 6, supernew: true, laxbreak: true */
 /* exported EL, Library_Version_ENTRY_LIST */

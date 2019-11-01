@@ -25,9 +25,9 @@
 // ==UserLibrary==
 // @name            Progress Bar
 // @description     Create and manage simple progress bars, minimal JavaScript
-// @version         1.1
+// @version         1.2
 // @author          guidovilla
-// @date            19.10.2019
+// @date            01.11.2019
 // @copyright       2019, Guido Villa (https://greasyfork.org/users/373199-guido-villa)
 // @license         GPL-3.0-or-later
 // @homepageURL     https://greasyfork.org/scripts/391236-progress-bar
@@ -51,13 +51,14 @@
 //
 // Changelog:
 // ----------
-//                   Adopt Userscript Utils, hide global variables, additional
-//                   refactor&cleanup. Minor name change, backward compatible
-// 2019.10.19  [1.1] Add possibility to update finish value
-//                   Change default value for "current" argument in update()
-// 2019.10.16  [1.0] First version
-// 2019.10.14  [0.1] First test version, private use only
+// 2019.11.01 [1.2] Adopt Userscript Utils, hide global variables, additional
+//                  refactor&cleanup. Minor name change, backward compatible
+// 2019.10.19 [1.1] Add possibility to update finish value
+//                  Change default value for "current" argument in update()
+// 2019.10.16 [1.0] First version
+// 2019.10.14 [0.1] First test version, private use only
 //
+// --------------------------------------------------------------------
 
 /* jshint esversion: 6, supernew: true, laxbreak: true */
 /* exported ProgressBar, Library_Version_PROGRESS_BAR */
