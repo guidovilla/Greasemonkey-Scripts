@@ -270,14 +270,13 @@ var EL = new (function() {
 
     // standardized names for storage variables
     var storName = {
-        'self':            this,
         'listIdent':       function(ctx)           { return STORAGE_SEP + ctx.name + STORAGE_SEP + ctx.user; },
-        'listPrefix':      function(ctx)           { return 'List'  + self.listIdent(ctx) + STORAGE_SEP; },
+        'listPrefix':      function(ctx)           { return 'List'  + this.listIdent(ctx) + STORAGE_SEP; },
 
         'lastUser':        function(ctx)           { return ctx.name + STORAGE_SEP + 'lastUser'; },
         'lastUserPayload': function(ctx)           { return ctx.name + STORAGE_SEP + 'lastUserPayload'; },
-        'listOfLists':     function(ctx)           { return 'Lists' + self.listIdent(ctx); },
-        'listName':        function(ctx, listName) { return self.listPrefix(ctx) + listName; },
+        'listOfLists':     function(ctx)           { return 'Lists' + this.listIdent(ctx); },
+        'listName':        function(ctx, listName) { return this.listPrefix(ctx) + listName; },
     };
 
 
