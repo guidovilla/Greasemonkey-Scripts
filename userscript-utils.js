@@ -227,7 +227,11 @@ window.UU = new (function() {
     };
 
     // deleteObject offered only for name consistency
-    this.GM_deleteObject = GM_deleteValue;
+    this.GM_deleteObject = function(name) {
+        // the wrapping inside a function is needed otherwise you would need to
+        // @grant GM_deleteValue even if not using it
+        GM_deleteValue(name);
+    };
 
 
 
