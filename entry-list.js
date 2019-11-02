@@ -329,12 +329,12 @@ window.EL = new (function() {
         if (ctx.getSourceUserFromTargetUser) {
             ctx.user = ctx.getSourceUserFromTargetUser(mainContext.name, mainContext.user); // eslint-disable-line max-len
             if (ctx.user && typeof ctx.user === 'object') {
-                ctx.payload = ctx.user.payload;
-                ctx.user    = ctx.user.name;
+                ctx.userPayload = ctx.user.payload;
+                ctx.user        = ctx.user.name;
             }
             if (!ctx.user) {
                 UU.le(ctx.name + ": cannot find user corresponding to '" + mainContext.user + "' on " + mainContext.name);
-                delete ctx.payload;
+                delete ctx.userPayload;
             }
         } else {
             ctx.user        = GM_getValue(storName.lastUser(ctx));
