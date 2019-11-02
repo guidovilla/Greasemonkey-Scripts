@@ -48,7 +48,8 @@
 //
 // Changelog:
 // ----------
-// 2019.11.01 [1.5] Adopt Userscript Utils, some refactoring&cleanup
+// 2019.11.01 [1.5] Modifications due to changes in Entry List library
+//                  Adopt Userscript Utils, some refactoring&cleanup
 // 2019.10.10 [1.4] Use classes instead of inline styles, some code cleanup
 //                  Optimization: permanently skip invalid entries
 // 2019.10.02 [1.3] Simplify code thanks to new EntryList defaults
@@ -163,6 +164,6 @@
 
     //-------- "main" --------
     GM_addStyle(timvision.STYLE_BUTTON + timvision.STYLE_PROCESS);
-    EL.startup(timvision);
+    EL.startup(timvision, true);
 
 })();

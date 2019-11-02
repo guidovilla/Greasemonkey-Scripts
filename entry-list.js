@@ -20,10 +20,10 @@
 // To use this library in a userscript you must add to script header:
   // @require https://greasyfork.org/scripts/391648/code/userscript-utils.js
   // @require https://greasyfork.org/scripts/390248/code/entry-list.js
-  // @grant   GM_getValue
-  // @grant   GM_setValue
-  // @grant   GM_deleteValue
-  // @grant   GM_listValues
+  // @grant   GM_getValue     (only if using lists)
+  // @grant   GM_setValue     (only if using lists)
+  // @grant   GM_deleteValue  (only if using lists)
+  // @grant   GM_listValues   (only if using lists)
 //
 // --------------------------------------------------------------------
 //
@@ -50,10 +50,7 @@
 // --------------------------------------------------------------------
 //
 // To-do (priority: [H]igh, [M]edium, [L]ow):
-//   - [M] main context as default context
 //   - [M] changes to a list aren't reflected in page till reload. Change?
-//   - [M] Better handle case without lists (e.g. optimizations)
-//   - [M] Add description of flow in usage documentation
 //   - [M] List regeneration method doesn't handle case where lists are missing
 //   - [M] Add explantion on how it works in general and how lists are managed
 //
@@ -62,6 +59,7 @@
 // 2019.11.01 [1.10] Refactor adding Userscript Utils, remove title (duplicate
 //                   of UU.me), getIdFromEntry -> getEntryData (more generic)
 //                   Add startProcessing() and stopProcessing()
+//                   Main context default in calls, loading list now optional
 //                   Minor name change, backward compatible
 // 2019.10.19 [1.9]  Add inList method for checking if entry is in list
 //                   Fix use of context in startup()
@@ -91,7 +89,7 @@
 /* exported EL, Library_Version_ENTRY_LIST */
 /* global UU: readonly */
 
-const Library_Version_ENTRY_LIST = '1.9';
+const Library_Version_ENTRY_LIST = '1.10';
 
 /* How to use this library
 
@@ -104,10 +102,12 @@ be used in processing.
 Call, in order:
 0. EL.newContext(name) to initialize each source and target context, before
    adding methods and variables
-1. EL.init(ctx), passing the target context object
-   -> not needed if you don't have external sources, just call EL.startup(ctx)
+1. EL.init(ctx, loadlistsAtStartup), passing the target context object
+   -> not needed if you don't have external sources, just call EL.startup
+   - loadlistsAtStartup (default: false) tells whether lists should be loaded
+     from local storage during startup operations
 2. EL.addSource(ctx) for each external source, with its specific context object
-3. EL.startup(ctx), ctx is not needed if EL.init(ctx) was called.
+3. EL.startup(ctx, loadlistsAtStartup), skip arguments if EL.init was called.
 
 Other methods and variables:
 - addToggleEventOnClick(button, howToFindEntry[, toggleList[, toggleType]]):
@@ -127,10 +127,14 @@ Other methods and variables:
   This method returns false so it can be used in isValidEntry() in this way:
   return condition || EL.markInvalid(entry)
   This leaves the return value unchanged and marks the entry only if invalid
-- ln(ctx, listName): return list name as passed to determineType() (see below)
-- saveList(ctx, list, name): save list of entries to storage
-- deleteList(ctx, name): remove a list from storage (but not from memory)
-- deleteAllLists(ctx): remove all user lists from storage (not from memory)
+- ln(listName, ctx): return list name as passed to determineType() (see below).
+  Default for "ctx" is target context.
+- saveList(list, name, ctx): save list of entries to storage.
+  Default for "ctx" is target context.
+- deleteList(name, ctx): remove a list from storage (but not from memory).
+  Default for "ctx" is target context.
+- deleteAllLists(ctx): remove all user lists from storage (not from memory).
+  Default for "ctx" is target context.
 
 - processAllEntries(ctx): process all entries in page. This is automatically
   done at startup, so it should be manually called only for specific purposes.
@@ -261,6 +265,7 @@ var EL = new (function() {
     var initialized = false;
     var failedInit  = false;
     var mainContext;          // target context object
+    var listLoad;             // true if lists are to be loaded at startup
     var isEntryPage;          // boolean
     var allContexts;          // array (cointains mainContext, too)
     var processTimer;         // setInterval timer for processAllEntries
@@ -394,7 +399,7 @@ var EL = new (function() {
         allContexts.forEach(function(ctx) {
             for (var list in ctx.allLists) {
                 if (ctx.inList(entryData, ctx.allLists[list])) {
-                    lists[self.ln(ctx, list)] = true;
+                    lists[self.ln(list, ctx)] = true;
                 }
             }
         });
@@ -408,7 +413,7 @@ var EL = new (function() {
 
 
     // Wrap ctx.getEntryData and add error logging
-    function _wrap_getEntryData(ctx, entry) {
+    function _wrap_getEntryData(entry, ctx = mainContext) {
         //UU.startTimer('getEntryData');
         var entryData = ctx.getEntryData(entry);
         //UU.stopTimer('getEntryData');
@@ -430,7 +435,7 @@ var EL = new (function() {
         if (ctx.isValidEntry && !ctx.isValidEntry(entry)) return;
 
         if (ctx.getEntryData) {
-            entryData = _wrap_getEntryData(ctx, entry);
+            entryData = _wrap_getEntryData(entry, ctx);
             if (!entryData) return;
         }
 
@@ -478,7 +483,7 @@ var EL = new (function() {
     function toggleEntry(entry, toggleList, toggleType) {
         var ctx = mainContext;
 
-        var entryData = _wrap_getEntryData(ctx, entry);
+        var entryData = _wrap_getEntryData(entry, ctx);
         if (!entryData || UU.isUndef(entryData.id)) return;
 
         // check if item is in list
@@ -493,7 +498,7 @@ var EL = new (function() {
             ctx.processItem(entry, entryData, toggleType);
             entry.ELProcessingType = toggleType;
         }
-        self.saveList(ctx, list, toggleList);
+        self.saveList(list, toggleList, ctx);
     }
 
 
@@ -507,7 +512,7 @@ var EL = new (function() {
 
 
     // init method
-    this.init = function(ctx) {
+    this.init = function(ctx, loadlistsAtStartup = false) {
         initialized = false;
         failedInit  = true;
         mainContext = null;
@@ -533,23 +538,26 @@ var EL = new (function() {
         }
 
         mainContext = ctx;
+        listLoad    = loadlistsAtStartup;
         initialized = true;
         failedInit  = false;
     };
 
 
     // startup method. Don't pass "ctx" arg if init() had been called before
-    this.startup = function(ctx) {
+    this.startup = function(ctx, loadlistsAtStartup) {
         if (!initialized) {
             if (failedInit) return;
-            self.init(ctx);
-
-        } else if (ctx) UU.lw('Startup called after init, ignoring context argument');
+            self.init(ctx, loadlistsAtStartup);
+        } else if (arguments.legth > 0) {
+            UU.lw('Startup() called after init(), ignoring arguments');
+        }
 
         if (!isEntryPage) return;
 
         // Load list data for this user from local storage
-        mainContext.allLists = loadSavedLists(mainContext);
+        mainContext.allLists = ( listLoad ? loadSavedLists(mainContext) : {} );
+
         allContexts.push(mainContext);
         // Setup the default list checking method, if not provided by context
         if (!mainContext.inList) mainContext.inList = _inList_default;
@@ -631,7 +639,7 @@ var EL = new (function() {
         }
 
         // Load list data for this user from local storage
-        ctx.allLists = loadSavedLists(ctx);
+        ctx.allLists = ( listLoad ? loadSavedLists(ctx) : {} );
         allContexts.push(ctx);
         // Setup the default list checking method, if not provided by context
         if (!ctx.inList) ctx.inList = _inList_default;
@@ -653,13 +661,13 @@ var EL = new (function() {
 
 
     // return the list name as generated by inLists (to be used in ctx.determineType())
-    this.ln = function(ctx, listName) {
+    this.ln = function(listName, ctx = mainContext) {
         return ctx.name + SEP + listName;
     };
 
 
     // Save single list for the current user
-    this.saveList = function(ctx, list, name) {
+    this.saveList = function(list, name, ctx = mainContext) {
         var listNames = loadListOfLists(ctx);
 
         if (listNames.indexOf(name) == -1) {
@@ -671,7 +679,7 @@ var EL = new (function() {
 
 
     // Delete a single list for the current user
-    this.deleteList = function(ctx, name) {
+    this.deleteList = function(name, ctx = mainContext) {
         var listNames = loadListOfLists(ctx);
 
         var i = listNames.indexOf(name);
@@ -685,7 +693,7 @@ var EL = new (function() {
 
 
     // Delete all lists for the current user
-    this.deleteAllLists = function(ctx) {
+    this.deleteAllLists = function(ctx = mainContext) {
         var listNames = loadListOfLists(ctx);
         UU.GM_deleteObject(storName.listOfLists(ctx));
 

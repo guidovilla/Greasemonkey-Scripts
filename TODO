@@ -1,5 +1,3 @@
-- testare condizioni di errore per NF
-- verificare come si comporta il salvataggio liste se non c'è utente (undefined? vd. YT)
 - createfunction e createfunctionparam: fare e usare
 
 - README in gitlab/GF/OUJS - esempi:

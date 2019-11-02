@@ -71,6 +71,7 @@
 // Changelog:
 // ----------
 // 2019.11.01 [1.7] Adopt Userscript Utils and move some functions there
+//                  Modifications due to changes in Entry List library
 //                  Some additional refactoring, cleanup and optimizations
 // 2019.10.21 [1.6] Add download of rating and check-in list
 //                  Filter out non-title IMDb lists
@@ -193,14 +194,14 @@
         var type = null;
 
         if (entry.classList.contains('is-disliked')) type = 'D';
-        else if (lists[EL.ln(imdb, LIST_WATCH)]) type = 'W';
-        else if (lists[EL.ln(imdb, LIST_TBD)])   type = 'T';
-        else if (lists[EL.ln(imdb, LIST_SEEN)])  type = 'S';
-        else if (lists[EL.ln(imdb, LIST_NO)])    type = 'N';
+        else if (lists[EL.ln(LIST_WATCH, imdb)])     type = 'W';
+        else if (lists[EL.ln(LIST_TBD,   imdb)])     type = 'T';
+        else if (lists[EL.ln(LIST_SEEN,  imdb)])     type = 'S';
+        else if (lists[EL.ln(LIST_NO,    imdb)])     type = 'N';
 
-        else if (lists[EL.ln(netflix, LIST_HIDE)])  type = 'H';
+        else if (lists[EL.ln(LIST_HIDE)])            type = 'H';
 
-        if (lists[EL.ln(netflix, LIST_NF_MY)] && (!type || type === 'W' || type === 'T') && this.pageType != NF_LIST_PAGE) {
+        if (lists[EL.ln(LIST_NF_MY)] && (!type || type === 'W' || type === 'T') && this.pageType != NF_LIST_PAGE) {
             var row = entry.closest('div.lolomoRow');
             if (!row || ['queue', 'continueWatching'].indexOf(row.dataset.listContext) == -1) type = 'M';
         }
@@ -365,7 +366,7 @@
 
 
     function NFMyListClear() {
-        EL.deleteList(netflix, LIST_NF_MY);
+        EL.deleteList(LIST_NF_MY);
         delete netflix.allLists[LIST_NF_MY];
     }
 
@@ -384,7 +385,7 @@
             list[entryData.id] = entryData.name;
         }
 
-        EL.saveList(netflix, list, LIST_NF_MY);
+        EL.saveList(list, LIST_NF_MY);
         return true;
     }
 
@@ -439,10 +440,10 @@
                     closeMsg = 'Done, but with errors:' + msg.txt;
                     UU.le('Errors in list download:', msg.txt);
                 } else {
-                    throw 'Error - It was not possible to download the IMDb lists:' + msg.txt;
+                    throw msg.txt;
                 }
             })
-            .catch(function(err) { UU.le(err); closeMsg = err; })
+            .catch(function(err) { UU.le(err); closeMsg = 'Error - It was not possible to download the IMDb lists: ' + err; })
             .finally(function() {
                 GM_notification({
                     'text':      closeMsg,
@@ -460,7 +461,7 @@
 
         var allDnd = lists.map(function(list) {
             return downloadList(list.id, list.type)
-                       .then(function(listData) { EL.saveList(imdb, listData, list.name); })
+                       .then(function(listData) { EL.saveList(listData, list.name, imdb); })
                        .then(pb.advance)
                        .catch(function(error) { pb.advance(); throw "list '" + list.name + "' - " + error; });
         });
@@ -487,6 +488,7 @@
             return Promise.resolve(document);
 
         } else {
+            UU.li('Not in the IMdb list page, downloading it.');
             var url = 'https://www.imdb.com/user/' + imdb.userPayload + '/lists';
             return UU.GM_xhR('GET', url, 'Get IMDb list page', { 'responseType': 'document' })
                        .then(function(response) { return response.responseXML2; });
@@ -521,17 +523,10 @@
             var url = 'https://www.imdb.com/user/' + imdb.userPayload + '/' + id;
             getUrl = UU.GM_xhR('GET', url, "Get list page", { 'responseType': 'document' })
                 .then(function(response) {
-                    var exportLink;
                     var lsId = response.responseXML2.querySelector('meta[property="pageId"]');
                     if (lsId) lsId = lsId.content;
-                    if (lsId) exportLink = "https://www.imdb.com/list/" + lsId + "/export";
-                    else {
-                        exportLink = response.responseXML2.getElementsByClassName('export')[0];
-                        if (exportLink) exportLink = exportLink.getElementsByTagName('a')[0];
-                        if (exportLink) exportLink = exportLink.href;
-                        if (!exportLink) throw 'Cannot get list id';
-                    }
-                    return exportLink;
+                    if (!lsId) throw 'Cannot get list id';
+                    return "https://www.imdb.com/list/" + lsId + "/export";
                 });
         } else if (id == RATINGLIST) {
             getUrl = Promise.resolve("https://www.imdb.com/user/" + imdb.userPayload + "/" + id + "/export");
@@ -543,22 +538,6 @@
                    .then(function(response) { return parseList(response, type); });
     }
 
-
-
-    /* END IMDB FUNCTIONS */
-
-
-
-    //-------- "main" --------
-    GM_addStyle(TRIANGLE_STYLE + HIDE_BUTTON_STYLE);
-    EL.init(netflix);
-    EL.addSource(imdb);
-    EL.startup();
-
-
-
-
-//TODO reorder functions
 
     // Process a downloaded list
     function parseList(response, type) {
@@ -601,11 +580,17 @@
         return list;
     }
 
-    var createFunction = function( func, p1, p2, p3 ) {
-        return function() {
-            func(p1, p2, p3);
-        };
-    };
+
+
+    /* END IMDB FUNCTIONS */
+
+
+
+    //-------- "main" --------
+    GM_addStyle(TRIANGLE_STYLE + HIDE_BUTTON_STYLE);
+    EL.init(netflix, true);
+    EL.addSource(imdb);
+    EL.startup();
 
 
 
