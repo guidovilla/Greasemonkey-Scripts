@@ -70,8 +70,8 @@
 //
 // Changelog:
 // ----------
-//                  Changes due to changes in Entry List library
 // 2019.11.01 [1.7] Adopt Userscript Utils and move some functions there
+//                  Modifications due to changes in Entry List library
 //                  Some additional refactoring, cleanup and optimizations
 // 2019.10.21 [1.6] Add download of rating and check-in list
 //                  Filter out non-title IMDb lists

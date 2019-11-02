@@ -32,10 +32,6 @@
 //
 // @require         https://greasyfork.org/scripts/391648/code/userscript-utils.js
 // @require         https://greasyfork.org/scripts/390248/code/entry-list.js
-// @grant           GM_getValue
-// @grant           GM_setValue
-// @grant           GM_deleteValue
-// @grant           GM_listValues
 // ==/UserScript==
 //
 // --------------------------------------------------------------------
@@ -45,7 +41,7 @@
 //
 // Changelog:
 // ----------
-// 2019.11.01 [1.4] Cleanups
+// 2019.11.01 [1.4] Cleanups&optimizations
 // 2019.10.05 [1.3] Fix completion status appearing later (after ELProcessed)
 // 2019.10.03 [1.2] Refactor using EntryList library
 // 2019.09.30 [1.1] First public version, correct @namespace and other headers
