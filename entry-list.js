@@ -20,9 +20,9 @@
 // To use this library in a userscript you must add to script header:
   // @require https://greasyfork.org/scripts/391648/code/userscript-utils.js
   // @require https://greasyfork.org/scripts/390248/code/entry-list.js
-  // @grant   GM_getValue     (only if using lists)
-  // @grant   GM_setValue     (only if using lists)
-  // @grant   GM_deleteValue  (only if using lists)
+  // @grant   GM_getValue     (only if using lists or ctx.getUser)
+  // @grant   GM_setValue     (only if using lists or ctx.getUser)
+  // @grant   GM_deleteValue  (only if using lists or ctx.getUser)
   // @grant   GM_listValues   (only if using lists)
 //
 // --------------------------------------------------------------------
