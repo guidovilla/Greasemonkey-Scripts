@@ -227,11 +227,11 @@ window.UU = new (function() {
     };
 
     // deleteObject offered only for name consistency
-    this.GM_deleteObject = function(name) {
-        // the wrapping inside a function is needed otherwise you would need to
-        // @grant GM_deleteValue even if not using it
-        GM_deleteValue(name);
-    };
+    if (GM_info.script.grant.indexOf('GM_deleteValue') != -1) {
+        // ...and only if the grant exists (otherwise the grant would be
+        // needed even if the function is not used)
+        this.GM_deleteObject = GM_deleteValue;
+    }
 
 
 
