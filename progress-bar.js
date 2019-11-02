@@ -239,7 +239,7 @@ window.ProgressBar = (function() {
         this.update = function(currentVal, newMsg, newFinish) {
             if (newMsg) message = newMsg;
             // if finish == 0, set it to -1
-            if (!UU.isUndef(newFinish)  && newFinish  !== null) finish = (newFinish || -1);
+            if (!UU.isUndef(newFinish)  && newFinish !== null) finish = (newFinish || -1);
             var newVal;
             if (!UU.isUndef(currentVal) && currentVal !== null) newVal = currentVal;
             else newVal = current;

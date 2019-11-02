@@ -58,14 +58,14 @@
 //   - [H] Not all IMDb movies are recognized because matching is done by title
 //         (maybe use https://greasyfork.org/en/scripts/390115-imdb-utility-library-api)
 //   - [M] Move IMDb list functions to an IMDb utility library
-//   - [M] Download lists from GM_Config or similar, not from IMDb/Netflix list page
-//   - [M] Show name in tooltip? Maybe not needed if above is solved
+//   - [M] Download lists from button in GM_Config or similar, not from
+//         IMDb/Netflix list page
+//   - [M] Show name in tooltip (both NF and IMDb)
 //   - [M] Make triangles more visible
 //   - [M] Show in tooltip all lists where title is present?
-//   - [M] Lots of clean-up
 //   - [M] Add comments
 //   - [M] Delay autopreview for hidden movies?
-//   - [L] No link between IMDb user and Netflix user, implement getSourceUserFromTargetUser
+//   - [L] Implement getSourceUserFromTargetUser to link IMDb and Netflix users
 //   - [L] hide selective titles?
 //
 // Changelog:
@@ -78,15 +78,15 @@
 //                  Normalize apostrophes to increase NF<->IMDb name matching
 // 2019.10.20 [1.5] Refactor using EntryList library (first version)
 // 2019.09.30 [1.4] First public version, correct @namespace and other headers
-// 2019.08.28 [1.3] Make the list more visible (top right triangle instead of border, with tooltip)
+// 2019.08.28 [1.3] Make the list more visible (border -> triangle with tooltip)
 //                  Fix unhide method (bug added in 1.2)
-//                  Add priority in todo list
+//                  Add priority in to-do list
 // 2019.07.06 [1.2] Fix working in pages without rows (i.e. search page)
 //                  Fix opacity not applied in some cases/pages
 // 2019.06.20 [1.1] Load My List from My List page
-// 2019.06.01 [1.0] Hide "My List" titles outside "My List" (row and page) and "Continue watching"
-//                  Fix user name detection
-//                  Gets data both from locally hidden movies and from IMDb lists
+// 2019.06.01 [1.0] Hide "My List" titles outside "My List" (row and page) and
+//                  "Continue watching". Fix user name detection
+//                  Gets data from both locally hidden movies and IMDb lists
 // 2019.03.30 [0.1] First test version, private use only
 //
 // --------------------------------------------------------------------
@@ -136,7 +136,7 @@
     netflix.getUser = function() {
         var user = document.querySelector('div.account-menu-item div.account-dropdown-button > a');
 
-        if (user) user = user.getAttribute("aria-label");
+        if (user) user = user.getAttribute('aria-label');
         if (user) user = user.match(/^(.+) - Account & Settings$/);
         if (user && user.length >= 2) user = user[1];
 
@@ -150,17 +150,17 @@
 
 
     netflix.getPageEntries = function() {
-        return document.getElementsByClassName("title-card");
+        return document.getElementsByClassName('title-card');
     };
 
 
     netflix.modifyEntry = function(entry) {
         var b           = document.createElement('a');
-        b.className     = "nf-svg-button simpleround";
+        b.className     = 'nf-svg-button simpleround';
         b.textContent   = 'H';
         b.title         = 'Hide/show this title';
         var d           = document.createElement('div');
-        d.className     = "nf-svg-button-wrapper " + HIDE_BUTTON_STYLE_NAME;
+        d.className     = 'nf-svg-button-wrapper ' + HIDE_BUTTON_STYLE_NAME;
         d.appendChild(b);
         EL.addToggleEventOnClick(b, 2, LIST_HIDE, 'H');
         entry.appendChild(d);
@@ -181,7 +181,7 @@
         }
         if (!id) return null;
 
-        var title = entry.getElementsByClassName("fallback-text")[0];
+        var title = entry.getElementsByClassName('fallback-text')[0];
         if (title) title = title.innerText;
         if (!title) UU.le('Cannot find title for entry with id ' + id + ' on URL ' + document.URL, entry);
         else title = title.replace(/’/g, "'");
@@ -210,25 +210,25 @@
 
 
     var hideTypes = {
-        "H": { "name": 'Hidden',    "colour": 'white' },
-        "D": { "name": 'Disliked',  "colour": 'black' },
-        "W": { "name": 'Watchlist', "colour": 'darkgoldenrod', "visible": true },
-        "T": { "name": 'TBD',       "colour": 'Maroon',        "visible": true },
-        "S": { "name": 'Watched',   "colour": 'seagreen' },
-        "N": { "name": 'NO',        "colour": 'darkgrey' },
-        "M": { "name": 'My list',   "colour": 'yellow' },
-        "MISSING": { "name": 'Hide type not known', "colour": 'red' },
+        'H': { 'name': 'Hidden',    'colour': 'white' },
+        'D': { 'name': 'Disliked',  'colour': 'black' },
+        'W': { 'name': 'Watchlist', 'colour': 'darkgoldenrod', 'visible': true },
+        'T': { 'name': 'TBD',       'colour': 'Maroon',        'visible': true },
+        'S': { 'name': 'Watched',   'colour': 'seagreen' },
+        'N': { 'name': 'NO',        'colour': 'darkgrey' },
+        'M': { 'name': 'My list',   'colour': 'yellow' },
+        'MISSING': { 'name': 'Hide type not known', 'colour': 'red' },
     };
 
     netflix.processItem = function(entry, _I_entryData, processingType) {
-        if (!processingType || !hideTypes[processingType]) processingType = 'MISSING';
+        var type = (processingType && hideTypes[processingType] ? processingType : 'MISSING');
         var triangle = document.createElement('div');
         triangle.className = 'NHT-triangle ' + TRIANGLE_STYLE_NAME;
-        triangle.style.borderRightColor = hideTypes[processingType].colour;
-        triangle.title = hideTypes[processingType].name;
+        triangle.style.borderRightColor = hideTypes[type].colour;
+        triangle.title = hideTypes[type].name;
         entry.parentNode.appendChild(triangle);
 
-        if (!hideTypes[processingType].visible) entry.parentNode.style.opacity = .1;
+        if (!hideTypes[type].visible) entry.parentNode.style.opacity = .1;
 /*
         var parent = entry.parentNode;
         parent.parentNode.style.width = '5%';
@@ -253,7 +253,8 @@
         if (triangle) triangle.parentNode.removeChild(triangle);
 /*
         entry.parentNode.parentNode.style.width = null;
-        entry.parentNode.querySelector('fieldset#hideTitle' + entryData.id).style.display = 'none';
+        entry.parentNode.querySelector('fieldset#hideTitle' + entryData.id)
+            .style.display = 'none';
 */
     };
 
@@ -268,13 +269,13 @@
         // no need to check pageType: as of now there is only one
         var main = document.getElementsByClassName('mainView')[0];
         if (!main) {
-            UU.le('Could not find "main <div>" to insert buttons');
+            UU.le('Could not find "mainView" <div> to insert buttons');
             return;
         }
         var div  = document.createElement('div');
         var btnStyle = 'margin-left: 20px; margin-bottom: 20px; font-size: 13px; padding: .5em; background: 0 0; color: grey; border: soli 1px grey;';
-        addBtn(div, btnNFMyListRefresh, "Load My List data",  "Reload information from 'My List'", btnStyle);
-        addBtn(div, btnNFMyListClear,   "Clear My List data", "Empty the data from 'My List'",     btnStyle);
+        addBtn(div, btnNFMyListRefresh, 'Load My List data',  "Reload information from 'My List'", btnStyle);
+        addBtn(div, btnNFMyListClear,   'Clear My List data', "Empty the data from 'My List'",     btnStyle);
         main.appendChild(div);
     };
 
@@ -304,17 +305,17 @@
     // add buttons on the IMDb lists page
     imdb.processPage = function(_I_pageType, _I_isEntryPage) {
         // no need to check pageType: as of now there is only one
-        var main = document.getElementById("main");
-        var h1 = ( main && main.getElementsByTagName("h1")[0] );
+        var main = document.getElementById('main');
+        var h1 = ( main && main.getElementsByTagName('h1')[0] );
         if (!h1) {
             UU.le('Could not find element to insert buttons.');
             return;
         }
         var div = document.createElement('div');
-        div.className     = "aux-content-widget-2";
-        div.style.cssText = "margin-top: 10px;";
-        addBtn(div, btnIMDbListRefresh, "NF - Refresh highlight data", "Reload information from lists - might take a few seconds");
-        addBtn(div, btnIMDbListClear,   "NF - Clear highlight data",   "Remove list data");
+        div.className     = 'aux-content-widget-2';
+        div.style.cssText = 'margin-top: 10px;';
+        addBtn(div, btnIMDbListRefresh, 'NF - Refresh highlight data', 'Reload information from lists - might take a few seconds');
+        addBtn(div, btnIMDbListClear,   'NF - Clear highlight data',   'Remove list data');
         h1.appendChild(div);
     };
 
@@ -334,9 +335,8 @@
 
     function addBtn(div, func, txt, help, style) {
         var b = document.createElement('button');
-        b.className     = "btn";
-        if (!style) style = "margin-right: 10px; font-size: 11px;";
-        b.style.cssText = style;
+        b.className     = 'btn';
+        b.style.cssText = style || 'margin-right: 10px; font-size: 11px;';
         b.textContent   = txt;
         b.title         = help;
         b.addEventListener('click', func, false);
@@ -399,7 +399,7 @@
 
     function btnIMDbListClear() {
         IMDbListClear();
-        GM_notification({'text': "Information from IMDb cleared.", 'title': UU.me + ' - Clear IMDb lists', 'timeout': 0});
+        GM_notification({'text': 'Information from IMDb cleared.', 'title': UU.me + ' - Clear IMDb lists', 'timeout': 0});
     }
 
     function btnIMDbListRefresh() {
@@ -428,7 +428,7 @@
             .then(function(outcomes) {
                 var msg = outcomes.reduce(function(msg, outcome) {
                     if (outcome.status === 'rejected') {
-                        msg.txt += "\n * " + outcome.reason;
+                        msg.txt += '\n * ' + outcome.reason;
                         msg.numKO++;
                     }
                     return msg;
@@ -461,7 +461,9 @@
 
         var allDnd = lists.map(function(list) {
             return downloadList(list.id, list.type)
-                       .then(function(listData) { EL.saveList(listData, list.name, imdb); })
+                       .then(function(listData) {
+                           EL.saveList(listData, list.name, imdb);
+                        })
                        .then(pb.advance)
                        .catch(function(error) { pb.advance(); throw "list '" + list.name + "' - " + error; });
         });
@@ -469,12 +471,12 @@
     }
 
 
-    var WATCHLIST  = "watchlist";
-    var RATINGLIST = "ratings";
-    var CHECKINS   = "checkins";
-    var TITLES = "Titles";
-    var PEOPLE = "People";
-    var IMAGES = "Images";
+    var WATCHLIST  = 'watchlist';
+    var RATINGLIST = 'ratings';
+    var CHECKINS   = 'checkins';
+    var TITLES = 'Titles';
+    //var PEOPLE = 'People';
+    //var IMAGES = 'Images';
     // Return a Promise to get all lists (name, id, type) for current user
     // filter out all non-title lists
     function getIMDbLists() {
@@ -498,18 +500,18 @@
         var listElements = document.getElementsByClassName('user-list');
 
         var lists = Array.prototype.map.call(listElements, function(listElem) {
-            var name = listElem.getElementsByClassName("list-name")[0];
+            var name = listElem.getElementsByClassName('list-name')[0];
             if (name) {
                 name = name.text;
             } else {
-                UU.le("Error reading name of list", listElem);
+                UU.le('Error reading name of list', listElem);
                 name = listElem.id;
             }
-            return {"name": name, "id": listElem.id, 'type': listElem.dataset.listType };
+            return {'name': name, 'id': listElem.id, 'type': listElem.dataset.listType };
         });
-        lists.push({"name": LIST_WATCH,   "id": WATCHLIST,  'type': TITLES });
-        lists.push({"name": LIST_RATING,  "id": RATINGLIST, "type": TITLES });
-        lists.push({"name": LIST_CHECKIN, "id": CHECKINS,   "type": TITLES });
+        lists.push({'name': LIST_WATCH,   'id': WATCHLIST,  'type': TITLES });
+        lists.push({'name': LIST_RATING,  'id': RATINGLIST, 'type': TITLES });
+        lists.push({'name': LIST_CHECKIN, 'id': CHECKINS,   'type': TITLES });
         return lists;
     }
 
@@ -518,42 +520,43 @@
     function downloadList(id, type) {
         var getUrl;
         if (id == WATCHLIST || id == CHECKINS) {
-            // Watchlist & check-ins are not easily available (requires another fetch to find export link)
+            // Watchlist & check-ins require another fetch to find export link
             // http://www.imdb.com/user/ur???????/watchlist | HTML page w/ "export link" at the bottom
             var url = 'https://www.imdb.com/user/' + imdb.userPayload + '/' + id;
-            getUrl = UU.GM_xhR('GET', url, "Get list page", { 'responseType': 'document' })
+            getUrl = UU.GM_xhR('GET', url, 'Get list page', { 'responseType': 'document' })
                 .then(function(response) {
                     var lsId = response.responseXML2.querySelector('meta[property="pageId"]');
                     if (lsId) lsId = lsId.content;
                     if (!lsId) throw 'Cannot get list id';
-                    return "https://www.imdb.com/list/" + lsId + "/export";
+                    return 'https://www.imdb.com/list/' + lsId + '/export';
                 });
         } else if (id == RATINGLIST) {
-            getUrl = Promise.resolve("https://www.imdb.com/user/" + imdb.userPayload + "/" + id + "/export");
+            getUrl = Promise.resolve('https://www.imdb.com/user/' + imdb.userPayload + '/' + id + '/export');
         } else {
-            getUrl = Promise.resolve("https://www.imdb.com/list/" + id + "/export");
+            getUrl = Promise.resolve('https://www.imdb.com/list/' + id + '/export');
         }
         return getUrl
-                   .then(function(url)      { return UU.GM_xhR('GET', url, "download"); })
-                   .then(function(response) { return parseList(response, type); });
+                   .then(function(url)      { return UU.GM_xhR('GET', url, 'download'); })
+                   .then(function(response) {
+                        if (response.responseText.startsWith('<!DOCTYPE html')) {
+                            throw 'received HTML instead of CSV file';
+                        }
+                        return UU.parseCSV(response.responseText);
+                   })
+                   .then(function(csvData)  { return parseList(csvData, id, type); });
     }
 
 
     // Process a downloaded list
-    function parseList(response, type) {
-        if (response.responseText.startsWith("<!DOCTYPE html")) {
-            throw 'received HTML instead of CSV file';
-        }
-
-        var data = UU.parseCSV(response.responseText);
+    function parseList(data, listId, type) {
         var f    = UU.getCSVheader(data);
         var list = {};
 
         var id_fld, name_fld;
         switch (type) {
             case TITLES:
-                id_fld   = "Title";  // "Const";
-                name_fld = "Title";
+                id_fld   = 'Title';  // 'Const';
+                name_fld = 'Title';
                 break;
             default:
                 throw 'downloaded list of unmanaged type ' + type + ', discarded';
@@ -563,16 +566,16 @@
         var name_idx = f[name_fld];
 
         var id, name;
-        for (var i=1; i < data.length; i++) {
+        for (var i = 1; i < data.length; i++) {
             id   = data[i][id_idx];
             name = data[i][name_idx];
 
-            if (id === "") {
-                UU.le('parse ' + response.finalUrl + ": no id found at row " + i);
+            if (id === '') {
+                UU.le('parse list ' + listId + ': no id found at row ' + i);
                 continue;
             }
             if (list[id]) {
-                UU.le('parse ' + response.finalUrl + ": duplicate id " + id + " found at row " + i);
+                UU.le('parse list ' + listId + ': duplicate id ' + id + ' found at row ' + i);
                 continue;
             }
             list[id] = name;
@@ -586,12 +589,10 @@
 
 
 
-    //-------- "main" --------
+    /***  MAIN  ***/
     GM_addStyle(TRIANGLE_STYLE + HIDE_BUTTON_STYLE);
     EL.init(netflix, true);
     EL.addSource(imdb);
     EL.startup();
-
-
 
 }());

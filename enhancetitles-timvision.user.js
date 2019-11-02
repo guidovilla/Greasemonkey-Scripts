@@ -42,7 +42,7 @@
 // --------------------------------------------------------------------
 //
 // To-do (priority: [H]igh, [M]edium, [L]ow):
-//   - [M] check if title id is really unique for a title or if multiple ids are possible
+//   - [M] check if title id is really unique for a title
 //   - [M] add some @exclude
 //   - [L] Integration with IMDb list
 //
@@ -162,8 +162,8 @@
 
 
 
-    //-------- "main" --------
+    /***  MAIN  ***/
     GM_addStyle(timvision.STYLE_BUTTON + timvision.STYLE_PROCESS);
     EL.startup(timvision, true);
 
-})();
+}());

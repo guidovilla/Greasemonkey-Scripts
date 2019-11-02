@@ -181,8 +181,8 @@ window.UU = new (function() {
         var valid = true;
         try {
             // check is not stopped at first error, so all problems are logged
-            interfaceDef.forEach(function(prop) {
-                valid = valid && checkProperty(object, prop.name, prop.type, prop.optional);
+            interfaceDef.forEach(function(p) {
+                valid = valid && checkProperty(object, p.name, p.type, p.optional);
             });
         } catch(err) {
             self.le('Error while testing object:', object,
@@ -321,20 +321,21 @@ window.UU = new (function() {
             var details = opts || {};
             details.method = method;
             details.url    = url;
-            details.onload = function(response) {
-                if (response.status !== 200) xhrError(reject, response, method, url, purpose);
-//                else resolve(response);
+            details.onload = function(resp) {
+                if (resp.status !== 200) xhrError(reject, resp, method, url, purpose);
+//                else resolve(resp);
                 else {
                     if (details.responseType === 'document') {
                         try {
-                            const d = document.implementation.createHTMLDocument().documentElement;
-                            d.innerHTML = response.responseText;
-                            response.responseXML2 = d;
+                            const d = document.implementation
+                                     .createHTMLDocument().documentElement;
+                            d.innerHTML = resp.responseText;
+                            resp.responseXML2 = d;
                         } catch(e) {
-                            xhrError(reject, response, method, url, purpose, e);
+                            xhrError(reject, resp, method, url, purpose, e);
                         }
                     }
-                    resolve(response);
+                    resolve(resp);
                 }
             };
             details.onabort   = xhrErrorFunc(reject, method, url, purpose, 'abort');

@@ -73,7 +73,7 @@
 
     youtube.determineType = function(_I_lists, _I_entryData, entry) {
         var st = entry.querySelector('#overlays #progress');
-        return (st && st.style.width == "100%");
+        return (st && st.style.width == '100%');
     };
 
 
@@ -85,7 +85,7 @@
 
 
 
-    //-------- "main" --------
+    /***  MAIN  ***/
     EL.startup(youtube);
 
-})();
+}());

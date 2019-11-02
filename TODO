@@ -1,5 +1,3 @@
-- createfunction e createfunctionparam: fare e usare
-
 - README in gitlab/GF/OUJS - esempi:
     https://greasyfork.org/en/scripts/1810-google-tracking-b-gone
     https://openuserjs.org/libs/Marti/GM_setStyle
@@ -23,3 +21,4 @@
   - altre informazioni
 - gruppo GF e/o OUJS (occhio che questo non può cambiare)
 - header: exclude, resource, vedere quelli in verde
+- createfunction e createfunctionparam: fare e usare
