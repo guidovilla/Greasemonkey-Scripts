@@ -54,7 +54,6 @@
 //
 // To-do (priority: [H]igh, [M]edium, [L]ow):
 //   - [H] List/color configuration is hard-coded -> make configurable
-//         Also, configuration should allow to skip downloading of unused lists
 //   - [H] Not all IMDb movies are recognized because matching is done by title
 //         (maybe use https://greasyfork.org/en/scripts/390115-imdb-utility-library-api)
 //   - [M] Move IMDb list functions to an IMDb utility library
@@ -70,6 +69,7 @@
 //
 // Changelog:
 // ----------
+//                  Filter out IMDb lists that are not used
 // 2019.11.01 [1.7] Adopt Userscript Utils and move some functions there
 //                  Modifications due to changes in Entry List library
 //                  Some additional refactoring, cleanup and optimizations
@@ -481,11 +481,15 @@
     var PEOPLE = 'People';
     var IMAGES = 'Images';
     // Return a Promise to get all lists (name, id, type) for current user
-    // filter out all non-title lists
+    // keep only lists that are actually needed
     function getIMDbLists() {
         return findIMDbLists().then(getIMDbListFromPage)
                    .then(function(lists) {
-                       return lists.filter(function(list) { return (list.type === TITLES); });
+                       return lists.filter(function(list) {
+                           return LIST_ORDER.findIndex(function(el) {
+                               return (el.list === list.name && el.source === imdb);
+                           }) != -1;
+                        });
                    });
     }
     function findIMDbLists() {
