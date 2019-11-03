@@ -6,11 +6,12 @@
 - gv profile su GF e OUJS (bug reporting, vedere esempi fatti da altri)
 - per le librerie: fare documentazione in GL/GH e GF/OUJS (vedere librerie tipo GM_Config come esempio)
 
+- guardare le altre librerie e gli altri script che lavorano su imdb, netflix, timvision, youtube
 - valutare se/quando usare GM_notification(), eventualmente al posto di alert, confirm, console
 - aggiungere log.info in giro per il codice
 - aggiustare logging errori con funzione che salva gli errori per andare a rivederli (con gm config ad es.)? - se possibile in asincrono
 
-- valutare {} -> [] per output inLists
+- output inLists: property deve avere il dato preso dalla entry in lista, non true
 - usare GM_config (uno dei due):
     https://github.com/sizzlemctwizzle/GM_config
     https://greasyfork.org/en/scripts/1884-gm-config
