@@ -209,7 +209,7 @@
     };
 
 
-    var hideTypes = {
+    const PROC_TYPES = {
         'H': { 'name': 'Hidden',    'colour': 'white' },
         'D': { 'name': 'Disliked',  'colour': 'black' },
         'W': { 'name': 'Watchlist', 'colour': 'darkgoldenrod', 'visible': true },
@@ -221,14 +221,14 @@
     };
 
     netflix.processItem = function(entry, _I_entryData, processingType) {
-        var type = (processingType && hideTypes[processingType] ? processingType : 'MISSING');
+        var type = (processingType && PROC_TYPES[processingType] ? processingType : 'MISSING');
         var triangle = document.createElement('div');
         triangle.className = 'NHT-triangle ' + TRIANGLE_STYLE_NAME;
-        triangle.style.borderRightColor = hideTypes[type].colour;
-        triangle.title = hideTypes[type].name;
+        triangle.style.borderRightColor = PROC_TYPES[type].colour;
+        triangle.title = PROC_TYPES[type].name;
         entry.parentNode.appendChild(triangle);
 
-        if (!hideTypes[type].visible) entry.parentNode.style.opacity = .1;
+        if (!PROC_TYPES[type].visible) entry.parentNode.style.opacity = .1;
 /*
         var parent = entry.parentNode;
         parent.parentNode.style.width = '5%';
