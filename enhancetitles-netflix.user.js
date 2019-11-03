@@ -111,6 +111,17 @@
                       , { 'list': 'Visti',          'source': imdb, 'procType': 'S' }
                       , { 'list': 'no',             'source': imdb, 'procType': 'N' }
                       , { 'list': 'localHide',                      'procType': 'H' }];
+    var PROC_TYPES   = {
+        'H': { 'name': 'Hidden',    'colour': 'white' },
+        'D': { 'name': 'Disliked',  'colour': 'black' },
+        'W': { 'name': 'Watchlist', 'colour': 'darkgoldenrod', 'visible': true },
+        'T': { 'name': 'TBD',       'colour': 'Maroon',        'visible': true },
+        'S': { 'name': 'Watched',   'colour': 'seagreen' },
+        'N': { 'name': 'NO',        'colour': 'darkgrey' },
+        'M': { 'name': 'My list',   'colour': 'yellow' },
+        'MISSING': { 'name': 'Hide type not known', 'colour': 'red' },
+    };
+
 
     var IMDB_LIST_PAGE = 1; // any context-wide unique, non-falsy value is good
     var NF_LIST_PAGE   = 2; // any context-wide unique, non-falsy value is good
@@ -208,17 +219,6 @@
         return type;
     };
 
-
-    var PROC_TYPES = {
-        'H': { 'name': 'Hidden',    'colour': 'white' },
-        'D': { 'name': 'Disliked',  'colour': 'black' },
-        'W': { 'name': 'Watchlist', 'colour': 'darkgoldenrod', 'visible': true },
-        'T': { 'name': 'TBD',       'colour': 'Maroon',        'visible': true },
-        'S': { 'name': 'Watched',   'colour': 'seagreen' },
-        'N': { 'name': 'NO',        'colour': 'darkgrey' },
-        'M': { 'name': 'My list',   'colour': 'yellow' },
-        'MISSING': { 'name': 'Hide type not known', 'colour': 'red' },
-    };
 
     netflix.processItem = function(entry, _I_entryData, processingType) {
         var type = (processingType && PROC_TYPES[processingType] ? processingType : 'MISSING');
