@@ -106,12 +106,11 @@
     // TODO ci deve essere un modo migliore di questo
     var LIST_HIDE    = 'localHide';
     var LIST_NF_MY   = 'nfMyList';
-    var LIST_NO      = 'no';
-    var LIST_SEEN    = 'Visti';
-    var LIST_TBD     = 'tbd';
-    var LIST_WATCH   = 'Your Watchlist';
-    var LIST_RATING  = 'Your ratings';
-    var LIST_CHECKIN = 'Your check-ins';
+    var LIST_ORDER   = [{ 'list': 'Your Watchlist', 'source': imdb, 'procType': 'W' }
+                      , { 'list': 'tbd',            'source': imdb, 'procType': 'T' }
+                      , { 'list': 'Visti',          'source': imdb, 'procType': 'S' }
+                      , { 'list': 'no',             'source': imdb, 'procType': 'N' }
+                      , { 'list': 'localHide',                      'procType': 'H' }];
 
     var IMDB_LIST_PAGE = 1; // any context-wide unique, non-falsy value is good
     var NF_LIST_PAGE   = 2; // any context-wide unique, non-falsy value is good
@@ -194,13 +193,14 @@
         var type = null;
 
         if (entry.classList.contains('is-disliked')) type = 'D';
-        else if (lists[EL.ln(LIST_WATCH, imdb)])     type = 'W';
-        else if (lists[EL.ln(LIST_TBD,   imdb)])     type = 'T';
-        else if (lists[EL.ln(LIST_SEEN,  imdb)])     type = 'S';
-        else if (lists[EL.ln(LIST_NO,    imdb)])     type = 'N';
-
-        else if (lists[EL.ln(LIST_HIDE)])            type = 'H';
-
+        else {
+            for (var i = 0; i < LIST_ORDER.length; i++) {
+                if (lists[EL.ln(LIST_ORDER[i].list, LIST_ORDER[i].source)]) {
+                    type = LIST_ORDER[i].procType;
+                    break;
+                }
+            }
+        }
         if (lists[EL.ln(LIST_NF_MY)] && (!type || type === 'W' || type === 'T') && this.pageType != NF_LIST_PAGE) {
             var row = entry.closest('div.lolomoRow');
             if (!row || ['queue', 'continueWatching'].indexOf(row.dataset.listContext) == -1) type = 'M';
@@ -474,9 +474,12 @@
     var WATCHLIST  = 'watchlist';
     var RATINGLIST = 'ratings';
     var CHECKINS   = 'checkins';
+    var LIST_WATCH   = 'Your Watchlist';
+    var LIST_RATING  = 'Your ratings';
+    var LIST_CHECKIN = 'Your check-ins';
     var TITLES = 'Titles';
-    //var PEOPLE = 'People';
-    //var IMAGES = 'Images';
+    var PEOPLE = 'People';
+    var IMAGES = 'Images';
     // Return a Promise to get all lists (name, id, type) for current user
     // filter out all non-title lists
     function getIMDbLists() {
