@@ -209,7 +209,7 @@
     };
 
 
-    const PROC_TYPES = {
+    var PROC_TYPES = {
         'H': { 'name': 'Hidden',    'colour': 'white' },
         'D': { 'name': 'Disliked',  'colour': 'black' },
         'W': { 'name': 'Watchlist', 'colour': 'darkgoldenrod', 'visible': true },
