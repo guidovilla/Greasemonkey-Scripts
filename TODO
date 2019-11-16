@@ -5,6 +5,7 @@
     vedere anche esempi di sizzle
 - gv profile su GF e OUJS (bug reporting, vedere esempi fatti da altri)
 - per le librerie: fare documentazione in GL/GH e GF/OUJS (vedere librerie tipo GM_Config come esempio)
+- cambiare nome alle variabili delle liste ma mantenere controllo per riconversione vecchie (retrocompatibilità)
 
 - guardare le altre librerie e gli altri script che lavorano su imdb, netflix, timvision, youtube
 - valutare se/quando usare GM_notification(), eventualmente al posto di alert, confirm, console
