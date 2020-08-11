@@ -58,6 +58,7 @@
 //
 // Changelog:
 // ----------
+//                   Add entryData to modifyEntry
 //                   Fix retrieval of user payload
 //                   Code and documentation cleanup
 // 2019.11.01 [1.10] Refactor adding Userscript Utils, remove title (duplicate
@@ -202,7 +203,7 @@ Optional callback methods and variables in main context:
   NOTE: if entry is skipped, it is not however marked as invalid for subsequent
   passes (unless you use TL.markInvalid(), see above)
   Default is always true => all entries returned by getPageEntries() are valid
-- modifyEntry(entry):
+- modifyEntry(entry, entryData):
   optionally modify entry when scanned for the first time (e.g. add a button)
   see also EL.addToggleEventOnClick() above
 - inList(entryData, list):
@@ -444,7 +445,7 @@ window.EL = new (function() {
             if (!entryData) return;
         }
 
-        if (ctx.modifyEntry) ctx.modifyEntry(entry);
+        if (ctx.modifyEntry) ctx.modifyEntry(entry, entryData);
         lists = ( entryData ? inLists(entryData) : {} );
 
         //UU.startTimer('determineType');
