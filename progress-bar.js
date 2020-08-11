@@ -51,6 +51,7 @@
 //
 // Changelog:
 // ----------
+//                  Code cleanup
 // 2019.11.01 [1.2] Adopt Userscript Utils, hide global variables, additional
 //                  refactor&cleanup. Minor name change, backward compatible
 // 2019.10.19 [1.1] Add possibility to update finish value

@@ -41,6 +41,7 @@
 //
 // Changelog:
 // ----------
+//                  Code cleanup
 // 2019.11.01 [1.4] Cleanups&optimizations
 // 2019.10.05 [1.3] Fix completion status appearing later (after ELProcessed)
 // 2019.10.03 [1.2] Refactor using EntryList library

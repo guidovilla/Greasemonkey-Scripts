@@ -70,6 +70,7 @@
 // Changelog:
 // ----------
 //                  Filter out IMDb lists that are not used
+//                  Code and documentation cleanup
 // 2019.11.01 [1.7] Adopt Userscript Utils and move some functions there
 //                  Modifications due to changes in Entry List library
 //                  Some additional refactoring, cleanup and optimizations

@@ -48,6 +48,7 @@
 //
 // Changelog:
 // ----------
+//                  Code and documentation cleanup
 // 2019.11.01 [1.5] Modifications due to changes in Entry List library
 //                  Adopt Userscript Utils, some refactoring&cleanup
 // 2019.10.10 [1.4] Use classes instead of inline styles, some code cleanup

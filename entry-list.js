@@ -58,6 +58,8 @@
 //
 // Changelog:
 // ----------
+//                   Fix retrieval of user payload
+//                   Code and documentation cleanup
 // 2019.11.01 [1.10] Refactor adding Userscript Utils, remove title (duplicate
 //                   of UU.me), getIdFromEntry -> getEntryData (more generic)
 //                   Add startProcessing() and stopProcessing()

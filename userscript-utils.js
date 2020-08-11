@@ -46,6 +46,7 @@
 //
 // Changelog:
 // ----------
+//                  Code and documentation cleanup
 // 2019.11.01 [1.1] Add GM storage for objs, getCSVheader, cumulative timers
 //                  Add implements() and make checkProperty() private
 //                  Name change, backward compatible
@@ -90,8 +91,8 @@ Storage for objects:
   applies serialization before saving.
 - GM_getObject(name, defaultValue): wrapper around GM_getValue for retrieving
   stringified objects, applies deserialization and returns a proper object.
-- GM_deleteObject(name): just another name for GM_deleteValue (offered only
-  for name consistency).
+- GM_deleteObject(name): just another name for GM_deleteValue (offered for
+  name consistency).
 
 CSV:
 - parseCSV(csv): simple CSV parsing function, by Trevor Dixon (see below)
