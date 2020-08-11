@@ -48,6 +48,7 @@
 //
 // Changelog:
 // ----------
+//                  Add IMDb button (open IMDb page in new window)
 //                  Code and documentation cleanup
 // 2019.11.01 [1.5] Modifications due to changes in Entry List library
 //                  Adopt Userscript Utils, some refactoring&cleanup
@@ -63,7 +64,7 @@
 // --------------------------------------------------------------------
 
 /* jshint laxbreak: true */
-/* global EL: readonly */
+/* global EL: readonly, UU: readonly */
 
 (function() {
     'use strict';
@@ -78,7 +79,6 @@
     timvision.STYLE_BUTTON = '.' + timvision.CLASS_BUTTON + ' {'
             + 'position: absolute;'
             + 'bottom: 8px;'
-            + 'left: 8px;'
             + 'z-index: 1000;'
             + 'width: 30px;'
             + 'height: 30px;'
@@ -91,6 +91,7 @@
             + 'vertical-align: middle;'
             + 'font-weight: bold;'
             + '}';
+    timvision.POSITION_BUTTON = ['8px', '50px'];
     timvision.CLASS_PROCESS = 'EL-TIMVision-Process';
     var process_selector = '.' + timvision.ENTRY_CLASS + '.' + timvision.CLASS_PROCESS;
     timvision.STYLE_PROCESS =
@@ -121,13 +122,32 @@
     };
 
 
-    timvision.modifyEntry = function(entry) {
+    var openIMDb = function(evt) {
+        evt.stopPropagation();
+        evt.preventDefault();
+        // menubar=0 is to force opening in new window instead of new tab
+        window.open('https://www.imdb.com/find?s=tt&q=' + encodeURIComponent(evt.target.dataset.title), null, 'menubar=0');
+    };
+
+    timvision.addButton = function(father, text, tooltip, leftPos) {
         var d         = document.createElement('div');
-        d.textContent = 'H';
-        d.title       = 'Hide/show this title';
+        d.textContent = text;
+        d.title       = tooltip;
         d.className   = this.CLASS_BUTTON;
+        d.style.left  = leftPos;
+        father.appendChild(d);
+        return d;
+    };
+
+    timvision.modifyEntry = function(entry, entryData) {
+        var father = entry.getElementsByTagName('figure')[0];
+
+        var d = this.addButton(father, 'H', 'Hide/show this title', this.POSITION_BUTTON[0]);
         EL.addToggleEventOnClick(d, '.' + this.ENTRY_CLASS);
-        entry.getElementsByTagName('figure')[0].appendChild(d);
+
+        d     = this.addButton(father, 'I', 'Open IMDb',            this.POSITION_BUTTON[1]);
+        d.dataset.title = entryData.name;
+        d.addEventListener('click', openIMDb, false);
 
         // remove useless zooming on mouseover
         var parent = entry.parentNode.parentNode.parentNode;
