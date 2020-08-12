@@ -1,3 +1,8 @@
+- in timvision la lista json è salvata in modo strano: alcuni elementi sono id: nome, altri sono id: entrydata (dove entrydata è {"id": id, "nome": nome})
+  rettificare la cosa, se serve, oppure rettificarla comunque (da capire).
+  Inoltre è un po' un duplicato salvare un oggetto usando l'id come chiave ma mettendo l'id anche dentro l'oggetto
+- il check di appartenenza a lista in toggleEntry è diverso da quello fatto in inLists: è sempre quello di default
+
 - README in gitlab/GF/OUJS - esempi:
     https://greasyfork.org/en/scripts/1810-google-tracking-b-gone
     https://openuserjs.org/libs/Marti/GM_setStyle
