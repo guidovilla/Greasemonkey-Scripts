@@ -1,3 +1,4 @@
+- in EL.init se l'utente non c'è fa return, ma se init era stata chiamata da startup, questa condizione non è gestita correttamente
 - in timvision la lista json è salvata in modo strano: alcuni elementi sono id: nome, altri sono id: entrydata (dove entrydata è {"id": id, "nome": nome})
   rettificare la cosa, se serve, oppure rettificarla comunque (da capire).
   Inoltre è un po' un duplicato salvare un oggetto usando l'id come chiave ma mettendo l'id anche dentro l'oggetto
